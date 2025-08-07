@@ -14,4 +14,8 @@ struct XcodePAIApp: App {
             ContentView()
         }
     }
+    
+    init() {
+        let _ = ChatProxy.shared
+    }
 }
