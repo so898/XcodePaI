@@ -48,6 +48,11 @@ class ChatProxyTunnel {
         }
         return _modelListString ?? ""
     }()
+    
+    private func writeServerErrorResponse() {
+        responseType = .unknown
+        connection?.writeResponse(HTTPResponse(statusCode: 500, statusMessage: "Server not supported."))
+    }
 }
 
 // MARK: Models List Response
@@ -62,7 +67,22 @@ extension ChatProxyTunnel{
 
 // MARK: Completions Response
 extension ChatProxyTunnel{
-    
+    func receiveCompletionsRequest(body: Data) {
+        guard let jsonDict = try? JSONSerialization.jsonObject(with: body) as? [String: Any] else {
+            writeServerErrorResponse()
+            return
+        }
+        
+        let originalRequest = LLMRequest(dict: jsonDict)
+        
+        // Do LLM request to server, add MCP...
+        
+        
+        responseType = .completions
+        var response = HTTPResponse()
+        response.chunked()
+        connection?.writeResponse(response)
+    }
 }
 
 // MARK: HTTPConnectionDelegate
@@ -77,13 +97,10 @@ extension ChatProxyTunnel: HTTPConnectionDelegate {
             var response = HTTPResponse()
             response.addContentLength(modelDataLength())
             connection.writeResponse(response)
-        } else if request.method == "POST", request.path.contains("/v1/chat/completion") {
-            responseType = .completions
-            var response = HTTPResponse()
-            response.chunked()
-            connection.writeResponse(response)
+        } else if request.method == "POST", request.path.contains("/v1/chat/completion"), let bodyData = request.body {
+            receiveCompletionsRequest(body: bodyData)
         } else {
-            connection.writeResponse(HTTPResponse(statusCode: 500, statusMessage: "Server not supported."))
+            writeServerErrorResponse()
         }
     }
     
