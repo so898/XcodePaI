@@ -91,11 +91,13 @@ class LLMRequest {
             dict["stream_options"] = streamOptions.toDictionary()
         }
         
-        var toolsArray = [Any]()
-        for message in messages {
-            toolsArray.append(message.toDictionary())
+        if let tools = tools, tools.count > 0 {
+            var toolsArray = [Any]()
+            for tool in tools {
+                toolsArray.append(tool.toDictionary())
+            }
+            dict["tools"] = toolsArray
         }
-        dict["tools"] = toolsArray
         
         if let seed = seed {
             dict["seed"] = seed
@@ -148,15 +150,15 @@ class LLMMessage {
             fatalError("LLM message could not be properly parsered.")
         }
         
-        if let content = content {
+        if content != nil {
             self.type = .content
         }
         
-        if let contents = contents {
+        if contents != nil {
             self.type = .mutipleContent
         }
         
-        if let toolCalls = toolCalls {
+        if toolCalls != nil {
             self.type = .toolCall
         }
     }
