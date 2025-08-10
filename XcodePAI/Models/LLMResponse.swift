@@ -152,30 +152,34 @@ class LLMResponseChoiceMessage {
     let type: LLMResponseChoiceMessageType
     
     let content: String?
+    let reasoningContent: String?
     let toolCallId: String?
     
     let toolCalls: [LLMMessageToolCall]?
     
-    init(role: String?, type: LLMResponseChoiceMessageType = .content, content: String? = nil, toolCallId: String? = nil, toolCalls: [LLMMessageToolCall]? = nil) {
+    init(role: String?, type: LLMResponseChoiceMessageType = .content, content: String? = nil, reasoningContent: String? = nil, toolCallId: String? = nil, toolCalls: [LLMMessageToolCall]? = nil) {
         self.role = role
         self.type = type
         self.content = content
+        self.reasoningContent = reasoningContent
         self.toolCallId = toolCallId
         self.toolCalls = toolCalls
     }
     
-    init(role: String, content: String? = nil, toolCallId: String? = nil) {
+    init(role: String, content: String? = nil, reasoningContent: String? = nil, toolCallId: String? = nil) {
         self.role = role
         self.type = .content
         self.content = content
+        self.reasoningContent = reasoningContent
         self.toolCallId = toolCallId
         self.toolCalls = nil
     }
     
-    init(role: String, content: String) {
+    init(role: String, content: String, reasoningContent: String? = nil) {
         self.role = role
         self.type = .content
         self.content = content
+        self.reasoningContent = reasoningContent
         self.toolCallId = nil
         self.toolCalls = nil
     }
@@ -184,6 +188,7 @@ class LLMResponseChoiceMessage {
         self.role = role
         self.type = .content
         self.content = nil
+        self.reasoningContent = nil
         self.toolCallId = toolCallId
         self.toolCalls = nil
     }
@@ -192,6 +197,7 @@ class LLMResponseChoiceMessage {
         self.role = role
         self.type = .toolCall
         self.content = nil
+        self.reasoningContent = nil
         self.toolCallId = nil
         self.toolCalls = toolCalls
     }
@@ -200,6 +206,7 @@ class LLMResponseChoiceMessage {
         self.role = nil
         self.type = .content
         self.content = content
+        self.reasoningContent = nil
         self.toolCallId = nil
         self.toolCalls = nil
     }
@@ -210,6 +217,21 @@ class LLMResponseChoiceMessage {
         if let content = dict["content"] as? String {
             self.type = .content
             self.content = content
+            if let reasoningContent = dict["reasoning_content"] as? String {
+                self.reasoningContent = reasoningContent
+            } else {
+                self.reasoningContent = nil
+            }
+            if let toolCallId = dict["tool_call_id"] as? String {
+                self.toolCallId = toolCallId
+            } else {
+                self.toolCallId = nil
+            }
+            self.toolCalls = nil
+        } else if let reasoningContent = dict["reasoning_content"] as? String {
+            self.type = .content
+            self.content = nil
+            self.reasoningContent = reasoningContent
             if let toolCallId = dict["tool_call_id"] as? String {
                 self.toolCallId = toolCallId
             } else {
@@ -220,6 +242,11 @@ class LLMResponseChoiceMessage {
             self.type = .content
             self.toolCallId = toolCallId
             self.content = nil
+            if let reasoningContent = dict["reasoning_content"] as? String {
+                self.reasoningContent = reasoningContent
+            } else {
+                self.reasoningContent = nil
+            }
             self.toolCalls = nil
         } else if let toolCalls = dict["tool_calls"] as? [[String: Any]] {
             self.type = .toolCall
@@ -229,10 +256,12 @@ class LLMResponseChoiceMessage {
             }
             self.toolCalls = parseredToolCalls
             self.content = nil
+            self.reasoningContent = nil
             self.toolCallId = nil
         } else {
             self.type = .empty
             self.content = nil
+            self.reasoningContent = nil
             self.toolCallId = nil
             self.toolCalls = nil
         }
@@ -250,8 +279,11 @@ class LLMResponseChoiceMessage {
             if let content = content {
                 dict["content"] = content
             }
+            if let reasoningContent = reasoningContent {
+                dict["reasoning_content"] = reasoningContent
+            }
             if let toolCallId = toolCallId {
-                dict["content"] = toolCallId
+                dict["tool_call_id"] = toolCallId
             }
         case .toolCall:
             if let toolCalls = toolCalls {
