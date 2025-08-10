@@ -8,43 +8,15 @@
 import Foundation
 
 class ChatProxy {
+    
     static let shared = ChatProxy()
     
-    private var server: ChunkedHTTPServer?
+    private var server: TCPServer?
+    
+    private var tunnels = [ChatProxyTunnel]()
+    
     init() {
-        server = ChunkedHTTPServer(port: 50222, requestHandler: { request in
-            print("Handling request: \(request.method) \(request.path)")
-            
-            // Create Response
-            let response = HTTPResponse(
-                headers: ["Content-Type": "text/plain"]
-            )
-            
-            // Generate Chunk
-            let chunks = [
-                "Hello, ".data(using: .utf8)!,
-                "this is a ".data(using: .utf8)!,
-                "chunked response!".data(using: .utf8)!
-            ]
-//            response.contentChunks = chunks
-            
-            // Send response
-            request.connection?.sendResponse(response: response)
-            
-            for chunk in chunks {
-                request.connection?.sendChunk(chunk)
-                sleep(5)
-            }
-            
-            request.connection?.sendEndChunk()
-            
-            
-            // Close Connection
-            // Maybe after write complete
-//            if !shouldKeepAlive(request) {
-//                request.connection?.closeConnection()
-//            }
-        })
+        server = TCPServer(port: 50222, delegate: self)
         server?.start()
     }
     
@@ -52,5 +24,25 @@ class ChatProxy {
         // keep connection with Connection header key
         guard let connectionHeader = request.headers["Connection"] else { return false }
         return connectionHeader.lowercased() == "keep-alive"
+    }
+}
+
+extension ChatProxy: TCPServerDelegate {
+    func serverStartListen(port: Int) {
+        print("TCP listen at port: \(port)")
+    }
+    
+    func serverStopListen(error: (any Error)?) {
+        print("TCP stop listening, \(String(describing: error))")
+    }
+    
+    func serverDidReceive(connection: TCPConnection) {
+        tunnels.append(ChatProxyTunnel(connection, delegate: self))
+    }
+}
+
+extension ChatProxy: ChatProxyTunnelDelegate {
+    func tunnelStoped(_ tunnel: ChatProxyTunnel) {
+        tunnels.removeAll{$0 == tunnel}
     }
 }

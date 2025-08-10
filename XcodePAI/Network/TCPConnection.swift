@@ -1,0 +1,120 @@
+//
+//  TCPConnection.swift
+//  XcodePAI
+//
+//  Created by Bill Cheng on 2025/8/10.
+//
+
+import Foundation
+import Network
+
+protocol TCPConnectionDelegate {
+    func connectionConnected(_ connection: TCPConnection)
+    func connection(_ connection: TCPConnection, didReceiveData data: Data)
+    func connection(_ connection: TCPConnection, didWrite data: Data, tag: Int?)
+    func connection(_ connection: TCPConnection, didNotWrite error: Error, tag: Int?)
+    func connection(_ connection: TCPConnection, closed error: Error?)
+}
+
+class TCPConnection {
+    let connection: NWConnection
+    private let queue = DispatchQueue(label: "server.connection")
+    var delegate: TCPConnectionDelegate?
+    init(_ connection: NWConnection) {
+        self.connection = connection
+    }
+    
+    func start(_ delegate: TCPConnectionDelegate) {
+        guard connection.state != .ready else {
+            return
+        }
+        
+        self.delegate = delegate
+        
+        connection.start(queue: queue)
+        connection.stateUpdateHandler = {[weak self] newState in
+            guard let `self` = self else {
+                return
+            }
+            switch newState {
+            case .setup:
+                print("Connection setup")
+            case .waiting(let error):
+                print("Connection waiting")
+            case .preparing:
+                print("Connection preparing")
+            case .ready:
+                print("Connection ready")
+                self.delegate?.connectionConnected(self)
+            case .failed(let error):
+                print("Connection failed")
+                self.delegate?.connection(self, closed: error)
+            case .cancelled:
+                print("Connection cancelled")
+                self.delegate?.connection(self, closed: nil)
+            @unknown default:
+                fatalError()
+            }
+        }
+    }
+    
+    func read() {
+        receiveData()
+    }
+    
+    func write(_ data: Data, tag: Int? = nil) {
+        connection.send(content: data, completion: .contentProcessed({[weak self] error in
+            guard let `self` = self else {
+                return
+            }
+            if let error = error {
+                self.delegate?.connection(self, didNotWrite: error, tag: tag)
+                return
+            }
+            self.delegate?.connection(self, didWrite: data, tag: tag)
+        }))
+    }
+    
+    func stop() {
+        self.queue.async {[weak self] in
+            guard let `self` = self else { return }
+            self.connection.cancel()
+        }
+    }
+    
+    func forceStop() {
+        self.queue.async {[weak self] in
+            guard let `self` = self else { return }
+            self.cleanup()
+        }
+    }
+    
+    private func receiveData() {
+        connection.receive(minimumIncompleteLength: 1, maximumLength: .max) { [weak self] data, _, isComplete, error in
+            guard let `self` = self else { return }
+            
+            if let error = error {
+                self.cleanup(error)
+                return
+            }
+            
+            if let data = data {
+                self.delegate?.connection(self, didReceiveData: data)
+            }
+            
+            if isComplete {
+                self.queue.async {[weak self] in
+                    guard let `self` = self else { return }
+                    self.cleanup()
+                }
+            }
+        }
+    }
+    
+    private func cleanup(_ error: Error? = nil) {
+        delegate?.connection(self, closed: error)
+        delegate = nil
+        connection.cancel()
+    }
+    
+}
