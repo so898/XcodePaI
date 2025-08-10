@@ -136,7 +136,6 @@ class LLMClient {
 
 extension LLMClient: HTTPSSEClientDelegate {
     func client(_ client: HTTPSSEClient, receive chunk: String) {
-        print("[CHUNK] \(chunk)")
         if chunk == "[DONE]" {
             // close client when receive `DONE`
             client.cancel()
