@@ -13,7 +13,10 @@ class Constraint {
     static let CRLFString = "\r\n"
     static let DoubleCRLFString = "\r\n\r\n"
     
+    static let DoubleLFString = "\n\n"
+    
     //Static Data
     static let CRLF = Data(Constraint.CRLFString.utf8)
     static let DoubleCRLF = Data(Constraint.DoubleCRLFString.utf8)
+    static let DoubleLF = Data(Constraint.DoubleLFString.utf8)
 }
