@@ -107,11 +107,27 @@
 		790799B02E487394004D9D1A /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				790799BB2E48B68F004D9D1A /* Server */,
+				790799BC2E48B699004D9D1A /* Client */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		790799BB2E48B68F004D9D1A /* Server */ = {
+			isa = PBXGroup;
+			children = (
 				790799B12E4873A7004D9D1A /* TCPServer.swift */,
 				790799B32E487E05004D9D1A /* TCPConnection.swift */,
 				790799B52E487F7E004D9D1A /* HTTPConnection.swift */,
 			);
-			path = Network;
+			path = Server;
+			sourceTree = "<group>";
+		};
+		790799BC2E48B699004D9D1A /* Client */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Client;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
