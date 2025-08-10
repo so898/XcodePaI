@@ -22,6 +22,14 @@ class LLMServer {
         self.privateKey = privateKey
     }
     
+    func modelListUrl() -> String {
+        return url + "/v1/models"
+    }
+    
+    func chatCompletionsUrl() -> String {
+        return url + "/v1/chat/completions"
+    }
+    
     func requestHeaders() -> [String: Any]? {
         guard let privateKey = privateKey else {
             return nil

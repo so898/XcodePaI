@@ -9,60 +9,68 @@ import Foundation
 
 class HTTPClient {
     
-    static func get(url: URL, headers: [String: String]? = nil, completion: @escaping (Result<Data, Error>) -> Void) {
+    static func get(url: String, headers: [String: Any]? = nil, completion: @escaping (Result<Data, Error>) -> Void) {
+        guard let url = URL(string: url) else {
+            completion(.failure(NSError(domain: "NetworkError", code: 0, userInfo: [NSLocalizedDescriptionKey: "url parser fail"])))
+            return
+        }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         headers?.forEach { key, value in
-            request.addValue(value, forHTTPHeaderField: key)
+            if let value = value as? String {
+                request.addValue(value, forHTTPHeaderField: key)
+            } else if let value = value as? Int {
+                request.addValue(String(value), forHTTPHeaderField: key)
+            } else if let value = value as? Double {
+                request.addValue(String(value), forHTTPHeaderField: key)
+            }
         }
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+                completion(.failure(error))
                 return
             }
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode),
                   let data = data else {
-                DispatchQueue.main.async {
-                    completion(.failure(NSError(domain: "NetworkError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response or no data"])))
-                }
+                completion(.failure(NSError(domain: "NetworkError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response or no data"])))
                 return
             }
-            DispatchQueue.main.async {
-                completion(.success(data))
-            }
+            completion(.success(data))
         }.resume()
     }
     
-    static func post(url: URL, headers: [String: String]? = nil, body: Data?, completion: @escaping (Result<Data, Error>) -> Void) {
+    static func post(url: String, headers: [String: Any]? = nil, body: Data?, completion: @escaping (Result<Data, Error>) -> Void) {
+        guard let url = URL(string: url) else {
+            completion(.failure(NSError(domain: "NetworkError", code: 0, userInfo: [NSLocalizedDescriptionKey: "url parser fail"])))
+            return
+        }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = body
         headers?.forEach { key, value in
-            request.addValue(value, forHTTPHeaderField: key)
+            if let value = value as? String {
+                request.addValue(value, forHTTPHeaderField: key)
+            } else if let value = value as? Int {
+                request.addValue(String(value), forHTTPHeaderField: key)
+            } else if let value = value as? Double {
+                request.addValue(String(value), forHTTPHeaderField: key)
+            }
         }
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+                completion(.failure(error))
                 return
             }
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode),
                   let data = data else {
-                DispatchQueue.main.async {
-                    completion(.failure(NSError(domain: "NetworkError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response or no data"])))
-                }
+                completion(.failure(NSError(domain: "NetworkError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response or no data"])))
                 return
             }
-            DispatchQueue.main.async {
-                completion(.success(data))
-            }
+            completion(.success(data))
         }.resume()
     }
 }

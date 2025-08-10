@@ -73,7 +73,7 @@ class HTTPSSEClient: NSObject {
     
     private func receive(_ data: Data) {
         guard var chunk = String(data: data, encoding: .utf8) else {
-            self.delegate?.client(self, complete: .failure(CocoaError(.validationInvalidDate, userInfo: ["message": "Parser chunk data fail"])))
+            self.delegate?.client(self, complete: .failure(NSError(domain: "NetworkError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Parser chunk data fail"])))
             return
         }
         

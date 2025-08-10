@@ -55,7 +55,7 @@ class LLMClient {
             }
         }
         
-        client = HTTPSSEClient(url: server.url, headers: server.requestHeaders(), body: data, delegate: self)
+        client = HTTPSSEClient(url: server.chatCompletionsUrl(), headers: server.requestHeaders(), body: data, delegate: self)
         client?.start()
     }
     
