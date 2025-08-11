@@ -8,17 +8,17 @@
 import Foundation
 
 class LLMRequest {
-    let model: String
-    let messages: [LLMMessage]
-    let stream: Bool
-    let streamOptions: LLMStreamOption?
-    let tools: [LLMTool]?
+    var model: String
+    var messages: [LLMMessage]
+    var stream: Bool
+    var streamOptions: LLMStreamOption?
+    var tools: [LLMTool]?
     
     // LLM Parameters
-    let seed: Int?
-    let maxTokens: Int?
-    let temperature: Float?
-    let topP: Float?
+    var seed: Int?
+    var maxTokens: Int?
+    var temperature: Float?
+    var topP: Float?
     
     init(model: String, messages: [LLMMessage], stream: Bool = true, usage: Bool = false, tools: [LLMTool]? = nil, seed: Int? = nil, maxTokens: Int? = nil, temperature: Float? = nil, topP: Float? = nil) {
         self.model = model
