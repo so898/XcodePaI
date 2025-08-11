@@ -22,11 +22,14 @@ class LLMAssistantMessage {
     
     let tools: [LLMMessageToolCall]?
     
-    init(reason: String? = nil, isReasonComplete: Bool = false, content: String? = nil, tools: [LLMMessageToolCall]? = nil) {
+    let finishReason: String?
+    
+    init(reason: String? = nil, isReasonComplete: Bool = false, content: String? = nil, tools: [LLMMessageToolCall]? = nil, finishReason: String? = nil) {
         self.reason = reason
         self.isReasonComplete = isReasonComplete
         self.content = content
         self.tools = tools
+        self.finishReason = finishReason
     }
 }
 
@@ -57,6 +60,10 @@ class LLMClient {
         
         client = HTTPSSEClient(url: server.chatCompletionsUrl(), headers: server.requestHeaders(), body: data, delegate: self)
         client?.start()
+    }
+
+    func stop() {
+        client?.cancel()
     }
     
     private var reason: String?
@@ -145,9 +152,9 @@ extension LLMClient: HTTPSSEClientDelegate {
             return
         }
         
-        if let error = dict["error"] {
+        guard let _ = dict["id"] else {
             // Error
-            delegate.client(self, receiveError: error as? [String: Any] ?? [String: Any]())
+            delegate.client(self, receiveError: dict)
             client.cancel()
             return
         }
@@ -157,8 +164,10 @@ extension LLMClient: HTTPSSEClientDelegate {
         var chunkReason: String?
         var chunkContent: String?
         var chunkTools: [LLMMessageToolCall]?
+        var chunkFinishReason: String?
         
         for choice in response.choices {
+            chunkFinishReason = choice.finishReason
             chunkTools = processToolWithMessage(choice.message)
             if choice.isFullMessage {
                 let chunkRet = processReasonAndContentWithMessage(choice.message)
@@ -219,7 +228,8 @@ extension LLMClient: HTTPSSEClientDelegate {
         delegate.client(self, receivePart: LLMAssistantMessage(reason: chunkReason,
                                                                isReasonComplete: isReasonComplete,
                                                                content: chunkContent,
-                                                               tools: chunkTools))
+                                                               tools: chunkTools,
+                                                               finishReason: chunkFinishReason))
     }
     
     func client(_ client: HTTPSSEClient, complete: Result<Void, any Error>) {
