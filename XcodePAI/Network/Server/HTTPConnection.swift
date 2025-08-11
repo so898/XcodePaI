@@ -210,7 +210,13 @@ extension HTTPConnection {
     }
     
     func writeEndChunk() {
-        write("")
+        guard HTTPResponseWrited else {
+            return
+        }
+        let chunkSize = String(format: "%lx", 0)
+        let chunkHeader = Data("\(chunkSize)".utf8)
+        let chunkData = chunkHeader + Constraint.DoubleCRLF
+        connection.write(chunkData)
     }
 }
 
