@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct XcodePAIApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var body: some Scene {
         WindowGroup {
             VStack {
@@ -16,9 +18,5 @@ struct XcodePAIApp: App {
             }
         }
         .windowToolbarStyle(.expanded)
-    }
-    
-    init() {
-        let _ = ChatProxy.shared
     }
 }

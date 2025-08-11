@@ -28,6 +28,8 @@
 		790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E22E4A36C8004D9D1A /* GeneralSettingSectionView.swift */; };
 		790799E52E4A370B004D9D1A /* LLMSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E42E4A3700004D9D1A /* LLMSettingSectionView.swift */; };
 		790799E72E4A3ED4004D9D1A /* ChatProxySettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */; };
+		790799E92E4A5665004D9D1A /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E82E4A565E004D9D1A /* MenuBarView.swift */; };
+		790799EB2E4A5868004D9D1A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799EA2E4A5864004D9D1A /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +56,8 @@
 		790799E22E4A36C8004D9D1A /* GeneralSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingSectionView.swift; sourceTree = "<group>"; };
 		790799E42E4A3700004D9D1A /* LLMSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingSectionView.swift; sourceTree = "<group>"; };
 		790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxySettingSectionView.swift; sourceTree = "<group>"; };
+		790799E82E4A565E004D9D1A /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		790799EA2E4A5864004D9D1A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +117,7 @@
 				7907999F2E471FEA004D9D1A /* ChatProxy */,
 				790799A12E471FEA004D9D1A /* Assets.xcassets */,
 				790799A32E471FEA004D9D1A /* XcodePAI.entitlements */,
+				790799EA2E4A5864004D9D1A /* AppDelegate.swift */,
 				790799A42E471FEA004D9D1A /* XcodePAIApp.swift */,
 			);
 			path = XcodePAI;
@@ -167,6 +172,7 @@
 		790799DE2E4A32CC004D9D1A /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				790799E82E4A565E004D9D1A /* MenuBarView.swift */,
 				790799E12E4A36AC004D9D1A /* SettingSectionViews */,
 				790799DF2E4A342E004D9D1A /* SettingsView.swift */,
 				790799A22E471FEA004D9D1A /* ContentView.swift */,
@@ -256,6 +262,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				790799EB2E4A5868004D9D1A /* AppDelegate.swift in Sources */,
 				790799C42E48D914004D9D1A /* LLMResponse.swift in Sources */,
 				790799C22E48BC74004D9D1A /* LLMRequest.swift in Sources */,
 				790799A62E471FEA004D9D1A /* ChatProxy.swift in Sources */,
@@ -265,6 +272,7 @@
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
 				790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */,
 				790799A82E471FEA004D9D1A /* ContentView.swift in Sources */,
+				790799E92E4A5665004D9D1A /* MenuBarView.swift in Sources */,
 				790799C92E48F688004D9D1A /* LLMServer.swift in Sources */,
 				790799C02E48B833004D9D1A /* HTTPSSEClient.swift in Sources */,
 				790799A92E471FEA004D9D1A /* XcodePAIApp.swift in Sources */,
