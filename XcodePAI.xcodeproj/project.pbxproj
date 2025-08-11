@@ -24,6 +24,10 @@
 		790799C42E48D914004D9D1A /* LLMResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799C32E48D911004D9D1A /* LLMResponse.swift */; };
 		790799C72E48F624004D9D1A /* LLMClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799C62E48F61D004D9D1A /* LLMClient.swift */; };
 		790799C92E48F688004D9D1A /* LLMServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799C82E48F683004D9D1A /* LLMServer.swift */; };
+		790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799DF2E4A342E004D9D1A /* SettingsView.swift */; };
+		790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E22E4A36C8004D9D1A /* GeneralSettingSectionView.swift */; };
+		790799E52E4A370B004D9D1A /* LLMSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E42E4A3700004D9D1A /* LLMSettingSectionView.swift */; };
+		790799E72E4A3ED4004D9D1A /* ChatProxySettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +50,10 @@
 		790799C32E48D911004D9D1A /* LLMResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMResponse.swift; sourceTree = "<group>"; };
 		790799C62E48F61D004D9D1A /* LLMClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMClient.swift; sourceTree = "<group>"; };
 		790799C82E48F683004D9D1A /* LLMServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMServer.swift; sourceTree = "<group>"; };
+		790799DF2E4A342E004D9D1A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		790799E22E4A36C8004D9D1A /* GeneralSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingSectionView.swift; sourceTree = "<group>"; };
+		790799E42E4A3700004D9D1A /* LLMSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingSectionView.swift; sourceTree = "<group>"; };
+		790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxySettingSectionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,12 +106,12 @@
 		790799A52E471FEA004D9D1A /* XcodePAI */ = {
 			isa = PBXGroup;
 			children = (
+				790799DE2E4A32CC004D9D1A /* Views */,
 				790799B02E487394004D9D1A /* Network */,
 				790799AD2E47203B004D9D1A /* Utils */,
 				790799A02E471FEA004D9D1A /* Models */,
 				7907999F2E471FEA004D9D1A /* ChatProxy */,
 				790799A12E471FEA004D9D1A /* Assets.xcassets */,
-				790799A22E471FEA004D9D1A /* ContentView.swift */,
 				790799A32E471FEA004D9D1A /* XcodePAI.entitlements */,
 				790799A42E471FEA004D9D1A /* XcodePAIApp.swift */,
 			);
@@ -154,6 +162,26 @@
 				790799C62E48F61D004D9D1A /* LLMClient.swift */,
 			);
 			path = LLM;
+			sourceTree = "<group>";
+		};
+		790799DE2E4A32CC004D9D1A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				790799E12E4A36AC004D9D1A /* SettingSectionViews */,
+				790799DF2E4A342E004D9D1A /* SettingsView.swift */,
+				790799A22E471FEA004D9D1A /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		790799E12E4A36AC004D9D1A /* SettingSectionViews */ = {
+			isa = PBXGroup;
+			children = (
+				790799E22E4A36C8004D9D1A /* GeneralSettingSectionView.swift */,
+				790799E42E4A3700004D9D1A /* LLMSettingSectionView.swift */,
+				790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */,
+			);
+			path = SettingSectionViews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -232,7 +260,10 @@
 				790799C22E48BC74004D9D1A /* LLMRequest.swift in Sources */,
 				790799A62E471FEA004D9D1A /* ChatProxy.swift in Sources */,
 				790799AC2E471FFF004D9D1A /* LLMModel.swift in Sources */,
+				790799E72E4A3ED4004D9D1A /* ChatProxySettingSectionView.swift in Sources */,
+				790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */,
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
+				790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */,
 				790799A82E471FEA004D9D1A /* ContentView.swift in Sources */,
 				790799C92E48F688004D9D1A /* LLMServer.swift in Sources */,
 				790799C02E48B833004D9D1A /* HTTPSSEClient.swift in Sources */,
@@ -244,6 +275,7 @@
 				790799AF2E47204C004D9D1A /* Constraint.swift in Sources */,
 				790799B42E487E08004D9D1A /* TCPConnection.swift in Sources */,
 				790799C72E48F624004D9D1A /* LLMClient.swift in Sources */,
+				790799E52E4A370B004D9D1A /* LLMSettingSectionView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

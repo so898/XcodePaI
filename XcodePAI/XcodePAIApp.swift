@@ -11,8 +11,11 @@ import SwiftUI
 struct XcodePAIApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            VStack {
+                SettingsView()
+            }
         }
+        .windowToolbarStyle(.expanded)
     }
     
     init() {
