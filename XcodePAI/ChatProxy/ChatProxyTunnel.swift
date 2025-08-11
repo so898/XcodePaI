@@ -18,6 +18,7 @@ enum ChatProxyTunnelResponeType {
 }
 
 class ChatProxyTunnel {
+    private var id = UUID().uuidString
     private var connection: HTTPConnection?
     private var delegate: ChatProxyTunnelDelegate?
     
