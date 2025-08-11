@@ -39,7 +39,7 @@ class TCPConnection {
             switch newState {
             case .setup:
                 print("Connection setup")
-            case .waiting(let error):
+            case .waiting(_):
                 print("Connection waiting")
             case .preparing:
                 print("Connection preparing")
@@ -102,12 +102,13 @@ class TCPConnection {
                 self.delegate?.connection(self, didReceiveData: data)
             }
             
-            if isComplete {
-                self.queue.async {[weak self] in
-                    guard let `self` = self else { return }
-                    self.cleanup()
-                }
-            }
+            // Mux socket, Wait for next HTTP header
+            // if isComplete {
+                // self.queue.async {[weak self] in
+                //     guard let `self` = self else { return }
+                //     self.cleanup()
+                // }
+            // }
         }
     }
     
