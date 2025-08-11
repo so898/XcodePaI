@@ -103,7 +103,7 @@ extension HTTPSSEClient: URLSessionDataDelegate {
             sseDataBuffer.removeSubrange(0..<range.upperBound)
             
             if !chunkData.isEmpty {
-                receive(data)
+                receive(chunkData)
             }
         }
     }
@@ -117,9 +117,16 @@ extension HTTPSSEClient: URLSessionDataDelegate {
                 self.delegate?.client(self, complete: .failure(error))
             } else {
                 // Process any remaining data
-                let buffer = self.sseDataBuffer
+                var buffer = self.sseDataBuffer
                 if !buffer.isEmpty {
-                    receive(buffer)
+                    while let range = buffer.range(of: Constraint.DoubleLF) {
+                        let chunkData = buffer.subdata(in: 0..<range.lowerBound)
+                        buffer.removeSubrange(0..<range.upperBound)
+                        
+                        if !chunkData.isEmpty {
+                            receive(chunkData)
+                        }
+                    }
                     self.sseDataBuffer = Data()
                 }
                 queue.async { [weak self] in
