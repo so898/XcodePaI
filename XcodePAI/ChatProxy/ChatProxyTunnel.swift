@@ -53,6 +53,9 @@ class ChatProxyTunnel {
         responseType = .unknown
         connection?.writeResponse(HTTPResponse(statusCode: 500, statusMessage: "Server not supported."))
     }
+
+    private var llmClient: LLMClient?
+    private var hasThink: Bool?
 }
 
 // MARK: Models List Response
@@ -74,9 +77,17 @@ extension ChatProxyTunnel{
         }
         
         let originalRequest = LLMRequest(dict: jsonDict)
+        originalRequest.model = "xxx"
         
         // Do LLM request to server, add MCP...
+        hasThink = nil
         
+        if let llmClient = llmClient {
+            llmClient.stop()
+        }
+        
+        llmClient = LLMClient(LLMServer(url: "xxx", privateKey: "sk-xxx"), delegate: self)
+        llmClient?.request(originalRequest)
         
         responseType = .completions
         var response = HTTPResponse()
@@ -136,6 +147,49 @@ extension ChatProxyTunnel: HTTPConnectionDelegate {
     func connection(_ connection: HTTPConnection, closed error: (any Error)?) {
         delegate?.tunnelStoped(self)
     }
+}
+
+extension ChatProxyTunnel: LLMClientDelegate {
+    func client(_ client: LLMClient, receivePart part: LLMAssistantMessage) {
+        var response: LLMResponse?
+        if hasThink == nil, let reason = part.reason {
+            hasThink = true
+            response = LLMResponse(id: id, model: "XcodePaI", object: "chat.completion.chunk", choices: [LLMResponseChoice(index: 0, finishReason: part.finishReason, isFullMessage: false, message: LLMResponseChoiceMessage(role: "assistant", content: "```think\n\n" + reason))])
+        } else if hasThink == true, let reason = part.reason {
+            response = LLMResponse(id: id, model: "XcodePaI", object: "chat.completion.chunk", choices: [LLMResponseChoice(index: 0, finishReason: part.finishReason, isFullMessage: false, message: LLMResponseChoiceMessage(role: "assistant", content: reason))])
+        } else if hasThink == true, part.reason == nil, let content = part.content {
+            response = LLMResponse(id: id, model: "XcodePaI", object: "chat.completion.chunk", choices: [LLMResponseChoice(index: 0, finishReason: part.finishReason, isFullMessage: false, message: LLMResponseChoiceMessage(role: "assistant", content: "\n\n~~EOT~~\n\n```\n\n" + content,))])
+            hasThink = false
+        } else if let content = part.content{
+            response = LLMResponse(id: id, model: "XcodePaI", object: "chat.completion.chunk", choices: [LLMResponseChoice(index: 0, finishReason: part.finishReason, isFullMessage: false, message: LLMResponseChoiceMessage(role: "assistant", content: content))])
+        }
+        
+        if let response = response, let json = try? JSONSerialization.data(withJSONObject: response.toDictionary()), let jsonStr = String(data: json, encoding: .utf8) {
+            connection?.writeChunk(jsonStr + Constraint.DoubleLFString)
+        }
+    }
+    
+    func client(_ client: LLMClient, receiveMessage message: LLMAssistantMessage) {
+        if let reason = message.reason {
+            print("[R] \(reason)")
+        }
+        
+        if let content = message.content {
+            print("[C] \(content)")
+        }
+    }
+    
+    func client(_ client: LLMClient, receiveError errorInfo: [String : Any]) {
+        connection?.writeChunk("[DONE]" + Constraint.DoubleLFString)
+        connection?.writeEndChunk()
+    }
+    
+    func client(_ client: LLMClient, closeWithComplete complete: Bool) {
+        connection?.writeChunk("[DONE]" + Constraint.DoubleLFString)
+        connection?.writeEndChunk()
+    }
+    
+    
 }
 
 extension ChatProxyTunnel: Equatable {
