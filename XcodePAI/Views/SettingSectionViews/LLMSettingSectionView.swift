@@ -73,7 +73,7 @@ struct LLMSettingSectionView: View {
             // Footer Buttons
             FooterActionsView()
         }
-//        .navigationTitle("Components") // This title is hidden by the custom toolbar but good for accessibility
+        .padding(.init(top: 10, leading: 20, bottom: 10, trailing: 20))
     }
 }
 
@@ -96,7 +96,7 @@ struct ListHeaderView: View {
         .foregroundColor(.secondary)
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(Color(nsColor: .windowBackgroundColor)) // Match window background
+        .background(Color(nsColor: .controlBackgroundColor)) // Match window background
     }
 }
 
@@ -176,6 +176,7 @@ struct FooterActionsView: View {
         }
         .padding(12)
         .buttonStyle(.borderless) // Use borderless for icon-only buttons
+        .background(Color(nsColor: .controlBackgroundColor))
     }
 }
 
