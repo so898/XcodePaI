@@ -131,20 +131,26 @@ struct LLMServiceSectionHeaderView: View {
             Spacer()
             HStack(spacing: 5){
                 Button(action: {}) {
+                    Image(systemName: "pencil")
+                        .frame(width: 10, height: 10)
+                }
+                .buttonStyle(GetButtonStyle())
+                
+                Button(action: {}) {
                     Image(systemName: "arrow.trianglehead.clockwise")
-                        .frame(width: 20, height: 20)
+                        .frame(width: 10, height: 10)
                 }
                 .buttonStyle(GetButtonStyle())
                 
                 Button(action: {}) {
                     Image(systemName: "plus")
-                        .frame(width: 20, height: 20)
+                        .frame(width: 10, height: 10)
                 }
                 .buttonStyle(GetButtonStyle())
                 
                 Button(action: {}) {
                     Image(systemName: "minus")
-                        .frame(width: 20, height: 20)
+                        .frame(width: 10, height: 10)
                 }
                 .buttonStyle(GetButtonStyle())
                 
