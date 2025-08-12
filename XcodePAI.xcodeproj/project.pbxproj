@@ -30,6 +30,9 @@
 		790799E72E4A3ED4004D9D1A /* ChatProxySettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */; };
 		790799E92E4A5665004D9D1A /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E82E4A565E004D9D1A /* MenuBarView.swift */; };
 		790799EB2E4A5868004D9D1A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799EA2E4A5864004D9D1A /* AppDelegate.swift */; };
+		790799ED2E4B94B5004D9D1A /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799EC2E4B94B4004D9D1A /* LocalStorage.swift */; };
+		790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799EF2E4BAE50004D9D1A /* AppIconView.swift */; };
+		790799F22E4BB5E2004D9D1A /* LLMIconListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F12E4BB5D7004D9D1A /* LLMIconListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +61,9 @@
 		790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxySettingSectionView.swift; sourceTree = "<group>"; };
 		790799E82E4A565E004D9D1A /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		790799EA2E4A5864004D9D1A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		790799EC2E4B94B4004D9D1A /* LocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorage.swift; sourceTree = "<group>"; };
+		790799EF2E4BAE50004D9D1A /* AppIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconView.swift; sourceTree = "<group>"; };
+		790799F12E4BB5D7004D9D1A /* LLMIconListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMIconListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +134,7 @@
 			children = (
 				790799AE2E472049004D9D1A /* Constraint.swift */,
 				790799B92E489328004D9D1A /* Extensions.swift */,
+				790799EC2E4B94B4004D9D1A /* LocalStorage.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -172,6 +179,7 @@
 		790799DE2E4A32CC004D9D1A /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				790799EE2E4BAE3F004D9D1A /* Components */,
 				790799E82E4A565E004D9D1A /* MenuBarView.swift */,
 				790799E12E4A36AC004D9D1A /* SettingSectionViews */,
 				790799DF2E4A342E004D9D1A /* SettingsView.swift */,
@@ -188,6 +196,15 @@
 				790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */,
 			);
 			path = SettingSectionViews;
+			sourceTree = "<group>";
+		};
+		790799EE2E4BAE3F004D9D1A /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				790799EF2E4BAE50004D9D1A /* AppIconView.swift */,
+				790799F12E4BB5D7004D9D1A /* LLMIconListView.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -272,12 +289,15 @@
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
 				790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */,
 				790799A82E471FEA004D9D1A /* ContentView.swift in Sources */,
+				790799ED2E4B94B5004D9D1A /* LocalStorage.swift in Sources */,
 				790799E92E4A5665004D9D1A /* MenuBarView.swift in Sources */,
 				790799C92E48F688004D9D1A /* LLMServer.swift in Sources */,
 				790799C02E48B833004D9D1A /* HTTPSSEClient.swift in Sources */,
 				790799A92E471FEA004D9D1A /* XcodePAIApp.swift in Sources */,
 				790799BA2E48932C004D9D1A /* Extensions.swift in Sources */,
+				790799F22E4BB5E2004D9D1A /* LLMIconListView.swift in Sources */,
 				790799BE2E48B6BD004D9D1A /* HTTPClient.swift in Sources */,
+				790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */,
 				790799B62E487F83004D9D1A /* HTTPConnection.swift in Sources */,
 				790799B22E4873B7004D9D1A /* TCPServer.swift in Sources */,
 				790799AF2E47204C004D9D1A /* Constraint.swift in Sources */,
