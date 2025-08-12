@@ -7,12 +7,16 @@
 
 import Foundation
 
-class LLMServer {
+class LLMServer: Codable, Identifiable {
+    let name: String
+    let iconName: String
     let url: String
     let authHeaderKey: String
     let privateKey: String?
     
-    init(url: String, authHeaderKey: String? = nil, privateKey: String?) {
+    init(name: String, iconName: String = "ollama", url: String, authHeaderKey: String? = nil, privateKey: String?) {
+        self.name = name
+        self.iconName = iconName
         self.url = url
         if let authHeaderKey = authHeaderKey {
             self.authHeaderKey = authHeaderKey
