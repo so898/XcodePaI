@@ -41,7 +41,7 @@ class TCPServer {
             switch newState {
             case .setup:
                 print("Server setup")
-            case .waiting(let error):
+            case .waiting(_):
                 print("Server waiting")
             case .ready:
                 print("Server ready")
