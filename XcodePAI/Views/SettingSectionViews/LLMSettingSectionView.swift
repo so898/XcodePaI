@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 // MARK: - Data Model
 struct PlatformItem: Identifiable {
@@ -30,10 +31,60 @@ struct LLMService: Identifiable {
     let iconName: String
 }
 
+class LLMServerManager: ObservableObject {
+    static let storageKey = "LLMServerStorage"
+    
+    @Published private(set) var servers: [LLMServer] = []
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        loadInitialValue()
+        
+        LocalStorage.shared.publisher(forKey: Self.storageKey)
+            .replaceNil(with: [])
+            .assign(to: \.servers, on: self)
+            .store(in: &cancellables)
+    }
+    
+    private func loadInitialValue() {
+        LocalStorage.shared.getValue(forKey: Self.storageKey) { [weak self] (servers: [LLMServer]?) in
+            self?.servers = servers ?? []
+        }
+    }
+    
+    func addServer(_ server: LLMServer) {
+        var currentServers = servers
+        currentServers.append(server)
+        saveServers(currentServers)
+    }
+    
+    func updateServer(_ server: LLMServer) {
+        var currentServers = servers
+        if let index = currentServers.firstIndex(where: { $0.name == server.name }) {
+            currentServers[index] = server
+            saveServers(currentServers)
+        }
+    }
+    
+    func deleteServer(at index: Int) {
+        var currentServers = servers
+        currentServers.remove(at: index)
+        saveServers(currentServers)
+    }
+    
+    private func saveServers(_ servers: [LLMServer]) {
+        LocalStorage.shared.save(servers, forKey: Self.storageKey)
+            .sink { _ in }
+            .store(in: &cancellables)
+    }
+}
+
 // MARK: - Main View
 struct LLMSettingSectionView: View {
     
     // MARK: - State
+    @StateObject private var serverManager = LLMServerManager()
+    
     @State private var selectedToolbarItem = "Components"
     @State private var isShowingSheet = false
     
@@ -68,14 +119,17 @@ struct LLMSettingSectionView: View {
             
             // Main List
             List {
-                
-                ForEach(serviceSections) { section in
-                    Section {
-                        ForEach(platformSupportItems) { item in
-                            PlatformRowView(item: item)
+                if serverManager.servers.count == 0 {
+                    LLMServerEmptyRowView(showAddServerSheet: $isShowingSheet)
+                } else {
+                    ForEach(serverManager.servers) { server in
+                        Section {
+                            ForEach(platformSupportItems) { item in
+                                PlatformRowView(item: item)
+                            }
+                        } header: {
+                            LLMServiceSectionHeaderView(server: server)
                         }
-                    } header: {
-                        LLMServiceSectionHeaderView(service: section)
                     }
                 }
             }
@@ -91,8 +145,133 @@ struct LLMSettingSectionView: View {
         .padding(.init(top: 10, leading: 20, bottom: 10, trailing: 20))
         .navigationTitle("LLM")
         .sheet(isPresented: $isShowingSheet) {
-            LLMServiceSectionHeaderView(service: .init(name: "OpenAI", iconName: "openai"))
+            LLMServerCreateView(isPresented: $isShowingSheet) { server in
+                serverManager.addServer(server)
+            }
         }
+    }
+}
+
+struct LLMServerCreateView: View {
+    @Binding var isPresented: Bool
+    
+    var newLLMServerInfo: (LLMServer) -> Void
+    
+    @State private var name: String = ""
+    @State private var iconName: String = "ollama"
+    @State private var url: String = ""
+    @State private var header: String = ""
+    @State private var key: String = ""
+    
+    @State private var showIconList = false
+        
+    var body: some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 8) {
+                VStack {
+                    ZStack(alignment: .center){
+                        Image(iconName)
+                            .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 48, height: 48)
+                        HStack{
+                            Spacer()
+                            VStack{
+                                Spacer()
+                                Button {
+                                    // Change Icon Action
+                                    showIconList = true
+                                } label: {
+                                    Image(systemName: "righttriangle.fill")
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            .padding(.init(top: 0, leading: 0, bottom: 8, trailing: 8))
+                        }
+                    }
+                    .frame(width: 64, height: 64)
+                    .popover(isPresented: $showIconList) {
+                        LLMIconListView(isPresented: $showIconList, choosedIconName: $iconName)
+                    }
+                    Spacer()
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("New LLM server")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                    
+                    Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 16) {
+                        GridRow(alignment: .top) {
+                            Text("Name")
+                                .padding(.init(top: 7, leading: 0, bottom: 0, trailing: 0))
+                            
+                            VStack(spacing: 8) {
+                                TextField("(*)", text: $name)
+                                    .textFieldStyle(.roundedBorder)
+                                    .controlSize(.large)
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                        
+                        GridRow(alignment: .top) {
+                            Text("URL")
+                                .padding(.init(top: 7, leading: 0, bottom: 0, trailing: 0))
+                            
+                            VStack(spacing: 8) {
+                                TextField("https://example.com", text: $url)
+                                    .textFieldStyle(.roundedBorder)
+                                    .controlSize(.large)
+                                    .frame(maxWidth: .infinity)
+                                if !url.isEmpty {
+                                    Text(url + "/v1/completions")
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                        
+                        GridRow(alignment: .top) {
+                            Text("Key")
+                                .padding(.init(top: 7, leading: 0, bottom: 0, trailing: 0))
+                            TextField("sk-xxxxxx (Optional)", text: $key)
+                                .textFieldStyle(.roundedBorder)
+                                .controlSize(.large)
+                                .frame(maxWidth: .infinity)
+                        }
+                        
+                        GridRow(alignment: .top) {
+                            Text("Header")
+                                .padding(.init(top: 7, leading: 0, bottom: 0, trailing: 0))
+                            TextField("Authorization (Optional)", text: $header)
+                                .textFieldStyle(.roundedBorder)
+                                .controlSize(.large)
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                }
+            }
+            
+            Spacer()
+            
+            HStack {
+                Spacer()
+                Button("Cancel") {
+                    isPresented = false
+                }
+                .keyboardShortcut(.cancelAction)
+                
+                Button("Add") {
+                    newLLMServerInfo(LLMServer(name: name, iconName: iconName, url: url, authHeaderKey: header.isEmpty ? nil : header, privateKey: key.isEmpty ? nil : key))
+                    isPresented = false
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(name.isEmpty || url.isEmpty)
+            }
+        }
+        .padding(16)
     }
 }
 
@@ -119,15 +298,18 @@ struct LLMSettingsListHeaderView: View {
 
 // MARK: LLM Service Section
 struct LLMServiceSectionHeaderView: View {
-    let service: LLMService
+    let server: LLMServer
     
     var body: some View {
         HStack {
-            Image(service.iconName)
+            Image(server.iconName)
                 .resizable()
                 .renderingMode(.template)
                 .frame(width: 30, height: 30)
-            Text(service.name)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(server.name)
+                Text(server.url)
+            }
             Spacer()
             HStack(spacing: 5){
                 Button(action: {}) {
@@ -157,11 +339,37 @@ struct LLMServiceSectionHeaderView: View {
             }
             .frame(alignment: .trailing)
         }
+        .padding(.init(top: 0, leading: 8, bottom: 0, trailing: 8))
         .frame(height: 40)
     }
 }
 
-struct ProviderRowView: View {
+struct LLMServerEmptyRowView: View {
+    @Binding var showAddServerSheet: Bool
+    
+    var body: some View {
+        VStack(alignment: .center) {
+            HStack(alignment: .center) {
+                Button(action: {
+                    showAddServerSheet = true
+                }) {
+                    HStack {
+                        Image(systemName: "plus")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: 10, height: 10)
+                        Text("Add LLM Server")
+                    }
+                }
+                .buttonStyle(GetButtonStyle())
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .frame(height: 40)
+    }
+}
+
+struct LLMServerModelRowView: View {
     var body: some View {
         
     }
