@@ -155,9 +155,9 @@ extension ChatProxyTunnel: LLMClientDelegate {
         var response: LLMResponse?
         if hasThink == nil, let reason = part.reason {
             hasThink = true
-            response = LLMResponse(id: id, model: "XcodePaI", object: "chat.completion.chunk", choices: [LLMResponseChoice(index: 0, finishReason: part.finishReason, isFullMessage: false, message: LLMResponseChoiceMessage(role: "assistant", content: "```think\n\n" + reason))])
+            response = LLMResponse(id: id, model: "XcodePaI", object: "chat.completion.chunk", choices: [LLMResponseChoice(index: 0, finishReason: part.finishReason, isFullMessage: false, message: LLMResponseChoiceMessage(role: "assistant", content: "```think\n\n" + reason.replacingOccurrences(of: "```", with: "'''")))])
         } else if hasThink == true, let reason = part.reason {
-            response = LLMResponse(id: id, model: "XcodePaI", object: "chat.completion.chunk", choices: [LLMResponseChoice(index: 0, finishReason: part.finishReason, isFullMessage: false, message: LLMResponseChoiceMessage(role: "assistant", content: reason))])
+            response = LLMResponse(id: id, model: "XcodePaI", object: "chat.completion.chunk", choices: [LLMResponseChoice(index: 0, finishReason: part.finishReason, isFullMessage: false, message: LLMResponseChoiceMessage(role: "assistant", content: reason.replacingOccurrences(of: "```", with: "'''")))])
         } else if hasThink == true, part.reason == nil, let content = part.content {
             response = LLMResponse(id: id, model: "XcodePaI", object: "chat.completion.chunk", choices: [LLMResponseChoice(index: 0, finishReason: part.finishReason, isFullMessage: false, message: LLMResponseChoiceMessage(role: "assistant", content: "\n\n~~EOT~~\n\n```\n\n" + content,))])
             hasThink = false
