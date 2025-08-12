@@ -28,42 +28,19 @@ struct SettingsView: View {
     ]
     
     var body: some View {
-        VStack(spacing: 0) {
-            
-            switch selectedTabId {
-            case 0: GeneralSettingSectionView()
-            case 1: LLMSettingSectionView()
-            case 2: ChatProxySettingSectionView()
-            default: GeneralSettingSectionView()
-            }
-            
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .principal) {
-                HStack(spacing: 4) {
-                    ForEach(tabs) { tab in
-                        Button(action: { selectedTabId = tab.id }) {
-                            VStack(spacing: 4) {
-                                Image(systemName: tab.imageName)
-                                    .font(.system(size: 20))
-                                    .foregroundStyle(selectedTabId == tab.id ? Color(nsColor: .systemBlue) : Color.primary)
-                                Text(tab.title)
-                                    .font(.caption)
-                                    .foregroundStyle( (selectedTabId == tab.id ? Color(nsColor: .systemBlue) : Color.primary))
-                            }
-                            .padding(.vertical, 4)
-                            .padding(.horizontal, 8)
-                            .frame(width: 90)
-                        }
-                        .background(selectedTabId == tab.id ? Color(nsColor: .darkGray).opacity(0.5) : Color.clear)
-                        .cornerRadius(6)
-                        .buttonStyle(.plain)
-                        
+        TabView {
+            ForEach(tabs) { tab in
+                Tab(tab.title, systemImage: tab.imageName) {
+                    switch tab.id {
+                    case 0: GeneralSettingSectionView()
+                    case 1: LLMSettingSectionView()
+                    case 2: ChatProxySettingSectionView()
+                    default: GeneralSettingSectionView()
                     }
                 }
-                .padding(.horizontal)
             }
         }
+        .tabViewStyle(SidebarAdaptableTabViewStyle())
         .background(Color(nsColor: .windowBackgroundColor))
     }
 }
