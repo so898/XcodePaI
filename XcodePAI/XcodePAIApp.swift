@@ -17,6 +17,5 @@ struct XcodePAIApp: App {
                 SettingsView()
             }
         }
-        .windowToolbarStyle(.expanded)
     }
 }
