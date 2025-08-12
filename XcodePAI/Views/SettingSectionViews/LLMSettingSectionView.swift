@@ -450,7 +450,7 @@ struct LLMSettingsFooterActionsView: View {
             }
             Spacer()
         }
-        .padding(12)
+        .padding(8)
         .buttonStyle(.borderless) // Use borderless for icon-only buttons
         .background(Color(nsColor: .controlBackgroundColor))
     }
