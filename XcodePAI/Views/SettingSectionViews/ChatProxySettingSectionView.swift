@@ -35,5 +35,6 @@ struct ChatProxySettingSectionView: View {
             .padding(30)
         }
         .background(Color(nsColor: .textBackgroundColor))
+        .navigationTitle("Chat Proxy")
     }
 }

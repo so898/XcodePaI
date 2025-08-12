@@ -109,5 +109,6 @@ struct GeneralSettingSectionView: View {
             .padding(30)
         }
         .background(Color(nsColor: .textBackgroundColor))
+        .navigationTitle("General")
     }
 }
