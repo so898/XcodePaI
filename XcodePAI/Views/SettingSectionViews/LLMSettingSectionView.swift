@@ -24,11 +24,18 @@ struct PlatformItem: Identifiable {
     let status: Status
 }
 
+struct LLMService: Identifiable {
+    let id = UUID()
+    let name: String
+    let iconName: String
+}
+
 // MARK: - Main View
 struct LLMSettingSectionView: View {
     
     // MARK: - State
     @State private var selectedToolbarItem = "Components"
+    @State private var isShowingSheet = false
     
     // MARK: - Data Source
     let platformSupportItems: [PlatformItem] = [
@@ -44,60 +51,113 @@ struct LLMSettingSectionView: View {
         .init(name: "iOS 17.5 Simulator", iconName: "iphone", lastUsed: nil, sizeOnDisk: "7.34 GB on disk", status: .installed(lastUsed: "Last year"))
     ]
     
+    let serviceSections: [LLMService] = [
+        .init(name: "OpenAI", iconName: "openai"),
+        .init(name: "Ollama", iconName: "ollama"),
+        .init(name: "Alibaba", iconName: "alibaba"),
+        .init(name: "DeepSeek", iconName: "deepseek"),
+    ]
+    
     // MARK: - Body
     var body: some View {
         VStack(spacing: 0) {
             // Custom Header for the List
-            ListHeaderView()
+            LLMSettingsListHeaderView()
             
             Divider()
             
             // Main List
             List {
-                Section(header: Text("Platform Support").font(.headline).padding(.leading, -8)) {
-                    ForEach(platformSupportItems) { item in
-                        PlatformRowView(item: item)
-                    }
-                }
                 
-                Section(header: Text("Other Installed Platforms").font(.headline).padding(.leading, -8)) {
-                    ForEach(otherInstalledItems) { item in
-                        PlatformRowView(item: item)
+                ForEach(serviceSections) { section in
+                    Section {
+                        ForEach(platformSupportItems) { item in
+                            PlatformRowView(item: item)
+                        }
+                    } header: {
+                        LLMServiceSectionHeaderView(service: section)
                     }
                 }
             }
-            .listStyle(.sidebar) // Sidebar style gives us this type of section header.
+            .listStyle(.bordered) // Sidebar style gives us this type of section header.
             
             Divider()
             
             // Footer Buttons
-            FooterActionsView()
+            LLMSettingsFooterActionsView {
+                isShowingSheet = true
+            }
         }
         .padding(.init(top: 10, leading: 20, bottom: 10, trailing: 20))
         .navigationTitle("LLM")
+        .sheet(isPresented: $isShowingSheet) {
+            LLMServiceSectionHeaderView(service: .init(name: "OpenAI", iconName: "openai"))
+        }
     }
 }
 
-
 // MARK: - Subviews
-struct ListHeaderView: View {
+struct LLMSettingsListHeaderView: View {
     var body: some View {
         HStack {
             HStack(spacing: 4) {
-                Text("Component")
-                Image(systemName: "chevron.up")
+                Text("Name")
             }
             Spacer()
-            Text("Last Used")
-                .frame(width: 150)
-            Text("Info")
+            Text("Usage")
+                .frame(width: 100)
+            Text("Action")
                 .frame(width: 200, alignment: .trailing)
         }
         .font(.subheadline)
         .foregroundColor(.secondary)
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(Color(nsColor: .controlBackgroundColor)) // Match window background
+        .background(Color(nsColor: .controlBackgroundColor))
+    }
+}
+
+// MARK: LLM Service Section
+struct LLMServiceSectionHeaderView: View {
+    let service: LLMService
+    
+    var body: some View {
+        HStack {
+            Image(service.iconName)
+                .resizable()
+                .renderingMode(.template)
+                .frame(width: 30, height: 30)
+            Text(service.name)
+            Spacer()
+            HStack(spacing: 5){
+                Button(action: {}) {
+                    Image(systemName: "arrow.trianglehead.clockwise")
+                        .frame(width: 20, height: 20)
+                }
+                .buttonStyle(GetButtonStyle())
+                
+                Button(action: {}) {
+                    Image(systemName: "plus")
+                        .frame(width: 20, height: 20)
+                }
+                .buttonStyle(GetButtonStyle())
+                
+                Button(action: {}) {
+                    Image(systemName: "minus")
+                        .frame(width: 20, height: 20)
+                }
+                .buttonStyle(GetButtonStyle())
+                
+            }
+            .frame(alignment: .trailing)
+        }
+        .frame(height: 40)
+    }
+}
+
+struct ProviderRowView: View {
+    var body: some View {
+        
     }
 }
 
@@ -163,16 +223,17 @@ struct PlatformRowView: View {
 }
 
 
-struct FooterActionsView: View {
+struct LLMSettingsFooterActionsView: View {
+    var addButtonAction: (() -> Void)
+    
     var body: some View {
         HStack {
-            Button(action: {}) {
+            Button(action: {
+                addButtonAction()
+            }) {
                 Image(systemName: "plus")
+                    .frame(width: 20, height: 20)
             }
-            Button(action: {}) {
-                Image(systemName: "minus")
-            }
-            .disabled(true)
             Spacer()
         }
         .padding(12)
