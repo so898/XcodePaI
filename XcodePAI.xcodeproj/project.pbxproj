@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3385C1FB2E4C307F005C4210 /* ModelProviderSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3385C1FA2E4C307E005C4210 /* ModelProviderSettingSectionView.swift */; };
+		3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3385C1FC2E4C79A3005C4210 /* ModelProviderEditView.swift */; };
 		790799A62E471FEA004D9D1A /* ChatProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7907999D2E471FEA004D9D1A /* ChatProxy.swift */; };
 		790799A82E471FEA004D9D1A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799A22E471FEA004D9D1A /* ContentView.swift */; };
 		790799A92E471FEA004D9D1A /* XcodePAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799A42E471FEA004D9D1A /* XcodePAIApp.swift */; };
@@ -23,19 +25,20 @@
 		790799C22E48BC74004D9D1A /* LLMRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799C12E48BC71004D9D1A /* LLMRequest.swift */; };
 		790799C42E48D914004D9D1A /* LLMResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799C32E48D911004D9D1A /* LLMResponse.swift */; };
 		790799C72E48F624004D9D1A /* LLMClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799C62E48F61D004D9D1A /* LLMClient.swift */; };
-		790799C92E48F688004D9D1A /* LLMServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799C82E48F683004D9D1A /* LLMServer.swift */; };
+		790799C92E48F688004D9D1A /* LLMModelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799C82E48F683004D9D1A /* LLMModelProvider.swift */; };
 		790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799DF2E4A342E004D9D1A /* SettingsView.swift */; };
 		790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E22E4A36C8004D9D1A /* GeneralSettingSectionView.swift */; };
-		790799E52E4A370B004D9D1A /* LLMSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E42E4A3700004D9D1A /* LLMSettingSectionView.swift */; };
 		790799E72E4A3ED4004D9D1A /* ChatProxySettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */; };
 		790799E92E4A5665004D9D1A /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799E82E4A565E004D9D1A /* MenuBarView.swift */; };
 		790799EB2E4A5868004D9D1A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799EA2E4A5864004D9D1A /* AppDelegate.swift */; };
 		790799ED2E4B94B5004D9D1A /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799EC2E4B94B4004D9D1A /* LocalStorage.swift */; };
 		790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799EF2E4BAE50004D9D1A /* AppIconView.swift */; };
-		790799F22E4BB5E2004D9D1A /* LLMIconListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F12E4BB5D7004D9D1A /* LLMIconListView.swift */; };
+		790799F22E4BB5E2004D9D1A /* ModelProviderIconListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F12E4BB5D7004D9D1A /* ModelProviderIconListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3385C1FA2E4C307E005C4210 /* ModelProviderSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelProviderSettingSectionView.swift; sourceTree = "<group>"; };
+		3385C1FC2E4C79A3005C4210 /* ModelProviderEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelProviderEditView.swift; sourceTree = "<group>"; };
 		790799862E4507BA004D9D1A /* XcodePAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XcodePAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7907999D2E471FEA004D9D1A /* ChatProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxy.swift; sourceTree = "<group>"; };
 		790799A12E471FEA004D9D1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -54,16 +57,15 @@
 		790799C12E48BC71004D9D1A /* LLMRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMRequest.swift; sourceTree = "<group>"; };
 		790799C32E48D911004D9D1A /* LLMResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMResponse.swift; sourceTree = "<group>"; };
 		790799C62E48F61D004D9D1A /* LLMClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMClient.swift; sourceTree = "<group>"; };
-		790799C82E48F683004D9D1A /* LLMServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMServer.swift; sourceTree = "<group>"; };
+		790799C82E48F683004D9D1A /* LLMModelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMModelProvider.swift; sourceTree = "<group>"; };
 		790799DF2E4A342E004D9D1A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		790799E22E4A36C8004D9D1A /* GeneralSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingSectionView.swift; sourceTree = "<group>"; };
-		790799E42E4A3700004D9D1A /* LLMSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSettingSectionView.swift; sourceTree = "<group>"; };
 		790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxySettingSectionView.swift; sourceTree = "<group>"; };
 		790799E82E4A565E004D9D1A /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		790799EA2E4A5864004D9D1A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		790799EC2E4B94B4004D9D1A /* LocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorage.swift; sourceTree = "<group>"; };
 		790799EF2E4BAE50004D9D1A /* AppIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconView.swift; sourceTree = "<group>"; };
-		790799F12E4BB5D7004D9D1A /* LLMIconListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMIconListView.swift; sourceTree = "<group>"; };
+		790799F12E4BB5D7004D9D1A /* ModelProviderIconListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelProviderIconListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +107,7 @@
 		790799A02E471FEA004D9D1A /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				790799C82E48F683004D9D1A /* LLMServer.swift */,
+				790799C82E48F683004D9D1A /* LLMModelProvider.swift */,
 				790799AB2E471FF8004D9D1A /* LLMModel.swift */,
 				790799C12E48BC71004D9D1A /* LLMRequest.swift */,
 				790799C32E48D911004D9D1A /* LLMResponse.swift */,
@@ -191,8 +193,8 @@
 		790799E12E4A36AC004D9D1A /* SettingSectionViews */ = {
 			isa = PBXGroup;
 			children = (
+				3385C1FA2E4C307E005C4210 /* ModelProviderSettingSectionView.swift */,
 				790799E22E4A36C8004D9D1A /* GeneralSettingSectionView.swift */,
-				790799E42E4A3700004D9D1A /* LLMSettingSectionView.swift */,
 				790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */,
 			);
 			path = SettingSectionViews;
@@ -202,7 +204,8 @@
 			isa = PBXGroup;
 			children = (
 				790799EF2E4BAE50004D9D1A /* AppIconView.swift */,
-				790799F12E4BB5D7004D9D1A /* LLMIconListView.swift */,
+				790799F12E4BB5D7004D9D1A /* ModelProviderIconListView.swift */,
+				3385C1FC2E4C79A3005C4210 /* ModelProviderEditView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -237,7 +240,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1640;
-				LastUpgradeCheck = 1640;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					790799852E4507BA004D9D1A = {
 						CreatedOnToolsVersion = 16.4;
@@ -286,16 +289,18 @@
 				790799AC2E471FFF004D9D1A /* LLMModel.swift in Sources */,
 				790799E72E4A3ED4004D9D1A /* ChatProxySettingSectionView.swift in Sources */,
 				790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */,
+				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
 				790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */,
 				790799A82E471FEA004D9D1A /* ContentView.swift in Sources */,
 				790799ED2E4B94B5004D9D1A /* LocalStorage.swift in Sources */,
 				790799E92E4A5665004D9D1A /* MenuBarView.swift in Sources */,
-				790799C92E48F688004D9D1A /* LLMServer.swift in Sources */,
+				790799C92E48F688004D9D1A /* LLMModelProvider.swift in Sources */,
+				3385C1FB2E4C307F005C4210 /* ModelProviderSettingSectionView.swift in Sources */,
 				790799C02E48B833004D9D1A /* HTTPSSEClient.swift in Sources */,
 				790799A92E471FEA004D9D1A /* XcodePAIApp.swift in Sources */,
 				790799BA2E48932C004D9D1A /* Extensions.swift in Sources */,
-				790799F22E4BB5E2004D9D1A /* LLMIconListView.swift in Sources */,
+				790799F22E4BB5E2004D9D1A /* ModelProviderIconListView.swift in Sources */,
 				790799BE2E48B6BD004D9D1A /* HTTPClient.swift in Sources */,
 				790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */,
 				790799B62E487F83004D9D1A /* HTTPConnection.swift in Sources */,
@@ -303,7 +308,6 @@
 				790799AF2E47204C004D9D1A /* Constraint.swift in Sources */,
 				790799B42E487E08004D9D1A /* TCPConnection.swift in Sources */,
 				790799C72E48F624004D9D1A /* LLMClient.swift in Sources */,
-				790799E52E4A370B004D9D1A /* LLMSettingSectionView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,6 +348,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = FYT366469V;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -369,6 +374,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -408,6 +414,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = FYT366469V;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -426,6 +433,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -440,9 +448,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = FYT366469V;
+				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -468,9 +481,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = FYT366469V;
+				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
