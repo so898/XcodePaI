@@ -20,7 +20,7 @@ class LLMModel: Identifiable, ObservableObject, Codable {
         case id, object, provider, enabled, created
     }
     
-    init(id: String, object: String, provider:String, enabled: Bool = true, created: Int = Int(Date().timeIntervalSince1970)) {
+    init(id: String, object: String = "model", provider: String, enabled: Bool = true, created: Int = Int(Date().timeIntervalSince1970)) {
         self.id = id
         self.object = object
         self.provider = provider

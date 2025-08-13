@@ -181,7 +181,6 @@ struct ModelProviderEditView: View {
                 dismiss()
             }
             .buttonStyle(.borderedProminent)
-            .tint(.blue)
             .controlSize(.large)
             .disabled(url.isEmpty || name.isEmpty)
         }

@@ -37,6 +37,7 @@
 		790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F62E4CD561004D9D1A /* ModelProviderDetailView.swift */; };
 		790799F92E4CE307004D9D1A /* LLMModelClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F82E4CE300004D9D1A /* LLMModelClient.swift */; };
 		790799FC2E4CF14F004D9D1A /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799FB2E4CF14C004D9D1A /* LoadingView.swift */; };
+		790799FE2E4CF7C0004D9D1A /* ModelAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799FD2E4CF7B4004D9D1A /* ModelAddView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -73,6 +74,7 @@
 		790799F82E4CE300004D9D1A /* LLMModelClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMModelClient.swift; sourceTree = "<group>"; };
 		790799FA2E4CE7A9004D9D1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		790799FB2E4CF14C004D9D1A /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		790799FD2E4CF7B4004D9D1A /* ModelAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelAddView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,6 +218,7 @@
 				790799FB2E4CF14C004D9D1A /* LoadingView.swift */,
 				790799F12E4BB5D7004D9D1A /* ModelProviderIconListView.swift */,
 				3385C1FC2E4C79A3005C4210 /* ModelProviderEditView.swift */,
+				790799FD2E4CF7B4004D9D1A /* ModelAddView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -329,6 +332,7 @@
 				790799FC2E4CF14F004D9D1A /* LoadingView.swift in Sources */,
 				790799AF2E47204C004D9D1A /* Constraint.swift in Sources */,
 				790799B42E487E08004D9D1A /* TCPConnection.swift in Sources */,
+				790799FE2E4CF7C0004D9D1A /* ModelAddView.swift in Sources */,
 				790799C72E48F624004D9D1A /* LLMClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

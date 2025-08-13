@@ -26,12 +26,18 @@ class ModelManager: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func loadModels(_ provider: LLMModelProvider) {
+    func loadModels(_ provider: LLMModelProvider, complete: ((Bool) -> Void)?) {
         LLMModelClient.getModelsList(provider) {[weak self] models, error in
             if let models = models {
                 DispatchQueue.main.async {[weak self] in
                     self?.replaceModels(models)
+                    
+                    complete?(true)
                 }
+                return
+            }
+            DispatchQueue.main.async {
+                complete?(false)
             }
         }
     }
@@ -93,6 +99,10 @@ struct ModelProviderDetailView: View {
     @State private var sortOrder = [KeyPathComparator(\LLMModel.id)]
         
     @State private var isShowingSheet = false
+    @State private var isShowingNewModelSheet = false
+    @State private var isShowingAlert = false
+    @State private var isShowingSuccessAlert = false
+    @State private var isReloadSuccess = false
     
     @Environment(\.dismiss) private var dismiss
     
@@ -107,7 +117,11 @@ struct ModelProviderDetailView: View {
             ModelProviderDetailHeader(provider: provider, isEnabled: $isProviderEnabled) {
                 isShowingSheet = true
             } refreshModelAction: {
-                modelManager.loadModels(provider)
+                if modelManager.models.count > 0 {
+                    isShowingAlert = true
+                } else {
+                    fetchModels()
+                }
             }
             
             Divider()
@@ -115,7 +129,7 @@ struct ModelProviderDetailView: View {
             modelsTable
             
             ModelProviderDetailFooterActionsView {
-                //                isShowingSheet = true
+                isShowingNewModelSheet = true
             }
         }
         .navigationTitle(provider.name)
@@ -129,6 +143,29 @@ struct ModelProviderDetailView: View {
                 dismiss()
             }
         }
+        .sheet(isPresented: $isShowingNewModelSheet, content: {
+            ModelAddView { modelName in
+                modelManager.addModel(LLMModel(id: modelName, provider: provider.name))
+            }
+        })
+        .alert("Reload models will remove all exist model config.", isPresented: $isShowingAlert) {
+            Button(role: .destructive) {
+                fetchModels()
+            } label: {
+                Text("Reload")
+            }
+        }
+        .alert(isReloadSuccess ? "Reload models success." : "Reload models fail.", isPresented: $isShowingSuccessAlert) {
+        }
+    }
+    
+    private func fetchModels() {
+        LoadingState.shared.show(text: "Fetch Models...")
+        modelManager.loadModels(provider) { success in
+            isReloadSuccess = success
+            isShowingSuccessAlert = true
+            LoadingState.shared.hide()
+        }
     }
     
     @State var showTestAlert = false
@@ -136,7 +173,15 @@ struct ModelProviderDetailView: View {
     private var modelsTable: some View {
         Table(modelManager.models, sortOrder: $sortOrder) {
             TableColumn("Identifier", value: \LLMModel.id) { model in
-                Text(model.id)
+                HStack{
+                    Text(model.id)
+                    Spacer()
+                }
+                .contextMenu {
+                    Button("Delete") {
+                        modelManager.deleteModel(model)
+                    }
+                }
             }
             
             TableColumn("Action") { model in
