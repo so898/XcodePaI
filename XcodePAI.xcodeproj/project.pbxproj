@@ -33,6 +33,8 @@
 		790799ED2E4B94B5004D9D1A /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799EC2E4B94B4004D9D1A /* LocalStorage.swift */; };
 		790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799EF2E4BAE50004D9D1A /* AppIconView.swift */; };
 		790799F22E4BB5E2004D9D1A /* ModelProviderIconListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F12E4BB5D7004D9D1A /* ModelProviderIconListView.swift */; };
+		790799F42E4CD21D004D9D1A /* ModelProviderSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F32E4CD21D004D9D1A /* ModelProviderSettingView.swift */; };
+		790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F62E4CD561004D9D1A /* ModelProviderDetailView.swift */; };
 		790799F92E4CE307004D9D1A /* LLMModelClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F82E4CE300004D9D1A /* LLMModelClient.swift */; };
 /* End PBXBuildFile section */
 
@@ -65,6 +67,8 @@
 		790799EC2E4B94B4004D9D1A /* LocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorage.swift; sourceTree = "<group>"; };
 		790799EF2E4BAE50004D9D1A /* AppIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconView.swift; sourceTree = "<group>"; };
 		790799F12E4BB5D7004D9D1A /* ModelProviderIconListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelProviderIconListView.swift; sourceTree = "<group>"; };
+		790799F32E4CD21D004D9D1A /* ModelProviderSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelProviderSettingView.swift; sourceTree = "<group>"; };
+		790799F62E4CD561004D9D1A /* ModelProviderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelProviderDetailView.swift; sourceTree = "<group>"; };
 		790799F82E4CE300004D9D1A /* LLMModelClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMModelClient.swift; sourceTree = "<group>"; };
 		790799FA2E4CE7A9004D9D1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -213,6 +217,15 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		790799F52E4CD53D004D9D1A /* ModelProviderSetting */ = {
+			isa = PBXGroup;
+			children = (
+				790799F32E4CD21D004D9D1A /* ModelProviderSettingView.swift */,
+				790799F62E4CD561004D9D1A /* ModelProviderDetailView.swift */,
+			);
+			path = ModelProviderSetting;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -293,6 +306,8 @@
 				790799E72E4A3ED4004D9D1A /* ChatProxySettingSectionView.swift in Sources */,
 				790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */,
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
+				790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */,
+				790799F42E4CD21D004D9D1A /* ModelProviderSettingView.swift in Sources */,
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
 				790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */,
 				790799F92E4CE307004D9D1A /* LLMModelClient.swift in Sources */,
