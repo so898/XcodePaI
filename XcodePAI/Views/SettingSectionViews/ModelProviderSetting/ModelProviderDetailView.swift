@@ -114,7 +114,7 @@ struct ModelProviderDetailView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            ModelProviderDetailHeader(provider: provider, isEnabled: $isProviderEnabled) {
+            ModelProviderDetailHeader(provider: provider, isEnabled: providerEnableToggleBinding(for: provider)) {
                 isShowingSheet = true
             } refreshModelAction: {
                 if modelManager.models.count > 0 {
@@ -157,6 +157,18 @@ struct ModelProviderDetailView: View {
         }
         .alert(isReloadSuccess ? "Reload models success." : "Reload models fail.", isPresented: $isShowingSuccessAlert) {
         }
+    }
+    
+    private func providerEnableToggleBinding(for provider: LLMModelProvider) -> Binding<Bool> {
+        Binding<Bool>(
+            get: { provider.enabled },
+            set: { newValue in
+                let newProvider = provider
+                newProvider.enabled = newValue
+                self.provider = newProvider
+                providerManager.updateModelProvider(newProvider)
+            }
+        )
     }
     
     private func fetchModels() {
