@@ -12,24 +12,22 @@ class LLMModelProvider: Identifiable, ObservableObject, Codable {
     @Published var name: String
     @Published var iconName: String
     @Published var url: String
-    @Published var authHeaderKey: String
+    @Published var authHeaderKey: String?
     @Published var privateKey: String?
+    @Published var enabled: Bool
     
     enum CodingKeys: String, CodingKey {
-        case id, name, iconName, url, authHeaderKey, privateKey
+        case id, name, iconName, url, authHeaderKey, privateKey, enabled
     }
     
-    init(id: UUID = UUID(), name: String, iconName: String = "ollama", url: String, authHeaderKey: String? = nil, privateKey: String?) {
+    init(id: UUID = UUID(), name: String, iconName: String = "ollama", url: String, authHeaderKey: String? = nil, privateKey: String?, enabled: Bool = true) {
         self.id = id
         self.name = name
         self.iconName = iconName
         self.url = url
-        if let authHeaderKey = authHeaderKey {
-            self.authHeaderKey = authHeaderKey
-        } else {
-            self.authHeaderKey = "Authorization"
-        }
+        self.authHeaderKey = authHeaderKey
         self.privateKey = privateKey
+        self.enabled = enabled
     }
     
     func modelListUrl() -> String {
@@ -40,11 +38,25 @@ class LLMModelProvider: Identifiable, ObservableObject, Codable {
         return url + "/v1/chat/completions"
     }
     
-    func requestHeaders() -> [String: Any]? {
+    func requestHeaders() -> [String: Any] {
+        var header: [String: Any] = ["Content-Type": "application/json"]
         guard let privateKey = privateKey else {
-            return nil
+            return header
         }
-        return [authHeaderKey: "Bearer \(privateKey)", "Content-Type": "application/json"]
+        let authHeaderKey: String = {
+            if let authHeaderKey = self.authHeaderKey {
+                return authHeaderKey
+            }
+            return "Authorization"
+        }()
+        
+        if authHeaderKey.lowercased() == "authorization" {
+            header[authHeaderKey] = "Bearer \(privateKey)"
+        } else {
+            header[authHeaderKey] = privateKey
+        }
+        
+        return header
     }
     
     // MARK: - Codable
@@ -54,8 +66,9 @@ class LLMModelProvider: Identifiable, ObservableObject, Codable {
         name = try container.decode(String.self, forKey: .name)
         iconName = try container.decode(String.self, forKey: .iconName)
         url = try container.decode(String.self, forKey: .url)
-        authHeaderKey = try container.decode(String.self, forKey: .authHeaderKey)
+        authHeaderKey = try container.decodeIfPresent(String.self, forKey: .authHeaderKey)
         privateKey = try container.decodeIfPresent(String.self, forKey: .privateKey)
+        enabled = try container.decode(Bool.self, forKey: .enabled)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -64,8 +77,9 @@ class LLMModelProvider: Identifiable, ObservableObject, Codable {
         try container.encode(name, forKey: .name)
         try container.encode(iconName, forKey: .iconName)
         try container.encode(url, forKey: .url)
-        try container.encode(authHeaderKey, forKey: .authHeaderKey)
+        try container.encodeIfPresent(authHeaderKey, forKey: .authHeaderKey)
         try container.encodeIfPresent(privateKey, forKey: .privateKey)
+        try container.encode(enabled, forKey: .enabled)
     }
 }
 

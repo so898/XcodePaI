@@ -33,7 +33,7 @@ struct ModelProviderEditView: View {
             _iconName = State(initialValue: currentProvider.iconName)
             _url = State(initialValue: currentProvider.url)
             _apiKey = State(initialValue: currentProvider.privateKey ?? "")
-            _keyHeader = State(initialValue: currentProvider.authHeaderKey)
+            _keyHeader = State(initialValue: currentProvider.authHeaderKey ?? "")
             _name = State(initialValue: currentProvider.name)
         }
         self.removeProvider = removeProvider
@@ -177,7 +177,7 @@ struct ModelProviderEditView: View {
             Button("Save") {
                 // Do the check
                 
-                createOrUpdateProvider(LLMModelProvider(id: currentProvider?.id ?? UUID(), name: name, iconName: iconName, url: url, authHeaderKey: keyHeader, privateKey: apiKey))
+                createOrUpdateProvider(LLMModelProvider(id: currentProvider?.id ?? UUID(), name: name, iconName: iconName, url: url, authHeaderKey: keyHeader.isEmpty ? nil : keyHeader, privateKey: apiKey))
                 dismiss()
             }
             .buttonStyle(.borderedProminent)
