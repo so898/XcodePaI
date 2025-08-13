@@ -118,6 +118,7 @@
 		790799A52E471FEA004D9D1A /* XcodePAI */ = {
 			isa = PBXGroup;
 			children = (
+				790799FA2E4CE7A9004D9D1A /* Info.plist */,
 				790799DE2E4A32CC004D9D1A /* Views */,
 				790799B02E487394004D9D1A /* Network */,
 				790799AD2E47203B004D9D1A /* Utils */,
@@ -457,6 +458,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = XcodePAI/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -490,6 +492,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = XcodePAI/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
