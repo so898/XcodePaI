@@ -233,9 +233,9 @@ private struct ToggleView: View {
         Binding<Bool>(
             get: { model.enabled },
             set: { newValue in
-                if let index = modelManager.models.firstIndex(where: { $0.id == model.id }) {
-                    modelManager.models[index].enabled = newValue
-                }
+                let newModel = model
+                newModel.enabled = newValue
+                modelManager.updateModel(newModel)
             }
         )
     }
