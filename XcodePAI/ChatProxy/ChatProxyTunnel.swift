@@ -181,6 +181,10 @@ extension ChatProxyTunnel: LLMClientDelegate {
     }
     
     func client(_ client: LLMClient, receiveError errorInfo: [String : Any]) {
+        // Send Error
+        if let json = try? JSONSerialization.data(withJSONObject: errorInfo), let jsonStr = String(data: json, encoding: .utf8) {
+            connection?.writeChunk(jsonStr + Constraint.DoubleLFString)
+        }
         connection?.writeChunk("[DONE]" + Constraint.DoubleLFString)
         connection?.writeEndChunk()
     }
