@@ -147,5 +147,34 @@ final class LocalStorage {
         }
         .eraseToAnyPublisher()
     }
+    
+    /// Rename local file
+    func renameStorage(oldKey: String, newKey: String) {
+        let oldFileURL = fileURL(forKey: oldKey)
+        let newFileURL = fileURL(forKey: newKey)
+        
+        queue.async(flags: .barrier) {
+            guard self.fileManager.fileExists(atPath: oldFileURL.path) else {
+                return
+            }
+            guard ((try? self.fileManager.moveItem(at: oldFileURL, to: newFileURL)) != nil) else {
+                return
+            }
+        }
+    }
+    
+    /// Remove local file
+    func removeStorage(key: String) {
+        let fileURL = fileURL(forKey: key)
+        
+        queue.async(flags: .barrier) {
+            guard self.fileManager.fileExists(atPath: fileURL.path) else {
+                return
+            }
+            guard ((try? self.fileManager.removeItem(at: fileURL)) != nil) else {
+                return
+            }
+        }
+    }
 }
 
