@@ -38,6 +38,7 @@
 		790799F92E4CE307004D9D1A /* LLMModelClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F82E4CE300004D9D1A /* LLMModelClient.swift */; };
 		790799FC2E4CF14F004D9D1A /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799FB2E4CF14C004D9D1A /* LoadingView.swift */; };
 		790799FE2E4CF7C0004D9D1A /* ModelAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799FD2E4CF7B4004D9D1A /* ModelAddView.swift */; };
+		79079A002E4CFE36004D9D1A /* ChatProxyBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799FF2E4CFE31004D9D1A /* ChatProxyBridge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -75,6 +76,7 @@
 		790799FA2E4CE7A9004D9D1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		790799FB2E4CF14C004D9D1A /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		790799FD2E4CF7B4004D9D1A /* ModelAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelAddView.swift; sourceTree = "<group>"; };
+		790799FF2E4CFE31004D9D1A /* ChatProxyBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyBridge.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +111,7 @@
 			children = (
 				7907999D2E471FEA004D9D1A /* ChatProxy.swift */,
 				790799B72E4890FC004D9D1A /* ChatProxyTunnel.swift */,
+				790799FF2E4CFE31004D9D1A /* ChatProxyBridge.swift */,
 			);
 			path = ChatProxy;
 			sourceTree = "<group>";
@@ -315,6 +318,7 @@
 				790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */,
 				790799F42E4CD21D004D9D1A /* ModelProviderSettingView.swift in Sources */,
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
+				79079A002E4CFE36004D9D1A /* ChatProxyBridge.swift in Sources */,
 				790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */,
 				790799F92E4CE307004D9D1A /* LLMModelClient.swift in Sources */,
 				790799A82E471FEA004D9D1A /* ContentView.swift in Sources */,

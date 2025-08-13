@@ -8,6 +8,7 @@
 import Foundation
 
 protocol LLMClientDelegate {
+    func client(_ client: LLMClient, connected success: Bool)
     func client(_ client: LLMClient, receivePart part: LLMAssistantMessage)
     func client(_ client: LLMClient, receiveMessage message: LLMAssistantMessage)
     func client(_ client: LLMClient, receiveError errorInfo: [String: Any])
@@ -142,6 +143,10 @@ class LLMClient {
 }
 
 extension LLMClient: HTTPSSEClientDelegate {
+    func client(_ client: HTTPSSEClient, connected success: Bool) {
+        delegate.client(self, connected: success)
+    }
+    
     func client(_ client: HTTPSSEClient, receive chunk: String) {
         if chunk == "[DONE]" {
             // close client when receive `DONE`

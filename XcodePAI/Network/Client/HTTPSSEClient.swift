@@ -8,6 +8,7 @@
 import Foundation
 
 protocol HTTPSSEClientDelegate {
+    func client(_ client: HTTPSSEClient, connected success: Bool)
     func client(_ client: HTTPSSEClient, receive chunk: String)
     func client(_ client: HTTPSSEClient, complete: (Result<Void, Error>))
 }
@@ -94,6 +95,19 @@ class HTTPSSEClient: NSObject {
 
 // MARK: URLSessionDataDelegate for SSE handling
 extension HTTPSSEClient: URLSessionDataDelegate {
+    
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+        
+        completionHandler(.allow)
+        
+        queue.async { [weak self] in
+            guard let `self` = self, let response = response as? HTTPURLResponse else {
+                return
+            }
+            self.delegate?.client(self, connected: response.statusCode == 200)
+        }
+    }
+    
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         sseDataBuffer.append(data)
         
@@ -119,6 +133,9 @@ extension HTTPSSEClient: URLSessionDataDelegate {
                 // Process any remaining data
                 var buffer = self.sseDataBuffer
                 if !buffer.isEmpty {
+                    if let str = String(data: buffer, encoding: .utf8) {
+                        print("sm.pro: \(str)")
+                    }
                     while let range = buffer.range(of: Constraint.DoubleLF) {
                         let chunkData = buffer.subdata(in: 0..<range.lowerBound)
                         buffer.removeSubrange(0..<range.upperBound)
