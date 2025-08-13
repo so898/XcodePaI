@@ -1,5 +1,5 @@
 //
-//  LLMIconListView.swift
+//  ModelProviderIconListView.swift
 //  XcodePAI
 //
 //  Created by Bill Cheng on 2025/8/13.
@@ -7,17 +7,17 @@
 
 import SwiftUI
 
-struct LLMIcon: Identifiable {
+struct ModelProviderIcon: Identifiable {
     let id = UUID()
     let iconName: String
     let name: String
 }
 
-struct LLMIconListView: View {
+struct ModelProviderIconListView: View {
     @Binding var isPresented: Bool
     @Binding var choosedIconName: String
     
-    let icons: [LLMIcon] = [
+    let icons: [ModelProviderIcon] = [
         .init(iconName: "openai", name: "OpenAI"),
         .init(iconName: "ollama", name: "Ollama"),
         .init(iconName: "deepseek", name: "DeepSeek"),
