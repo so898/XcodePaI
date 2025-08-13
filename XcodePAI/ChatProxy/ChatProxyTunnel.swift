@@ -87,7 +87,7 @@ extension ChatProxyTunnel{
             llmClient.stop()
         }
         
-        llmClient = LLMClient(LLMServer(name: "test", url: "xxx", privateKey: "sk-xxx"), delegate: self)
+        llmClient = LLMClient(LLMModelProvider(name: "test", url: "xxx", privateKey: "sk-xxx"), delegate: self)
         llmClient?.request(originalRequest)
         
         responseType = .completions

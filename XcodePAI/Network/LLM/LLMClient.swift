@@ -35,13 +35,13 @@ class LLMAssistantMessage {
 
 class LLMClient {
     
-    private let server: LLMServer
+    private let provider: LLMModelProvider
     private let delegate: LLMClientDelegate
     
     private var client: HTTPSSEClient?
     
-    init(_ server: LLMServer, delegate: LLMClientDelegate) {
-        self.server = server
+    init(_ provider: LLMModelProvider, delegate: LLMClientDelegate) {
+        self.provider = provider
         self.delegate = delegate
     }
     
@@ -58,7 +58,7 @@ class LLMClient {
             }
         }
         
-        client = HTTPSSEClient(url: server.chatCompletionsUrl(), headers: server.requestHeaders(), body: data, delegate: self)
+        client = HTTPSSEClient(url: provider.chatCompletionsUrl(), headers: provider.requestHeaders(), body: data, delegate: self)
         client?.start()
     }
 
