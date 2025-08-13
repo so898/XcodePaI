@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3385C1FB2E4C307F005C4210 /* ModelProviderSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3385C1FA2E4C307E005C4210 /* ModelProviderSettingSectionView.swift */; };
 		3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3385C1FC2E4C79A3005C4210 /* ModelProviderEditView.swift */; };
 		790799A62E471FEA004D9D1A /* ChatProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7907999D2E471FEA004D9D1A /* ChatProxy.swift */; };
 		790799A82E471FEA004D9D1A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799A22E471FEA004D9D1A /* ContentView.swift */; };
@@ -34,10 +33,10 @@
 		790799ED2E4B94B5004D9D1A /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799EC2E4B94B4004D9D1A /* LocalStorage.swift */; };
 		790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799EF2E4BAE50004D9D1A /* AppIconView.swift */; };
 		790799F22E4BB5E2004D9D1A /* ModelProviderIconListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F12E4BB5D7004D9D1A /* ModelProviderIconListView.swift */; };
+		790799F92E4CE307004D9D1A /* LLMModelClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799F82E4CE300004D9D1A /* LLMModelClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3385C1FA2E4C307E005C4210 /* ModelProviderSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelProviderSettingSectionView.swift; sourceTree = "<group>"; };
 		3385C1FC2E4C79A3005C4210 /* ModelProviderEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelProviderEditView.swift; sourceTree = "<group>"; };
 		790799862E4507BA004D9D1A /* XcodePAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XcodePAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7907999D2E471FEA004D9D1A /* ChatProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxy.swift; sourceTree = "<group>"; };
@@ -66,6 +65,8 @@
 		790799EC2E4B94B4004D9D1A /* LocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorage.swift; sourceTree = "<group>"; };
 		790799EF2E4BAE50004D9D1A /* AppIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconView.swift; sourceTree = "<group>"; };
 		790799F12E4BB5D7004D9D1A /* ModelProviderIconListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelProviderIconListView.swift; sourceTree = "<group>"; };
+		790799F82E4CE300004D9D1A /* LLMModelClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMModelClient.swift; sourceTree = "<group>"; };
+		790799FA2E4CE7A9004D9D1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,6 +175,7 @@
 		790799C52E48F60E004D9D1A /* LLM */ = {
 			isa = PBXGroup;
 			children = (
+				790799F82E4CE300004D9D1A /* LLMModelClient.swift */,
 				790799C62E48F61D004D9D1A /* LLMClient.swift */,
 			);
 			path = LLM;
@@ -194,8 +196,8 @@
 		790799E12E4A36AC004D9D1A /* SettingSectionViews */ = {
 			isa = PBXGroup;
 			children = (
-				3385C1FA2E4C307E005C4210 /* ModelProviderSettingSectionView.swift */,
 				790799E22E4A36C8004D9D1A /* GeneralSettingSectionView.swift */,
+				790799F52E4CD53D004D9D1A /* ModelProviderSetting */,
 				790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */,
 			);
 			path = SettingSectionViews;
@@ -293,11 +295,11 @@
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
 				790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */,
+				790799F92E4CE307004D9D1A /* LLMModelClient.swift in Sources */,
 				790799A82E471FEA004D9D1A /* ContentView.swift in Sources */,
 				790799ED2E4B94B5004D9D1A /* LocalStorage.swift in Sources */,
 				790799E92E4A5665004D9D1A /* MenuBarView.swift in Sources */,
 				790799C92E48F688004D9D1A /* LLMModelProvider.swift in Sources */,
-				3385C1FB2E4C307F005C4210 /* ModelProviderSettingSectionView.swift in Sources */,
 				790799C02E48B833004D9D1A /* HTTPSSEClient.swift in Sources */,
 				790799A92E471FEA004D9D1A /* XcodePAIApp.swift in Sources */,
 				790799BA2E48932C004D9D1A /* Extensions.swift in Sources */,
