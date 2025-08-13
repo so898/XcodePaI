@@ -15,6 +15,7 @@ struct XcodePAIApp: App {
         WindowGroup {
             VStack {
                 SettingsView()
+                    .globalLoading()
             }
         }
     }
