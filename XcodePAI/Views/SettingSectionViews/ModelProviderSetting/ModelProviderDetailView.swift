@@ -49,6 +49,14 @@ class ModelManager: ObservableObject {
         }
         LocalStorage.shared.renameStorage(oldKey: storageKey, newKey: newStorageKey)
         storageKey = newStorageKey
+        
+        var newModels = [LLMModel]()
+        for model in models {
+            let newModel = model
+            newModel.provider = provider
+            newModels.append(newModel)
+        }
+        saveModels(newModels)
     }
     
     func addModel(_ model: LLMModel) {
@@ -93,9 +101,7 @@ struct ModelProviderDetailView: View {
     @ObservedObject var modelManager: ModelManager
     
     @State private var provider: LLMModelProvider
-    
-    @State private var isProviderEnabled: Bool = true
-    
+        
     @State private var sortOrder = [KeyPathComparator(\LLMModel.id)]
         
     @State private var isShowingSheet = false

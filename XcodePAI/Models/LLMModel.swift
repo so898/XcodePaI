@@ -12,7 +12,7 @@ typealias ChatProxyLLMModel = LLMModel
 class LLMModel: Identifiable, ObservableObject, Codable {
     @Published var id: String
     let object: String
-    let provider: String
+    var provider: String
     @Published var enabled: Bool
     let created: Int // Create Timestamp
     
