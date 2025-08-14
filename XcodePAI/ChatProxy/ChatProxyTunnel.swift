@@ -160,7 +160,7 @@ extension ChatProxyTunnel: ChatProxyBridgeDelegate {
         connection?.writeChunk(chunk)
     }
     
-    func bridgeWirteEndChunk(_ bridge: ChatProxyBridge) {
+    func bridgeWriteEndChunk(_ bridge: ChatProxyBridge) {
         connection?.writeEndChunk()
     }
     

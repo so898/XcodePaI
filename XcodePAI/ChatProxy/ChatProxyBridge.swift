@@ -10,7 +10,7 @@ import Foundation
 protocol ChatProxyBridgeDelegate {
     func bridge(_ bridge: ChatProxyBridge, connected success: Bool)
     func bridge(_ bridge: ChatProxyBridge, write chunk: String)
-    func bridgeWirteEndChunk(_ bridge: ChatProxyBridge)
+    func bridgeWriteEndChunk(_ bridge: ChatProxyBridge)
 }
 
 class ChatProxyBridge {
@@ -27,8 +27,7 @@ class ChatProxyBridge {
     }
     
     func receiveRequest(_ request: LLMRequest) {
-        let newRequest = request
-        newRequest.model = "xxx"
+        let newRequest = processRequest(request)
         
         // Do LLM request to server, add MCP...
         hasThink = nil
@@ -39,6 +38,68 @@ class ChatProxyBridge {
         
         llmClient = LLMClient(LLMModelProvider(name: "test", url: "xxx", privateKey: "sk-xxx"), delegate: self)
         llmClient?.request(newRequest)
+    }
+}
+
+extension ChatProxyBridge {
+    private func processRequest(_ request: LLMRequest) -> LLMRequest{
+        let newRequest = request
+        newRequest.model = "xxx"
+        
+        let messages = request.messages
+        
+        var newMessages = [LLMMessage]()
+        for message in messages {
+            if let message = processMessage(message) {
+                newMessages.append(message)
+            }
+        }
+        newRequest.messages = newMessages
+        
+        return newRequest
+    }
+    
+    private func processMessage(_ message: LLMMessage) -> LLMMessage? {
+        
+        switch message.role {
+        case "developer":
+            // Developer Message
+            break
+        case "system":
+            // System Message
+            if let content = message.content {
+                print("SYSTEM: \n\(content)")
+            }
+            break
+        case "assistant":
+            // Assistant Message
+            if let content = message.content {
+                print("ASS: \n\(content)")
+            } else if let contents = message.contents {
+                for content in contents {
+                    if content.type == .text, let text = content.text {
+                        print("ASS: \n\(text)")
+                    }
+                }
+            }
+            break
+        case "user":
+            // User Message
+            if let content = message.content {
+                print("USER: \n\(content)")
+            } else if let contents = message.contents {
+                for content in contents {
+                    if content.type == .text, let text = content.text {
+                        print("USER: \n\(text)")
+                    }
+                }
+            }
+            break
+        default:
+            return message
+        }
+        
+        return message
     }
 }
 
@@ -82,12 +143,12 @@ extension ChatProxyBridge: LLMClientDelegate {
             delegate.bridge(self, write: jsonStr + Constraint.DoubleLFString)
         }
         delegate.bridge(self, write: "[DONE]" + Constraint.DoubleLFString)
-        delegate.bridgeWirteEndChunk(self)
+        delegate.bridgeWriteEndChunk(self)
     }
     
     func client(_ client: LLMClient, closeWithComplete complete: Bool) {
         delegate.bridge(self, write: "[DONE]" + Constraint.DoubleLFString)
-        delegate.bridgeWirteEndChunk(self)
+        delegate.bridgeWriteEndChunk(self)
     }
     
     
