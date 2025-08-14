@@ -19,6 +19,7 @@ class ChatProxyBridge {
     let delegate: ChatProxyBridgeDelegate
     
     private var llmClient: LLMClient?
+    private var isConnected = false
     private var hasThink: Bool?
     
     init(id: String, delegate: ChatProxyBridgeDelegate) {
@@ -104,8 +105,9 @@ extension ChatProxyBridge {
 }
 
 extension ChatProxyBridge: LLMClientDelegate {
-    func client(_ client: LLMClient, connected success: Bool) {
-        delegate.bridge(self, connected: success)
+    func clientConnected(_ client: LLMClient) {
+        isConnected = true
+        delegate.bridge(self, connected: true)
     }
     
     func client(_ client: LLMClient, receivePart part: LLMAssistantMessage) {
@@ -137,19 +139,25 @@ extension ChatProxyBridge: LLMClientDelegate {
         }
     }
     
-    func client(_ client: LLMClient, receiveError errorInfo: [String : Any]) {
-        // Send Error
-        if let json = try? JSONSerialization.data(withJSONObject: errorInfo), let jsonStr = String(data: json, encoding: .utf8) {
-            delegate.bridge(self, write: jsonStr + Constraint.DoubleLFString)
+    func client(_ client: LLMClient, receiveError error: Error?) {
+        if !isConnected {
+            delegate.bridge(self, connected: false)
+            return
         }
+        
+        if let _ = error{
+            // Error
+            if let json = try? JSONSerialization.data(withJSONObject: ["internal_error": "Server error"]), let jsonStr = String(data: json, encoding: .utf8) {
+                delegate.bridge(self, write: jsonStr + Constraint.DoubleLFString)
+            }
+            
+        }
+        
         delegate.bridge(self, write: "[DONE]" + Constraint.DoubleLFString)
         delegate.bridgeWriteEndChunk(self)
+        
+        llmClient?.stop()
+        llmClient = nil
     }
-    
-    func client(_ client: LLMClient, closeWithComplete complete: Bool) {
-        delegate.bridge(self, write: "[DONE]" + Constraint.DoubleLFString)
-        delegate.bridgeWriteEndChunk(self)
-    }
-    
     
 }

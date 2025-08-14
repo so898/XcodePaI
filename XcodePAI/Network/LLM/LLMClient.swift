@@ -6,13 +6,14 @@
 //
 
 import Foundation
+import EventSource
+import Combine
 
 protocol LLMClientDelegate {
-    func client(_ client: LLMClient, connected success: Bool)
+    func clientConnected(_ client: LLMClient)
     func client(_ client: LLMClient, receivePart part: LLMAssistantMessage)
     func client(_ client: LLMClient, receiveMessage message: LLMAssistantMessage)
-    func client(_ client: LLMClient, receiveError errorInfo: [String: Any])
-    func client(_ client: LLMClient, closeWithComplete complete: Bool)
+    func client(_ client: LLMClient, receiveError error: Error?)
 }
 
 class LLMAssistantMessage {
@@ -39,7 +40,8 @@ class LLMClient {
     private let provider: LLMModelProvider
     private let delegate: LLMClientDelegate
     
-    private var client: HTTPSSEClient?
+    private var eventSource: EventSource?
+    var cancellable: Cancellable?
     
     init(_ provider: LLMModelProvider, delegate: LLMClientDelegate) {
         self.provider = provider
@@ -59,12 +61,55 @@ class LLMClient {
             }
         }
         
-        client = HTTPSSEClient(url: provider.chatCompletionsUrl(), headers: provider.requestHeaders(), body: data, delegate: self)
-        client?.start()
+        guard let url = URL(string: provider.chatCompletionsUrl()) else {
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = data
+        request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+        request.setValue("gzip, deflate, br", forHTTPHeaderField: "Accept-Encoding")
+        provider.requestHeaders().forEach { key, value in
+            if let value = value as? String {
+                request.addValue(value, forHTTPHeaderField: key)
+            } else if let value = value as? Int {
+                request.addValue(String(value), forHTTPHeaderField: key)
+            } else if let value = value as? Double {
+                request.addValue(String(value), forHTTPHeaderField: key)
+            }
+        }
+        
+        let client = EventSource(request: request)
+        
+        client.onOpen = { [weak self] in
+            guard let `self` = self else { return }
+            self.delegate.clientConnected(self)
+        }
+        client.onMessage = { [weak self] event in
+            guard let `self` = self else { return }
+            self.receive(chunk: event.data)
+        }
+        client.onError = { [weak self] error in
+            guard let `self` = self else { return }
+            
+            if error == nil {
+                self.sendFullMessage()
+            }
+            
+            self.delegate.client(self, receiveError: error)
+        }
+        self.eventSource = client
     }
 
     func stop() {
-        client?.cancel()
+        Task {
+            if let client = eventSource {
+                await client.close()
+            }
+            eventSource = nil
+        }
     }
     
     private var reason: String?
@@ -142,25 +187,10 @@ class LLMClient {
     }
 }
 
-extension LLMClient: HTTPSSEClientDelegate {
-    func client(_ client: HTTPSSEClient, connected success: Bool) {
-        delegate.client(self, connected: success)
-    }
-    
-    func client(_ client: HTTPSSEClient, receive chunk: String) {
-        if chunk == "[DONE]" {
-            // close client when receive `DONE`
-            client.cancel()
-            return
-        }
+// MARK:  Event Source Functions
+extension LLMClient {
+    private func receive(chunk: String) {
         guard let data = chunk.data(using: .utf8), let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            return
-        }
-        
-        guard let _ = dict["id"] else {
-            // Error
-            delegate.client(self, receiveError: dict)
-            client.cancel()
             return
         }
         
@@ -182,7 +212,7 @@ extension LLMClient: HTTPSSEClientDelegate {
                 tools = chunkTools
                 
                 // Close client when full message received
-                client.cancel()
+                self.stop()
                 return
             } else {
                 let chunkRet = processReasonAndContentWithMessage(choice.message)
@@ -235,15 +265,5 @@ extension LLMClient: HTTPSSEClientDelegate {
                                                                content: chunkContent,
                                                                tools: chunkTools,
                                                                finishReason: chunkFinishReason))
-    }
-    
-    func client(_ client: HTTPSSEClient, complete: Result<Void, any Error>) {
-        sendFullMessage()
-        switch complete {
-        case .success(_):
-            delegate.client(self, closeWithComplete: true)
-        case .failure(_):
-            delegate.client(self, closeWithComplete: false)
-        }
     }
 }
