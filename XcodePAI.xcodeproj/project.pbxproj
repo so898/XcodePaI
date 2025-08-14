@@ -39,6 +39,7 @@
 		790799FC2E4CF14F004D9D1A /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799FB2E4CF14C004D9D1A /* LoadingView.swift */; };
 		790799FE2E4CF7C0004D9D1A /* ModelAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799FD2E4CF7B4004D9D1A /* ModelAddView.swift */; };
 		79079A002E4CFE36004D9D1A /* ChatProxyBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799FF2E4CFE31004D9D1A /* ChatProxyBridge.swift */; };
+		79079A032E4E191D004D9D1A /* MCP in Frameworks */ = {isa = PBXBuildFile; productRef = 79079A022E4E191D004D9D1A /* MCP */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79079A032E4E191D004D9D1A /* MCP in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,6 +137,7 @@
 				790799B02E487394004D9D1A /* Network */,
 				790799AD2E47203B004D9D1A /* Utils */,
 				790799A02E471FEA004D9D1A /* Models */,
+				79079A042E4E1930004D9D1A /* MCP */,
 				7907999F2E471FEA004D9D1A /* ChatProxy */,
 				790799A12E471FEA004D9D1A /* Assets.xcassets */,
 				790799A32E471FEA004D9D1A /* XcodePAI.entitlements */,
@@ -235,6 +238,13 @@
 			path = ModelProviderSetting;
 			sourceTree = "<group>";
 		};
+		79079A042E4E1930004D9D1A /* MCP */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = MCP;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -252,6 +262,7 @@
 			);
 			name = XcodePAI;
 			packageProductDependencies = (
+				79079A022E4E191D004D9D1A /* MCP */,
 			);
 			productName = XcodePAI;
 			productReference = 790799862E4507BA004D9D1A /* XcodePAI.app */;
@@ -281,6 +292,9 @@
 			);
 			mainGroup = 7907997D2E4507BA004D9D1A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				79079A012E4E191D004D9D1A /* XCRemoteSwiftPackageReference "swift-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 790799872E4507BA004D9D1A /* Products */;
 			projectDirPath = "";
@@ -558,6 +572,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		79079A012E4E191D004D9D1A /* XCRemoteSwiftPackageReference "swift-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/modelcontextprotocol/swift-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		79079A022E4E191D004D9D1A /* MCP */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 79079A012E4E191D004D9D1A /* XCRemoteSwiftPackageReference "swift-sdk" */;
+			productName = MCP;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7907997E2E4507BA004D9D1A /* Project object */;
 }
