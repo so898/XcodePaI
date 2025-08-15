@@ -10,6 +10,8 @@ import Foundation
 class Constraint {
     // Static strings
     static let AppName = "XcodePaI"
+    static let AppVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
+    
     static let LFString = "\n"
     static let CRLFString = "\r\n"
     static let DoubleCRLFString = "\r\n\r\n"
