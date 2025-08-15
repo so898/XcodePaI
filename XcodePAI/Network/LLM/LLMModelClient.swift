@@ -22,8 +22,9 @@ class LLMModelClient {
                 
                 var models = [LLMModel]()
                 for object in array {
-                    let model = LLMModel(object, provider: provider.name)
-                    models.append(model)
+                    if let model = LLMModel(object, provider: provider.name) {
+                        models.append(model)
+                    }
                 }
                 
                 DispatchQueue.main.async {
