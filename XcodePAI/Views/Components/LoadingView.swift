@@ -33,38 +33,39 @@ struct LoadingModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .overlay(loadingOverlay)
+            .sheet(isPresented: toggleBinding(), content: {
+                loadingOverlay
+            })
+//            .overlay()
+    }
+    
+    private func toggleBinding() -> Binding<Bool> {
+        Binding<Bool>(
+            get: { state.isPresented },
+            set: { newValue in
+                state.isPresented = newValue
+            }
+        )
     }
     
     private var loadingOverlay: some View {
         Group {
-            if state.isPresented {
-                ZStack {
-                    Color.black.opacity(0.4)
-                        .edgesIgnoringSafeArea(.all)
+            ZStack {
+                // Loading
+                HStack(spacing: 16) {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .secondary))
                     
-                    // Loading
-                    VStack(spacing: 16) {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .secondary))
-                            .scaleEffect(1.5)
-                        
-                        if !state.text.isEmpty {
-                            Text(state.text)
-                                .foregroundColor(.primary)
-                                .font(.headline)
-                        }
+                    if !state.text.isEmpty {
+                        Text(state.text)
+                            .foregroundColor(.primary)
+                            .font(.headline)
                     }
-                    .padding(30)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color(nsColor: .controlBackgroundColor))
-                            .shadow(color: Color.black.opacity(0.1), radius: 12, x: 0, y: 5)
-                    )
                 }
-                .zIndex(999) // On the top
-                .transition(.opacity)
+                .padding(30)
             }
+            .zIndex(999) // On the top
+            .transition(.opacity)
         }
     }
 }
