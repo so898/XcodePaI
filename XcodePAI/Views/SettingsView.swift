@@ -22,9 +22,10 @@ struct SettingsView: View {
     let tabs = [
         TabItem(id: 0, title: "General", imageName: "gearshape"),
         TabItem(id: 1, title: "Provider", imageName: "sparkles.square.filled.on.square"),
-        TabItem(id: 2, title: "Chat Proxy", imageName: "chart.bar.horizontal.page"),
-        TabItem(id: 3, title: "Completion", imageName: "pencil.and.list.clipboard"),
-        TabItem(id: 4, title: "About", imageName: "info.circle.fill"),
+        TabItem(id: 2, title: "MCP", imageName: "square.stack.3d.forward.dottedline"),
+        TabItem(id: 3, title: "Chat Proxy", imageName: "chart.bar.horizontal.page"),
+        TabItem(id: 4, title: "Completion", imageName: "pencil.and.list.clipboard"),
+        TabItem(id: 5, title: "About", imageName: "info.circle.fill"),
     ]
     
     var body: some View {
@@ -34,7 +35,8 @@ struct SettingsView: View {
                     switch tab.id {
                     case 0: GeneralSettingSectionView()
                     case 1: ModelProviderSettingSectionView()
-                    case 2: ChatProxySettingSectionView()
+                    case 2: MCPSettingSectionView()
+                    case 3: ChatProxySettingSectionView()
                     default: GeneralSettingSectionView()
                     }
                 }

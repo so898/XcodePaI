@@ -9,10 +9,10 @@ import Foundation
 
 class LLMMCP: Identifiable, ObservableObject, Codable {
     var id = UUID()
-    let name: String
-    let url: String
-    let description: String?
-    let headers: [String: String]?
+    @Published var name: String
+    @Published var url: String
+    @Published var description: String?
+    @Published var headers: [String: String]?
     @Published var enabled: Bool
     
     enum CodingKeys: CodingKey {
@@ -72,5 +72,15 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         }
         
         return ret
+    }
+}
+
+extension LLMMCP: Hashable {
+    static func == (lhs: LLMMCP, rhs: LLMMCP) -> Bool {
+        lhs.id == rhs.id && lhs.name == rhs.name && lhs.url == rhs.url && lhs.description == rhs.description && lhs.headers == rhs.headers && lhs.enabled == rhs.enabled
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(self))
     }
 }

@@ -186,37 +186,3 @@ struct ModelProviderEditView: View {
         }
     }
 }
-
-
-// MARK: - From File Components
-
-private struct FormFieldRow<Content: View>: View {
-    let label: String
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        HStack {
-            Text(label)
-                .foregroundColor(.secondary)
-            content
-                .foregroundColor(.primary)
-        }
-        .padding(16)
-    }
-}
-
-private struct InfoRow: View {
-    let label: String
-    @Binding var value: String
-
-    var body: some View {
-        HStack {
-            Text(label)
-                .foregroundColor(.secondary)
-            Spacer()
-            Text(value)
-                .foregroundColor(.primary)
-        }
-        .padding()
-    }
-}

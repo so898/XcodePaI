@@ -42,6 +42,8 @@
 		79079A032E4E191D004D9D1A /* MCP in Frameworks */ = {isa = PBXBuildFile; productRef = 79079A022E4E191D004D9D1A /* MCP */; };
 		79079A072E4F9449004D9D1A /* LLMMCPTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A062E4F9449004D9D1A /* LLMMCPTool.swift */; };
 		79079A082E4F9449004D9D1A /* LLMMCP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A052E4F9449004D9D1A /* LLMMCP.swift */; };
+		79079A0A2E4F94FB004D9D1A /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A092E4F94F9004D9D1A /* Components.swift */; };
+		79079A0D2E4F95E8004D9D1A /* MCPSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A0C2E4F95E3004D9D1A /* MCPSetting.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +84,8 @@
 		790799FF2E4CFE31004D9D1A /* ChatProxyBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyBridge.swift; sourceTree = "<group>"; };
 		79079A052E4F9449004D9D1A /* LLMMCP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMMCP.swift; sourceTree = "<group>"; };
 		79079A062E4F9449004D9D1A /* LLMMCPTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMMCPTool.swift; sourceTree = "<group>"; };
+		79079A092E4F94F9004D9D1A /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		79079A0C2E4F95E3004D9D1A /* MCPSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPSetting.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,6 +222,7 @@
 			children = (
 				790799E22E4A36C8004D9D1A /* GeneralSettingSectionView.swift */,
 				790799F52E4CD53D004D9D1A /* ModelProviderSetting */,
+				79079A0B2E4F95B7004D9D1A /* MCPSetting */,
 				790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */,
 			);
 			path = SettingSectionViews;
@@ -226,11 +231,9 @@
 		790799EE2E4BAE3F004D9D1A /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				79079A092E4F94F9004D9D1A /* Components.swift */,
 				790799EF2E4BAE50004D9D1A /* AppIconView.swift */,
 				790799FB2E4CF14C004D9D1A /* LoadingView.swift */,
-				790799F12E4BB5D7004D9D1A /* ModelProviderIconListView.swift */,
-				3385C1FC2E4C79A3005C4210 /* ModelProviderEditView.swift */,
-				790799FD2E4CF7B4004D9D1A /* ModelAddView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -238,6 +241,9 @@
 		790799F52E4CD53D004D9D1A /* ModelProviderSetting */ = {
 			isa = PBXGroup;
 			children = (
+				790799F12E4BB5D7004D9D1A /* ModelProviderIconListView.swift */,
+				3385C1FC2E4C79A3005C4210 /* ModelProviderEditView.swift */,
+				790799FD2E4CF7B4004D9D1A /* ModelAddView.swift */,
 				790799F32E4CD21D004D9D1A /* ModelProviderSettingView.swift */,
 				790799F62E4CD561004D9D1A /* ModelProviderDetailView.swift */,
 			);
@@ -249,6 +255,14 @@
 			children = (
 			);
 			path = MCP;
+			sourceTree = "<group>";
+		};
+		79079A0B2E4F95B7004D9D1A /* MCPSetting */ = {
+			isa = PBXGroup;
+			children = (
+				79079A0C2E4F95E3004D9D1A /* MCPSetting.swift */,
+			);
+			path = MCPSetting;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -357,9 +371,11 @@
 				79079A082E4F9449004D9D1A /* LLMMCP.swift in Sources */,
 				790799FC2E4CF14F004D9D1A /* LoadingView.swift in Sources */,
 				790799AF2E47204C004D9D1A /* Constraint.swift in Sources */,
+				79079A0D2E4F95E8004D9D1A /* MCPSetting.swift in Sources */,
 				790799B42E487E08004D9D1A /* TCPConnection.swift in Sources */,
 				790799FE2E4CF7C0004D9D1A /* ModelAddView.swift in Sources */,
 				790799C72E48F624004D9D1A /* LLMClient.swift in Sources */,
+				79079A0A2E4F94FB004D9D1A /* Components.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

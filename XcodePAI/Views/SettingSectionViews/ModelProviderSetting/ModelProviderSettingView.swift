@@ -8,16 +8,6 @@
 import SwiftUI
 import Combine
 
-// MARK: - Data Models
-
-struct AIModel: Identifiable, Hashable {
-    var id = UUID()
-    var name: String
-    var identifier: String
-    var isEnabled: Bool
-    var isFavorite: Bool
-}
-
 class ModelProviderManager: ObservableObject {
     static let storageKey = "LLMModelProviderStorage"
     
