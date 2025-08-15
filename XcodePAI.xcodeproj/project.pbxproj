@@ -40,6 +40,8 @@
 		790799FE2E4CF7C0004D9D1A /* ModelAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799FD2E4CF7B4004D9D1A /* ModelAddView.swift */; };
 		79079A002E4CFE36004D9D1A /* ChatProxyBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799FF2E4CFE31004D9D1A /* ChatProxyBridge.swift */; };
 		79079A032E4E191D004D9D1A /* MCP in Frameworks */ = {isa = PBXBuildFile; productRef = 79079A022E4E191D004D9D1A /* MCP */; };
+		79079A072E4F9449004D9D1A /* LLMMCPTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A062E4F9449004D9D1A /* LLMMCPTool.swift */; };
+		79079A082E4F9449004D9D1A /* LLMMCP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A052E4F9449004D9D1A /* LLMMCP.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +80,8 @@
 		790799FB2E4CF14C004D9D1A /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		790799FD2E4CF7B4004D9D1A /* ModelAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelAddView.swift; sourceTree = "<group>"; };
 		790799FF2E4CFE31004D9D1A /* ChatProxyBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyBridge.swift; sourceTree = "<group>"; };
+		79079A052E4F9449004D9D1A /* LLMMCP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMMCP.swift; sourceTree = "<group>"; };
+		79079A062E4F9449004D9D1A /* LLMMCPTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMMCPTool.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +129,8 @@
 				790799AB2E471FF8004D9D1A /* LLMModel.swift */,
 				790799C12E48BC71004D9D1A /* LLMRequest.swift */,
 				790799C32E48D911004D9D1A /* LLMResponse.swift */,
+				79079A052E4F9449004D9D1A /* LLMMCP.swift */,
+				79079A062E4F9449004D9D1A /* LLMMCPTool.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -347,6 +353,8 @@
 				790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */,
 				790799B62E487F83004D9D1A /* HTTPConnection.swift in Sources */,
 				790799B22E4873B7004D9D1A /* TCPServer.swift in Sources */,
+				79079A072E4F9449004D9D1A /* LLMMCPTool.swift in Sources */,
+				79079A082E4F9449004D9D1A /* LLMMCP.swift in Sources */,
 				790799FC2E4CF14F004D9D1A /* LoadingView.swift in Sources */,
 				790799AF2E47204C004D9D1A /* Constraint.swift in Sources */,
 				790799B42E487E08004D9D1A /* TCPConnection.swift in Sources */,
