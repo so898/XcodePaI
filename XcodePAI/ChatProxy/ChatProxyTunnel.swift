@@ -153,6 +153,7 @@ extension ChatProxyTunnel: ChatProxyBridgeDelegate {
             responseType = .error
             let response = HTTPResponse(statusCode: 500)
             connection?.writeResponse(response)
+            connection?.stop()
         }
     }
     
