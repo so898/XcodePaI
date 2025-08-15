@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MCP
 
 class LLMMCP: Identifiable, ObservableObject, Codable {
     var id = UUID()
@@ -72,6 +73,47 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         }
         
         return ret
+    }
+    
+    public func checkService(complete: @escaping (Bool) -> Void) {
+        Task {
+            guard let url = URL(string: url) else {
+                DispatchQueue.main.async {
+                    complete(false)
+                }
+                return
+            }
+            
+            let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
+            
+            let transport = HTTPClientTransport(
+                endpoint: url,
+                streaming: true) {[weak self] request in
+                    guard let `self` = self,  let headers = self.headers else {
+                        return request
+                    }
+                    var newRequest = request
+                    for key in headers.keys {
+                        if let value = headers[key] {
+                            newRequest.setValue(value, forHTTPHeaderField: key)
+                        }
+                    }
+                    return newRequest
+            }
+            
+            if let result = try? await client.connect(transport: transport) {
+                if result.capabilities.tools != nil {
+                    DispatchQueue.main.async {
+                        complete(true)
+                    }
+                    return
+                }
+            }
+            DispatchQueue.main.async {
+                complete(false)
+            }
+        }
+        
     }
 }
 
