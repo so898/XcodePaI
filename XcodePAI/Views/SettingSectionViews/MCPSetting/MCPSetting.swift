@@ -25,29 +25,29 @@ class MCPManager: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func addModelProvider(_ mcp: LLMMCP) {
+    func addMCP(_ mcp: LLMMCP) {
         var currentMCPs = mcps
         currentMCPs.append(mcp)
-        saveModelProviders(currentMCPs)
+        saveMCPs(currentMCPs)
     }
     
-    func updateModelProvider(_ mcp: LLMMCP) {
+    func updateMCP(_ mcp: LLMMCP) {
         var currentMCPs = mcps
         if let index = currentMCPs.firstIndex(where: { $0.id == mcp.id }) {
             currentMCPs[index] = mcp
-            saveModelProviders(currentMCPs)
+            saveMCPs(currentMCPs)
         }
     }
     
-    func deleteModelProvider(_ mcp: LLMMCP) {
+    func deleteMCP(_ mcp: LLMMCP) {
         var currentMCPs = mcps
         if let index = currentMCPs.firstIndex(where: { $0.id == mcp.id }) {
             currentMCPs.remove(at: index)
-            saveModelProviders(currentMCPs)
+            saveMCPs(currentMCPs)
         }
     }
     
-    private func saveModelProviders(_ mcps: [LLMMCP]) {
+    private func saveMCPs(_ mcps: [LLMMCP]) {
         self.mcps = mcps
         LocalStorage.shared.save(mcps, forKey: Self.storageKey)
             .sink { _ in }
@@ -97,7 +97,7 @@ struct MCPListView: View {
                 
                 HStack {
                     Spacer()
-                    Button("Add a MCP...") {
+                    Button("Add a MCP service...") {
                         isShowingSheet = true
                     }
                     .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 16))
@@ -107,9 +107,9 @@ struct MCPListView: View {
         }
         .navigationTitle("MCP")
         .sheet(isPresented: $isShowingSheet) {
-//            ModelProviderEditView(currentProvider: nil){ provider in
-//                providerManager.addModelProvider(provider)
-//            }
+            MCPEditView(mcp: nil){ mcp in
+                mcpManager.addMCP(mcp)
+            }
         }
     }
 }

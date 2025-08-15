@@ -25,6 +25,35 @@ struct FormFieldRow<Content: View>: View {
     }
 }
 
+struct FormKVFieldRow<Content: View>: View {
+    @ViewBuilder let key: Content
+    @ViewBuilder let value: Content
+    var deleteAction: () -> Void
+    
+    var body: some View {
+        HStack {
+            key
+                .foregroundColor(.primary)
+            Spacer()
+            Text("=")
+            Spacer()
+            value
+                .foregroundColor(.primary)
+            Button {
+                deleteAction()
+            } label: {
+                Image(systemName: "minus")
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(.white)
+                    .background(Color.red)
+                    .cornerRadius(10)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(16)
+    }
+}
+
 struct InfoRow: View {
     let label: String
     @Binding var value: String
