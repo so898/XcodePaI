@@ -43,8 +43,13 @@
 		79079A072E4F9449004D9D1A /* LLMMCPTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A062E4F9449004D9D1A /* LLMMCPTool.swift */; };
 		79079A082E4F9449004D9D1A /* LLMMCP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A052E4F9449004D9D1A /* LLMMCP.swift */; };
 		79079A0A2E4F94FB004D9D1A /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A092E4F94F9004D9D1A /* Components.swift */; };
-		79079A0D2E4F95E8004D9D1A /* MCPSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A0C2E4F95E3004D9D1A /* MCPSetting.swift */; };
+		79079A0D2E4F95E8004D9D1A /* MCPSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A0C2E4F95E3004D9D1A /* MCPSettingView.swift */; };
 		79079A0F2E4F9B27004D9D1A /* MCPEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A0E2E4F9B23004D9D1A /* MCPEditView.swift */; };
+		79079A112E4FB78C004D9D1A /* MCPDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A102E4FB786004D9D1A /* MCPDetailView.swift */; };
+		79079A142E4FBD7E004D9D1A /* ModelProviderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A132E4FBD7D004D9D1A /* ModelProviderManager.swift */; };
+		79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A152E4FBD95004D9D1A /* ModelManager.swift */; };
+		79079A182E4FBDAB004D9D1A /* MCPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A172E4FBDAA004D9D1A /* MCPManager.swift */; };
+		79079A1A2E4FBDBE004D9D1A /* MCPToolManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A192E4FBDBD004D9D1A /* MCPToolManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -86,8 +91,13 @@
 		79079A052E4F9449004D9D1A /* LLMMCP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMMCP.swift; sourceTree = "<group>"; };
 		79079A062E4F9449004D9D1A /* LLMMCPTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMMCPTool.swift; sourceTree = "<group>"; };
 		79079A092E4F94F9004D9D1A /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
-		79079A0C2E4F95E3004D9D1A /* MCPSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPSetting.swift; sourceTree = "<group>"; };
+		79079A0C2E4F95E3004D9D1A /* MCPSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPSettingView.swift; sourceTree = "<group>"; };
 		79079A0E2E4F9B23004D9D1A /* MCPEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPEditView.swift; sourceTree = "<group>"; };
+		79079A102E4FB786004D9D1A /* MCPDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPDetailView.swift; sourceTree = "<group>"; };
+		79079A132E4FBD7D004D9D1A /* ModelProviderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelProviderManager.swift; sourceTree = "<group>"; };
+		79079A152E4FBD95004D9D1A /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
+		79079A172E4FBDAA004D9D1A /* MCPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPManager.swift; sourceTree = "<group>"; };
+		79079A192E4FBDBD004D9D1A /* MCPToolManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPToolManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +157,7 @@
 				790799FA2E4CE7A9004D9D1A /* Info.plist */,
 				790799DE2E4A32CC004D9D1A /* Views */,
 				790799B02E487394004D9D1A /* Network */,
+				79079A122E4FBD67004D9D1A /* Storage */,
 				790799AD2E47203B004D9D1A /* Utils */,
 				790799A02E471FEA004D9D1A /* Models */,
 				79079A042E4E1930004D9D1A /* MCP */,
@@ -262,10 +273,22 @@
 		79079A0B2E4F95B7004D9D1A /* MCPSetting */ = {
 			isa = PBXGroup;
 			children = (
-				79079A0C2E4F95E3004D9D1A /* MCPSetting.swift */,
+				79079A0C2E4F95E3004D9D1A /* MCPSettingView.swift */,
+				79079A102E4FB786004D9D1A /* MCPDetailView.swift */,
 				79079A0E2E4F9B23004D9D1A /* MCPEditView.swift */,
 			);
 			path = MCPSetting;
+			sourceTree = "<group>";
+		};
+		79079A122E4FBD67004D9D1A /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				79079A132E4FBD7D004D9D1A /* ModelProviderManager.swift */,
+				79079A152E4FBD95004D9D1A /* ModelManager.swift */,
+				79079A172E4FBDAA004D9D1A /* MCPManager.swift */,
+				79079A192E4FBDBD004D9D1A /* MCPToolManager.swift */,
+			);
+			path = Storage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -349,10 +372,14 @@
 				790799C22E48BC74004D9D1A /* LLMRequest.swift in Sources */,
 				790799A62E471FEA004D9D1A /* ChatProxy.swift in Sources */,
 				790799AC2E471FFF004D9D1A /* LLMModel.swift in Sources */,
+				79079A1A2E4FBDBE004D9D1A /* MCPToolManager.swift in Sources */,
 				790799E72E4A3ED4004D9D1A /* ChatProxySettingSectionView.swift in Sources */,
+				79079A182E4FBDAB004D9D1A /* MCPManager.swift in Sources */,
 				790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */,
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
+				79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */,
 				790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */,
+				79079A112E4FB78C004D9D1A /* MCPDetailView.swift in Sources */,
 				790799F42E4CD21D004D9D1A /* ModelProviderSettingView.swift in Sources */,
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
 				79079A002E4CFE36004D9D1A /* ChatProxyBridge.swift in Sources */,
@@ -365,6 +392,7 @@
 				790799C02E48B833004D9D1A /* HTTPSSEClient.swift in Sources */,
 				790799A92E471FEA004D9D1A /* XcodePAIApp.swift in Sources */,
 				790799BA2E48932C004D9D1A /* Extensions.swift in Sources */,
+				79079A142E4FBD7E004D9D1A /* ModelProviderManager.swift in Sources */,
 				790799F22E4BB5E2004D9D1A /* ModelProviderIconListView.swift in Sources */,
 				790799BE2E48B6BD004D9D1A /* HTTPClient.swift in Sources */,
 				790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */,
@@ -375,7 +403,7 @@
 				790799FC2E4CF14F004D9D1A /* LoadingView.swift in Sources */,
 				79079A0F2E4F9B27004D9D1A /* MCPEditView.swift in Sources */,
 				790799AF2E47204C004D9D1A /* Constraint.swift in Sources */,
-				79079A0D2E4F95E8004D9D1A /* MCPSetting.swift in Sources */,
+				79079A0D2E4F95E8004D9D1A /* MCPSettingView.swift in Sources */,
 				790799B42E487E08004D9D1A /* TCPConnection.swift in Sources */,
 				790799FE2E4CF7C0004D9D1A /* ModelAddView.swift in Sources */,
 				790799C72E48F624004D9D1A /* LLMClient.swift in Sources */,

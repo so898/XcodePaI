@@ -8,8 +8,8 @@
 import Foundation
 import MCP
 
-class LLMMCPTool: Identifiable, Codable {
-    var id = UUID()
+final class LLMMCPTool: Identifiable, Codable, Sendable {
+    let id: UUID
     
     let name: String
     let description: String
@@ -22,13 +22,15 @@ class LLMMCPTool: Identifiable, Codable {
         case schema
     }
     
-    init(name: String, description: String, schema: String? = nil) {
+    init(id: UUID = UUID(), name: String, description: String, schema: String? = nil) {
+        self.id = id
         self.name = name
         self.description = description
         self.schema = schema
     }
     
     init(tool: Tool) {
+        self.id = UUID()
         self.name = tool.name
         self.description = tool.description
         if let jsonData = try? JSONEncoder().encode(tool.inputSchema), let schema = String(data: jsonData, encoding: .utf8) {

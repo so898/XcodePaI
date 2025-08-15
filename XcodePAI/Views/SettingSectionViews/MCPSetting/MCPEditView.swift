@@ -21,7 +21,7 @@ class KVObject: Identifiable {
 struct MCPEditView: View {
     let currentMCP: LLMMCP?
     
-    var createOrUpdateMCP: (LLMMCP) -> Void
+    var createOrUpdateMCP: (LLMMCP, [LLMMCPTool]?) -> Void
     
     var removeMCP: ((LLMMCP) -> Void)?
     
@@ -36,7 +36,7 @@ struct MCPEditView: View {
     // Close Sheet
     @Environment(\.dismiss) var dismiss
     
-    init(mcp: LLMMCP?, createOrUpdateMCP: @escaping (LLMMCP) -> Void, removeMCP: ((LLMMCP) -> Void)? = nil) {
+    init(mcp: LLMMCP?, createOrUpdateMCP: @escaping (LLMMCP, [LLMMCPTool]?) -> Void, removeMCP: ((LLMMCP) -> Void)? = nil) {
         self.currentMCP = mcp
         self.createOrUpdateMCP = createOrUpdateMCP
         if let mcp = mcp {
@@ -233,7 +233,7 @@ struct MCPEditView: View {
                 
                 let newMCP = LLMMCP(id: currentMCP?.id ?? UUID(), name: name, url: url, description: description.isEmpty ? nil : description, headers: headers.count > 0 ? headers : nil)
                 
-                newMCP.checkService { success in
+                newMCP.checkService { success, tools in
                     showCreateMCPLoading = false
                     
                     guard success else {
@@ -241,7 +241,7 @@ struct MCPEditView: View {
                         return
                     }
                     
-                    createOrUpdateMCP(newMCP)
+                    createOrUpdateMCP(newMCP, tools)
                     
                     dismiss()
                 }

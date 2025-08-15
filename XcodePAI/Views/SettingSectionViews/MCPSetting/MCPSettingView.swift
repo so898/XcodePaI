@@ -6,54 +6,6 @@
 //
 
 import SwiftUI
-import Combine
-
-class MCPManager: ObservableObject {
-    static let storageKey = "LLMMCPStorage"
-    
-    @Published private(set) var mcps: [LLMMCP] = []
-    private var cancellables = Set<AnyCancellable>()
-    
-    init() {
-        loadInitialValue()
-    }
-    
-    private func loadInitialValue() {
-        LocalStorage.shared.fetch(forKey: Self.storageKey)
-            .replaceNil(with: [])
-            .assign(to: \.mcps, on: self)
-            .store(in: &cancellables)
-    }
-    
-    func addMCP(_ mcp: LLMMCP) {
-        var currentMCPs = mcps
-        currentMCPs.append(mcp)
-        saveMCPs(currentMCPs)
-    }
-    
-    func updateMCP(_ mcp: LLMMCP) {
-        var currentMCPs = mcps
-        if let index = currentMCPs.firstIndex(where: { $0.id == mcp.id }) {
-            currentMCPs[index] = mcp
-            saveMCPs(currentMCPs)
-        }
-    }
-    
-    func deleteMCP(_ mcp: LLMMCP) {
-        var currentMCPs = mcps
-        if let index = currentMCPs.firstIndex(where: { $0.id == mcp.id }) {
-            currentMCPs.remove(at: index)
-            saveMCPs(currentMCPs)
-        }
-    }
-    
-    private func saveMCPs(_ mcps: [LLMMCP]) {
-        self.mcps = mcps
-        LocalStorage.shared.save(mcps, forKey: Self.storageKey)
-            .sink { _ in }
-            .store(in: &cancellables)
-    }
-}
 
 struct MCPSettingSectionView: View {
     @StateObject private var mcpManager = MCPManager()
@@ -65,7 +17,7 @@ struct MCPSettingSectionView: View {
                 MCPListView(mcpManager: mcpManager)
             }
             .navigationDestination(for: LLMMCP.self) { mcp in
-//                ModelProviderDetailView(providerManager: providerManager, provider: provider)
+                MCPDetailView(mcpManager: mcpManager, mcp: mcp)
             }
         }
     }
@@ -107,8 +59,11 @@ struct MCPListView: View {
         }
         .navigationTitle("MCP")
         .sheet(isPresented: $isShowingSheet) {
-            MCPEditView(mcp: nil){ mcp in
+            MCPEditView(mcp: nil){ mcp, tools in
                 mcpManager.addMCP(mcp)
+                
+                let toolManager = MCPToolManager(mcp.name)
+                toolManager.replaceTools(tools ?? [])
             }
         }
     }

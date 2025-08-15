@@ -75,11 +75,11 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         return ret
     }
     
-    public func checkService(complete: @escaping (Bool) -> Void) {
+    public func checkService(complete: @escaping (Bool, [LLMMCPTool]?) -> Void) {
         Task {
             guard let url = URL(string: url) else {
                 DispatchQueue.main.async {
-                    complete(false)
+                    complete(false, nil)
                 }
                 return
             }
@@ -103,14 +103,21 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
             
             if let result = try? await client.connect(transport: transport) {
                 if result.capabilities.tools != nil {
+                    let (tools, _) = try await client.listTools()
+                    
+                    var mcpTools = [LLMMCPTool]()
+                    for tool in tools {
+                        mcpTools.append(LLMMCPTool(tool: tool))
+                    }
+                    
                     DispatchQueue.main.async {
-                        complete(true)
+                        complete(true, mcpTools)
                     }
                     return
                 }
             }
             DispatchQueue.main.async {
-                complete(false)
+                complete(false, nil)
             }
         }
         
