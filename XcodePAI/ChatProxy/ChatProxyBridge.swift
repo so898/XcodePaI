@@ -219,6 +219,10 @@ extension ChatProxyBridge: LLMClientDelegate {
                 )
             }
         }
+        
+        if let response = response, let json = try? JSONSerialization.data(withJSONObject: response.toDictionary()), let jsonStr = String(data: json, encoding: .utf8) {
+            delegate.bridge(self, write: jsonStr + Constraint.DoubleLFString)
+        }
     }
     
     func client(_ client: LLMClient, receiveMessage message: LLMAssistantMessage) {
