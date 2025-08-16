@@ -50,6 +50,8 @@
 		79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A152E4FBD95004D9D1A /* ModelManager.swift */; };
 		79079A182E4FBDAB004D9D1A /* MCPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A172E4FBDAA004D9D1A /* MCPManager.swift */; };
 		79079A1A2E4FBDBE004D9D1A /* MCPToolManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A192E4FBDBD004D9D1A /* MCPToolManager.swift */; };
+		79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1B2E50D144004D9D1A /* PromptTemplate.swift */; };
+		79079A1E2E50F452004D9D1A /* LLMMCPToolUse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -98,6 +100,8 @@
 		79079A152E4FBD95004D9D1A /* ModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManager.swift; sourceTree = "<group>"; };
 		79079A172E4FBDAA004D9D1A /* MCPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPManager.swift; sourceTree = "<group>"; };
 		79079A192E4FBDBD004D9D1A /* MCPToolManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPToolManager.swift; sourceTree = "<group>"; };
+		79079A1B2E50D144004D9D1A /* PromptTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptTemplate.swift; sourceTree = "<group>"; };
+		79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMMCPToolUse.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +151,7 @@
 				790799C32E48D911004D9D1A /* LLMResponse.swift */,
 				79079A052E4F9449004D9D1A /* LLMMCP.swift */,
 				79079A062E4F9449004D9D1A /* LLMMCPTool.swift */,
+				79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -174,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				790799AE2E472049004D9D1A /* Constraint.swift */,
+				79079A1B2E50D144004D9D1A /* PromptTemplate.swift */,
 				790799B92E489328004D9D1A /* Extensions.swift */,
 				790799EC2E4B94B4004D9D1A /* LocalStorage.swift */,
 			);
@@ -368,11 +374,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				790799EB2E4A5868004D9D1A /* AppDelegate.swift in Sources */,
+				79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */,
 				790799C42E48D914004D9D1A /* LLMResponse.swift in Sources */,
 				790799C22E48BC74004D9D1A /* LLMRequest.swift in Sources */,
 				790799A62E471FEA004D9D1A /* ChatProxy.swift in Sources */,
 				790799AC2E471FFF004D9D1A /* LLMModel.swift in Sources */,
 				79079A1A2E4FBDBE004D9D1A /* MCPToolManager.swift in Sources */,
+				79079A1E2E50F452004D9D1A /* LLMMCPToolUse.swift in Sources */,
 				790799E72E4A3ED4004D9D1A /* ChatProxySettingSectionView.swift in Sources */,
 				79079A182E4FBDAB004D9D1A /* MCPManager.swift in Sources */,
 				790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */,

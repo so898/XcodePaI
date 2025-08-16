@@ -76,8 +76,8 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
     }
     
     public func checkService(complete: @escaping (Bool, [LLMMCPTool]?) -> Void) {
-        Task {
-            guard let url = URL(string: url) else {
+        Task {[weak self] in
+            guard let `self` = self, let url = URL(string: url) else {
                 DispatchQueue.main.async {
                     complete(false, nil)
                 }
@@ -107,7 +107,7 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
                     
                     var mcpTools = [LLMMCPTool]()
                     for tool in tools {
-                        mcpTools.append(LLMMCPTool(tool: tool))
+                        mcpTools.append(LLMMCPTool(tool: tool, mcp: self.name))
                     }
                     
                     DispatchQueue.main.async {
