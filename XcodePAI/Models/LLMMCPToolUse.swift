@@ -25,7 +25,7 @@ class LLMMCPToolUse: NSObject {
         toolName = ""
         
         while processContent.count > 0 {
-            if processContent.substring(to: 6) == "<name>" {
+            if processContent.count >= 6, processContent.substring(to: 6) == "<name>" {
                 let components = processContent.replacingOccurrences(of: "<name>", with: "").components(separatedBy: "</name>")
                 if components.count == 2 {
                     toolName = String(components[0])
@@ -33,7 +33,7 @@ class LLMMCPToolUse: NSObject {
                     fatalError("MCP tool use name parser fail")
                 }
                 processContent = components[1]
-            } else if processContent.substring(to: 6) == "<arguments>" {
+            } else if processContent.count >= 11, processContent.substring(to: 11) == "<arguments>" {
                 let components = processContent.replacingOccurrences(of: "<arguments>", with: "").components(separatedBy: "</arguments>")
                 if components.count == 2 {
                     arguments = String(components[0])

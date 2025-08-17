@@ -243,7 +243,60 @@ extension ChatProxyBridge: LLMClientDelegate {
     func client(_ client: LLMClient, receivePart part: LLMAssistantMessage) {
         var response: LLMResponse?
         
+        let processContentToolUse: (String?) -> String? = { [weak self] originalContent in
+            guard let `self` = self, let originalContent = originalContent else {
+                return originalContent
+            }
+            var content = originalContent
+            switch toolRequestCheck {
+            case .none:
+                if content.contains("<") {
+                    toolRequestCheck = .mightFound
+                    let components = content.split(separator: "<", maxSplits: 1)
+                    if components.count == 2 {
+                        content = String(components[0])
+                        maybeToolCallInContent = "<" + components[1]
+                    }
+                }
+                break
+            case .mightFound: fallthrough
+            case .found:
+                maybeToolCallInContent += content
+                content = ""
+                break
+            }
+            
+            if maybeToolCallInContent.count > 0 {
+                if toolRequestCheck == .mightFound {
+                    if maybeToolCallInContent.count >= ToolUseStartMark.count {
+                        if maybeToolCallInContent.substring(to: ToolUseStartMark.count) == ToolUseStartMark {
+                            // Found tool use start mark
+                            toolRequestCheck = .found
+                        } else {
+                            // Not found start mark means not tool use action
+                            content = maybeToolCallInContent + content
+                            maybeToolCallInContent = ""
+                            toolRequestCheck = .none
+                        }
+                    }
+                } else if toolRequestCheck == .found {
+                    if maybeToolCallInContent.contains(ToolUseEndMark) {
+                        // Found tool use end mark means tool use action complete
+                        let components = maybeToolCallInContent.components(separatedBy: ToolUseEndMark)
+                        
+                        processToolUse(components[0])
+                        
+                        content = components[1]
+                        maybeToolCallInContent = ""
+                        toolRequestCheck = .none
+                    }
+                }
+            }
+            return content
+        }
+        
         if thinkParser == .inReasoningContent {
+            
             response = LLMResponse(
                 id: id,
                 model: "XcodePaI",
@@ -255,7 +308,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                         isFullMessage: false,
                         message: LLMResponseChoiceMessage(
                             role: roleReturned ? nil : "assistant",
-                            content: part.content,
+                            content: processContentToolUse(part.content),
                             reasoningContent: part.reason
                         )
                     )
@@ -314,48 +367,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                     break
                 }
             } else if var content = part.content {
-                switch toolRequestCheck {
-                case .none:
-                    if content.contains("<") {
-                        toolRequestCheck = .mightFound
-                        let components = content.split(separator: "<", maxSplits: 1)
-                        content = String(components[0])
-                        maybeToolCallInContent = "<" + components[1]
-                    }
-                    break
-                case .mightFound: fallthrough
-                case .found:
-                    maybeToolCallInContent += content
-                    content = ""
-                    break
-                }
-                
-                if maybeToolCallInContent.count > 0 {
-                    if toolRequestCheck == .mightFound {
-                        if maybeToolCallInContent.count >= ToolUseStartMark.count,
-                           maybeToolCallInContent.substring(to: ToolUseStartMark.count) == ToolUseStartMark {
-                            // Found tool use start mark
-                            toolRequestCheck = .found
-                        } else {
-                            // Not found start mark means not tool use action
-                            content = maybeToolCallInContent + content
-                            maybeToolCallInContent = ""
-                            toolRequestCheck = .none
-                        }
-                    } else if toolRequestCheck == .found {
-                        if maybeToolCallInContent.contains(ToolUseEndMark) {
-                            // Found tool use end mark means tool use action complete
-                            let components = maybeToolCallInContent.components(separatedBy: ToolUseEndMark)
-                            
-                            processToolUse(components[0])
-                            
-                            content = components[1]
-                            maybeToolCallInContent = ""
-                            toolRequestCheck = .none
-                        }
-                    }
-                }
-                
+                content = processContentToolUse(content) ?? ""
                 if thinkState == .inProgress {
                     thinkState = .completed
                     let endThinkMark: String = {
