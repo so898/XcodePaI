@@ -418,7 +418,8 @@ extension ChatProxyBridge: LLMClientDelegate {
         }
         
         if let response = response, let json = try? JSONSerialization.data(withJSONObject: response.toDictionary()), let jsonStr = String(data: json, encoding: .utf8) {
-            delegate.bridge(self, write: jsonStr + Constraint.DoubleLFString)
+            print("OUT: \(jsonStr)")
+            delegate.bridge(self, write: "data:" + jsonStr + Constraint.DoubleLFString)
             
             roleReturned = true
         }
