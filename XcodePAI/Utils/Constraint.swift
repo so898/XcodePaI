@@ -23,4 +23,10 @@ class Constraint {
     static let CRLF = Data(Constraint.CRLFString.utf8)
     static let DoubleCRLF = Data(Constraint.DoubleCRLFString.utf8)
     static let DoubleLF = Data(Constraint.DoubleLFString.utf8)
+    
+    // Storage
+    static let modelProviderStorageKey = "LLMModelProviderStorage"
+    static let modelStorageKeyPrefix = "LLMModelStorage_"
+    static let mcpStorageKey = "LLMMCPStorage"
+    static let mcpToolStorageKeyPrefix = "LLMMCPToolStorage_"
 }

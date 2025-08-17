@@ -15,7 +15,7 @@ class ModelManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init(_ provider: String) {
-        storageKey = "LLMModelStorage_" + provider
+        storageKey = Constraint.modelStorageKeyPrefix + provider
         loadInitialValue()
     }
     

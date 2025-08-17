@@ -8,7 +8,7 @@
 import Combine
 
 class ModelProviderManager: ObservableObject {
-    static let storageKey = "LLMModelProviderStorage"
+    static let storageKey = Constraint.modelProviderStorageKey
     
     @Published private(set) var providers: [LLMModelProvider] = []
     private var cancellables = Set<AnyCancellable>()

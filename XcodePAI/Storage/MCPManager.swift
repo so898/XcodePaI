@@ -8,7 +8,7 @@
 import Combine
 
 class MCPManager: ObservableObject {
-    static let storageKey = "LLMMCPStorage"
+    static let storageKey = Constraint.mcpStorageKey
     
     @Published private(set) var mcps: [LLMMCP] = []
     private var cancellables = Set<AnyCancellable>()

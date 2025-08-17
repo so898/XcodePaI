@@ -78,7 +78,7 @@ final class LLMMCPTool: Identifiable, Codable, Sendable {
         if let schema = schema {
             ret += "\n<arguments>\(schema)</arguments>"
         }
-        ret += "\n</tool>"
+        ret += "\n</tool>\n"
         
         return ret
     }

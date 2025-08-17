@@ -81,7 +81,7 @@ class ChatProxyBridge {
 
 // MARK: Request
 extension ChatProxyBridge {
-    private func processRequest(_ request: LLMRequest) -> LLMRequest{
+    private func processRequest(_ request: LLMRequest) -> LLMRequest {
         let newRequest = request
         newRequest.model = "xxx"
         
@@ -109,6 +109,8 @@ extension ChatProxyBridge {
             let content = message.content ?? ""
             
             print("SYSTEM: \n\(content)")
+            
+            print("COVT: \n\(processSystemPrompt(content))")
             
             return LLMMessage(role: "system", content: processSystemPrompt(content))
         case "assistant":
@@ -159,20 +161,16 @@ extension ChatProxyBridge {
         if let mcpTools = mcpTools, mcpTools.count > 0 {
             systemPrompt = systemPrompt.replacingOccurrences(of: "{{USE_TOOLS}}", with: PromptTemplate.systemPromptToolTemplate)
             let toolsStr: String = {
-                var ret = """
-                    \n\n# Tool Use Available Tools
-                    
-                    Above example were using notional tools that might not exist for you. You only have access to these tools:
-                    
-                    <tools>\n\n
-                    """
+                var ret = PromptTemplate.systemPromptAvailableToolTemplate
                 for mcpTool in mcpTools {
                     ret += mcpTool.toPrompt() + "\n"
                 }
-                return ret + "\n</tools>\n"
+                return ret + PromptTemplate.systemPromptAvailableToolTemplateEnd
             }()
             
             systemPrompt = systemPrompt.replacingOccurrences(of: "{{TOOLS}}", with: toolsStr)
+        } else {
+            systemPrompt = systemPrompt.replacingOccurrences(of: "{{USE_TOOLS}}", with: "")
         }
         
         return systemPrompt
@@ -213,6 +211,7 @@ extension ChatProxyBridge {
 // MARK: tool use
 extension ChatProxyBridge {
     private func processToolUse(_ content: String) {
+        print("Tool Use: \(content)")
         guard let mcpTools = mcpTools else {
             return
         }
@@ -229,6 +228,57 @@ extension ChatProxyBridge {
     private func callToolUses() {
         for toolUse in mcpToolUses {
             // Do MCP tool call
+            if let tool = toolUse.tool {
+                MCPRunner.shared.run(mcpName: tool.mcp, toolName: tool.name, arguments: toolUse.arguments) {[weak self] retContent, error in
+                    guard let `self` = self else {
+                        return
+                    }
+                    print("Tool Result: \(retContent) \(error)")
+                    self.sendCallToolResult(toolUse: toolUse, content: retContent, isError: error != nil)
+                }
+            }
+        }
+    }
+    
+    private func sendCallToolResult(toolUse: LLMMCPToolUse, content: String?, isError: Bool = false) {
+        guard let tool = toolUse.tool else {
+            return
+        }
+        let respContent = """
+                    \(ToolUseStartMark)
+                    MCP: \(tool.mcp)
+                    Tool: \(tool.name)
+                    ARGS: \(toolUse.arguments ?? "NULL")
+                    SUCCESS: \(isError ? "False" : "True")
+                    RET: \(content ?? "NULL")
+                    """
+        let response = LLMResponse(
+            id: id,
+            model: "XcodePaI",
+            object: "chat.completion.chunk",
+            choices: [
+                LLMResponseChoice(
+                    index: 0,
+                    isFullMessage: false,
+                    message: LLMResponseChoiceMessage(
+                        role: roleReturned ? nil : "assistant",
+                        content: respContent
+                    )
+                )
+            ]
+        )
+        
+        writeResponse(response)
+    }
+}
+
+// MARK: Response
+extension ChatProxyBridge {
+    private func writeResponse(_ response: LLMResponse?) {
+        if let response = response, let json = try? JSONSerialization.data(withJSONObject: response.toDictionary()), let jsonStr = String(data: json, encoding: .utf8) {
+            delegate.bridge(self, write: "data:" + jsonStr + Constraint.DoubleLFString)
+            
+            roleReturned = true
         }
     }
 }
@@ -417,11 +467,13 @@ extension ChatProxyBridge: LLMClientDelegate {
             }
         }
         
-        if let response = response, let json = try? JSONSerialization.data(withJSONObject: response.toDictionary()), let jsonStr = String(data: json, encoding: .utf8) {
-            delegate.bridge(self, write: "data:" + jsonStr + Constraint.DoubleLFString)
-            
-            roleReturned = true
+        if part.finishReason != nil, mcpToolUses.count > 0 {
+            // Wait for MCP tool call complete
+            print("Wait for MCP tool call complete")
+            return
         }
+
+        writeResponse(response)
     }
     
     func client(_ client: LLMClient, receiveMessage message: LLMAssistantMessage) {
@@ -448,6 +500,10 @@ extension ChatProxyBridge: LLMClientDelegate {
         } else if mcpToolUses.count > 0 {
             // Tool calling
             callToolUses()
+            
+            llmClient?.stop()
+            llmClient = nil
+            
             return
         }
         

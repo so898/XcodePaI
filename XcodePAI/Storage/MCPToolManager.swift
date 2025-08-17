@@ -14,7 +14,7 @@ class MCPToolManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init(_ mcp: String) {
-        storageKey = "LLMMCPToolStorage_" + mcp
+        storageKey = Constraint.mcpToolStorageKeyPrefix + mcp
         loadInitialValue()
     }
     
