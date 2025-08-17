@@ -38,6 +38,9 @@ enum ToolRequestCheckProcess {
 let ToolUseStartMark = "<tool_use>"
 let ToolUseEndMark = "</tool_use>"
 
+let ToolUseInContentStartMark = "```tool_use\n\n"
+let ToolUseInContentEndMark = "\n\n~~EOTU~~\n\n```\n\n"
+
 class ChatProxyBridge {
     
     let id: String
@@ -179,15 +182,27 @@ extension ChatProxyBridge {
         var returnContent = content
         
         // Remove think part in assistant message
-        if content.substring(to: ThinkInContentWithCodeSnippetStartMark.count) == ThinkInContentWithCodeSnippetStartMark {
-            let components = content.components(separatedBy: ThinkInContentWithCodeSnippetEndMark)
+        // Process simple because think could only be at the start of content
+        if returnContent.substring(to: ThinkInContentWithCodeSnippetStartMark.count) == ThinkInContentWithCodeSnippetStartMark {
+            let components = returnContent.components(separatedBy: ThinkInContentWithCodeSnippetEndMark)
             if components.count == 2 {
                 returnContent = components[1]
             }
-        } else if content.contains(ThinkInContentWithEOTEndMark) {
-            let components = content.components(separatedBy: ThinkInContentWithEOTEndMark)
+        } else if returnContent.contains(ThinkInContentWithEOTEndMark) {
+            let components = returnContent.components(separatedBy: ThinkInContentWithEOTEndMark)
             if components.count == 2 {
                 returnContent = components[1]
+            }
+        }
+        
+        // Remove all tool use parts in assistant message
+        while returnContent.contains(ToolUseStartMark) {
+            let firstComponents = returnContent.split(separator: ToolUseStartMark, maxSplits: 1)
+            if firstComponents.count == 2 {
+                let secondComponents = String(firstComponents[1]).split(separator: ToolUseEndMark, maxSplits: 1)
+                if secondComponents.count == 2 {
+                    returnContent = String(firstComponents[0]) + "\n\n" + String(secondComponents[1])
+                }
             }
         }
         

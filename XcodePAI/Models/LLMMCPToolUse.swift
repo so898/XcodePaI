@@ -8,12 +8,16 @@
 import Foundation
 
 class LLMMCPToolUse: NSObject {
+    let content: String
+    
     var toolName: String
     var arguments: String?
     
     var tool: LLMMCPTool?
     
     init(content: String) {
+        self.content = content
+        
         var processContent = content.replacingOccurrences(of: "\n", with: "")
         processContent = processContent.replacingOccurrences(of: ToolUseStartMark, with: "")
         processContent = processContent.replacingOccurrences(of: ToolUseEndMark, with: "")
