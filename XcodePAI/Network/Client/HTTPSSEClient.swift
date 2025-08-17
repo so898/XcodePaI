@@ -133,9 +133,6 @@ extension HTTPSSEClient: URLSessionDataDelegate {
                 // Process any remaining data
                 var buffer = self.sseDataBuffer
                 if !buffer.isEmpty {
-                    if let str = String(data: buffer, encoding: .utf8) {
-                        print("sm.pro: \(str)")
-                    }
                     while let range = buffer.range(of: Constraint.DoubleLF) {
                         let chunkData = buffer.subdata(in: 0..<range.lowerBound)
                         buffer.removeSubrange(0..<range.upperBound)
