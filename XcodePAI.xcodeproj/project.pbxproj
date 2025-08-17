@@ -52,6 +52,7 @@
 		79079A1A2E4FBDBE004D9D1A /* MCPToolManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A192E4FBDBD004D9D1A /* MCPToolManager.swift */; };
 		79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1B2E50D144004D9D1A /* PromptTemplate.swift */; };
 		79079A1E2E50F452004D9D1A /* LLMMCPToolUse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */; };
+		79079A202E51C116004D9D1A /* MCPRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1F2E51C114004D9D1A /* MCPRunner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -102,6 +103,7 @@
 		79079A192E4FBDBD004D9D1A /* MCPToolManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPToolManager.swift; sourceTree = "<group>"; };
 		79079A1B2E50D144004D9D1A /* PromptTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptTemplate.swift; sourceTree = "<group>"; };
 		79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMMCPToolUse.swift; sourceTree = "<group>"; };
+		79079A1F2E51C114004D9D1A /* MCPRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPRunner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -272,6 +274,7 @@
 		79079A042E4E1930004D9D1A /* MCP */ = {
 			isa = PBXGroup;
 			children = (
+				79079A1F2E51C114004D9D1A /* MCPRunner.swift */,
 			);
 			path = MCP;
 			sourceTree = "<group>";
@@ -401,6 +404,7 @@
 				790799A92E471FEA004D9D1A /* XcodePAIApp.swift in Sources */,
 				790799BA2E48932C004D9D1A /* Extensions.swift in Sources */,
 				79079A142E4FBD7E004D9D1A /* ModelProviderManager.swift in Sources */,
+				79079A202E51C116004D9D1A /* MCPRunner.swift in Sources */,
 				790799F22E4BB5E2004D9D1A /* ModelProviderIconListView.swift in Sources */,
 				790799BE2E48B6BD004D9D1A /* HTTPClient.swift in Sources */,
 				790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */,
