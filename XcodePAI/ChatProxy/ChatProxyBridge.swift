@@ -315,9 +315,10 @@ extension ChatProxyBridge {
                 guard let `self` = self else {
                     return
                 }
-                self.toolRequestCheck = .none
-                self.maybeToolCallInContent = ""
-                self.mcpToolUses.removeAll()
+                toolRequestCheck = .none
+                maybeToolCallInContent = ""
+                mcpToolUses.removeAll()
+                recordAssistantMessages.removeAll()
                 receiveRequest(request)
             }
         }
