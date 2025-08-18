@@ -59,12 +59,17 @@ class ChatProxyBridge {
     private var maybeToolCallInContent: String = ""
     private var mcpToolUses = [LLMMCPToolUse]()
     
+    private var currentRequest: LLMRequest?
+    private var recordAssistantMessages = [LLMMessage]()
+    
     init(id: String, delegate: ChatProxyBridgeDelegate) {
         self.id = id
         self.delegate = delegate
     }
     
     func receiveRequest(_ request: LLMRequest) {
+        currentRequest = request
+        
         let newRequest = processRequest(request)
         
         // Do LLM request to server, add MCP...
@@ -109,8 +114,8 @@ extension ChatProxyBridge {
             let content = message.content ?? ""
             
             print("SYSTEM: \n\(content)")
-            
-            print("COVT: \n\(processSystemPrompt(content))")
+//            
+//            print("COVT: \n\(processSystemPrompt(content))")
             
             return LLMMessage(role: "system", content: processSystemPrompt(content))
         case "assistant":
@@ -194,10 +199,10 @@ extension ChatProxyBridge {
         }
         
         // Remove all tool use parts in assistant message
-        while returnContent.contains(ToolUseStartMark) {
-            let firstComponents = returnContent.split(separator: ToolUseStartMark, maxSplits: 1)
+        while returnContent.contains(ToolUseInContentStartMark) {
+            let firstComponents = returnContent.split(separator: ToolUseInContentStartMark, maxSplits: 1)
             if firstComponents.count == 2 {
-                let secondComponents = String(firstComponents[1]).split(separator: ToolUseEndMark, maxSplits: 1)
+                let secondComponents = String(firstComponents[1]).split(separator: ToolUseInContentEndMark, maxSplits: 1)
                 if secondComponents.count == 2 {
                     returnContent = String(firstComponents[0]) + "\n\n" + String(secondComponents[1])
                 }
@@ -211,7 +216,7 @@ extension ChatProxyBridge {
 // MARK: tool use
 extension ChatProxyBridge {
     private func processToolUse(_ content: String) {
-        print("Tool Use: \(content)")
+//        print("Tool Use: \(content)")
         guard let mcpTools = mcpTools else {
             return
         }
@@ -226,18 +231,30 @@ extension ChatProxyBridge {
     }
     
     private func callToolUses() {
-        for toolUse in mcpToolUses {
-            // Do MCP tool call
-            if let tool = toolUse.tool {
-                MCPRunner.shared.run(mcpName: tool.mcp, toolName: tool.name, arguments: toolUse.arguments) {[weak self] retContent, error in
-                    guard let `self` = self else {
-                        return
+        Task {[weak self] in
+            guard let `self` = self else {
+                return
+            }
+            
+            for toolUse in mcpToolUses {
+                // Do MCP tool call
+                if let tool = toolUse.tool {
+                    do {
+                        let content = try await MCPRunner.shared.run(mcpName: tool.mcp, toolName: tool.name, arguments: toolUse.arguments)
+                        self.sendCallToolResult(toolUse: toolUse, content: content, isError: false)
+                        
+//                        print("Tool Result[S]: \(content)")
+                    } catch let error {
+                        self.sendCallToolResult(toolUse: toolUse, content: nil, isError: true)
+                        
+//                        print("Tool Result[E]: \(error)")
                     }
-                    print("Tool Result: \(retContent) \(error)")
-                    self.sendCallToolResult(toolUse: toolUse, content: retContent, isError: error != nil)
                 }
             }
+            
+            completeToolUseCalls()
         }
+        
     }
     
     private func sendCallToolResult(toolUse: LLMMCPToolUse, content: String?, isError: Bool = false) {
@@ -245,12 +262,13 @@ extension ChatProxyBridge {
             return
         }
         let respContent = """
-                    \(ToolUseStartMark)
+                    \(ToolUseInContentStartMark)
                     MCP: \(tool.mcp)
                     Tool: \(tool.name)
                     ARGS: \(toolUse.arguments ?? "NULL")
                     SUCCESS: \(isError ? "False" : "True")
                     RET: \(content ?? "NULL")
+                    \(ToolUseInContentEndMark)
                     """
         let response = LLMResponse(
             id: id,
@@ -269,6 +287,40 @@ extension ChatProxyBridge {
         )
         
         writeResponse(response)
+        
+        let recordMessageDescriptionTitle: String = {
+            var ret = PromptTemplate.userPromptToolUseResultDescriptionTemplate.replacingOccurrences(of: "{{TOOL_NAME}}", with: tool.toolName)
+            if let arguments = toolUse.arguments, !arguments.isEmpty {
+                ret = ret.replacingOccurrences(of: "{{ARGUMENTS}}",
+                                             with: PromptTemplate.userPromptToolUseResultDescriptionArgumentsTemplate.replacingOccurrences(of: "{{ARGS_STR}}", with: arguments))
+            } else {
+                ret = ret.replacingOccurrences(of: "{{ARGUMENTS}}", with: "")
+            }
+            return ret
+        }()
+        
+        recordAssistantMessages.append(contentsOf: [
+            LLMMessage(role: "user", contents: [
+                LLMMessageContent(text: recordMessageDescriptionTitle),
+                LLMMessageContent(text: content ?? "")
+            ])
+        ])
+        
+        currentRequest?.messages.append(contentsOf: recordAssistantMessages)
+    }
+    
+    private func completeToolUseCalls() {
+        if let request = currentRequest {
+            DispatchQueue.main.async {[weak self] in
+                guard let `self` = self else {
+                    return
+                }
+                self.toolRequestCheck = .none
+                self.maybeToolCallInContent = ""
+                self.mcpToolUses.removeAll()
+                receiveRequest(request)
+            }
+        }
     }
 }
 
@@ -346,7 +398,6 @@ extension ChatProxyBridge: LLMClientDelegate {
         }
         
         if thinkParser == .inReasoningContent {
-            
             response = LLMResponse(
                 id: id,
                 model: "XcodePaI",
@@ -417,6 +468,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                     break
                 }
             } else if var content = part.content {
+                thinkParser = .inReasoningContent // Avoid think shown in tool use messages
                 content = processContentToolUse(content) ?? ""
                 if thinkState == .inProgress {
                     thinkState = .completed
@@ -481,8 +533,15 @@ extension ChatProxyBridge: LLMClientDelegate {
             print("[R] \(reason)")
         }
         
-        if let content = message.content {
+        if var content = message.content {
             print("[C] \(content)")
+            
+            if mcpToolUses.count > 0 {
+                for toolUse in mcpToolUses {
+                    content = content.replacingOccurrences(of: toolUse.content, with: "")
+                }
+                recordAssistantMessages.append(LLMMessage(role: "assistant", content: content))
+            }
         }
     }
     
