@@ -78,7 +78,40 @@ class MCPRunner {
     }
     
     func run(mcpName: String, toolName: String, arguments: String?, complete: @escaping (String?, Error?) -> Void) {
+        do {
+            let (mcp, tool, arguments) = try processMCPToolArgument(mcpName: mcpName, toolName: toolName, arguments: arguments)
+            
+            Task {[weak self] in
+                guard let `self` = self else {
+                    return
+                }
+                do {
+                    let content = try await self.run(mcp: mcp, tool: tool, arguments: arguments)
+                    DispatchQueue.main.async {
+                        complete(content, nil)
+                    }
+                } catch let error {
+                    DispatchQueue.main.async {
+                        complete(nil, error)
+                    }
+                }
+            }
+        } catch let error {
+            DispatchQueue.main.async {
+                complete(nil, error)
+            }
+        }
+    }
+    
+    func run(mcpName: String, toolName: String, arguments: String?) async throws -> String {
+        let (mcp, tool, arguments) = try processMCPToolArgument(mcpName: mcpName, toolName: toolName, arguments: arguments)
         
+        let content = try await self.run(mcp: mcp, tool: tool, arguments: arguments)
+        
+        return content
+    }
+    
+    private func processMCPToolArgument(mcpName: String, toolName: String, arguments: String?) throws -> (LLMMCP, LLMMCPTool, [String: Value]?) {
         var useMCP: LLMMCP?
         var useTool: LLMMCPTool?
         queue.sync {[weak self] in
@@ -103,86 +136,73 @@ class MCPRunner {
         }
         
         guard let mcp = useMCP else {
-            complete(nil, NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP not found"]))
-            return
+            throw NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP not found"])
         }
         
         guard let tool = useTool else {
-            complete(nil, NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP tool not found"]))
-            return
+            throw NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP tool not found"])
         }
         
+        let arguments: [String: Value]? = {
+            guard let arguments = arguments, let data = arguments.data(using: .utf8) else {
+                return nil
+            }
+            
+            if let value = try? JSONDecoder().decode([String: Value].self, from: data) {
+                return value
+            }
+            
+            return nil
+        }()
         
-        Task {
-            let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
-            
-            let transport = HTTPClientTransport(
-                endpoint: URL(string: mcp.url)!,
-                streaming: true) { request in
-                    guard let headers = mcp.headers else {
-                        return request
-                    }
-                    var newRequest = request
-                    for key in headers.keys {
-                        if let value = headers[key] {
-                            newRequest.setValue(value, forHTTPHeaderField: key)
-                        }
-                    }
-                    return newRequest
+        return (mcp, tool, arguments)
+    }
+    
+    private func run(mcp: LLMMCP, tool: LLMMCPTool, arguments: [String: Value]?) async throws -> String {
+        let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
+        
+        let transport = HTTPClientTransport(
+            endpoint: URL(string: mcp.url)!,
+            streaming: true) { request in
+                guard let headers = mcp.headers else {
+                    return request
                 }
-            let result = try await client.connect(transport: transport)
-            
-            let arguments: [String: Value]? = {
-                guard let arguments = arguments, let data = arguments.data(using: .utf8) else {
-                    return nil
-                }
-                
-                if let value = try? JSONDecoder().decode([String: Value].self, from: data) {
-                    return value
-                }
-                
-                return nil
-            }()
-            
-            // Call a tool with arguments
-            let (content, isError) = try await client.callTool(
-                name: tool.name,
-                arguments: arguments
-            )
-            
-            if let isError, isError {
-                DispatchQueue.main.async {
-                    complete(nil, NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP tool not found"]))
-                }
-                return
-            }
-            
-            let retContent: String? = {
-                for item in content {
-                    switch item {
-                    case .text(let text):
-                        return text
-                    case .image(let data, let mimeType, let metadata):
-                        break
-                    case .audio(let data, let mimeType):
-                        break
-                    case .resource(let uri, let mimeType, let text):
-                        break
+                var newRequest = request
+                for key in headers.keys {
+                    if let value = headers[key] {
+                        newRequest.setValue(value, forHTTPHeaderField: key)
                     }
                 }
-                return nil
-            }()
-            
-            guard let retContent else {
-                DispatchQueue.main.async {
-                    complete(nil, NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP tool return no text content"]))
-                }
-                return
+                return newRequest
             }
-            
-            DispatchQueue.main.async {
-                complete(retContent, nil)
-            }
+        try await client.connect(transport: transport)
+        
+        // Call a tool with arguments
+        let (content, isError) = try await client.callTool(
+            name: tool.name,
+            arguments: arguments
+        )
+        
+        if let isError, isError {
+            throw NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP tool not found"])
         }
+        
+        let retContent: String? = {
+            for item in content {
+                switch item {
+                case .text(let text):
+                    return text
+                default:
+                    break
+                }
+            }
+            return nil
+        }()
+        
+        guard let retContent else {
+            throw NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP tool return no text content"])
+        }
+        
+        return retContent
     }
 }
