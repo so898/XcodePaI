@@ -38,7 +38,7 @@ enum ToolRequestCheckProcess {
 let ToolUseStartMark = "<tool_use>"
 let ToolUseEndMark = "</tool_use>"
 
-let ToolUseInContentStartMark = "```tool_use\n\n"
+let ToolUseInContentStartMark = "\n\n```tool_use\n\n"
 let ToolUseInContentEndMark = "\n\n~~EOTU~~\n\n```\n\n"
 
 class ChatProxyBridge {
