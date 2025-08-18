@@ -157,12 +157,12 @@ extension ChatProxyTunnel: ChatProxyBridgeDelegate {
         }
     }
     
-    func bridge(_ bridge: ChatProxyBridge, write chunk: String) {
-        connection?.writeChunk(chunk)
+    func bridge(_ bridge: ChatProxyBridge, write dict: [String : Any]) {
+        connection?.writeSSEDict(dict)
     }
     
     func bridgeWriteEndChunk(_ bridge: ChatProxyBridge) {
-        connection?.writeEndChunk()
+        connection?.writeSSEComplete()
     }
     
 }

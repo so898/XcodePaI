@@ -9,7 +9,7 @@ import Foundation
 
 protocol ChatProxyBridgeDelegate {
     func bridge(_ bridge: ChatProxyBridge, connected success: Bool)
-    func bridge(_ bridge: ChatProxyBridge, write chunk: String)
+    func bridge(_ bridge: ChatProxyBridge, write dict: [String: Any])
     func bridgeWriteEndChunk(_ bridge: ChatProxyBridge)
 }
 
@@ -275,8 +275,8 @@ extension ChatProxyBridge {
 // MARK: Response
 extension ChatProxyBridge {
     private func writeResponse(_ response: LLMResponse?) {
-        if let response = response, let json = try? JSONSerialization.data(withJSONObject: response.toDictionary()), let jsonStr = String(data: json, encoding: .utf8) {
-            delegate.bridge(self, write: "data:" + jsonStr + Constraint.DoubleLFString)
+        if let response = response {
+            delegate.bridge(self, write: response.toDictionary())
             
             roleReturned = true
         }
@@ -494,9 +494,7 @@ extension ChatProxyBridge: LLMClientDelegate {
         
         if let _ = error {
             // Error
-            if let json = try? JSONSerialization.data(withJSONObject: ["internal_error": "Server error"]), let jsonStr = String(data: json, encoding: .utf8) {
-                delegate.bridge(self, write: jsonStr + Constraint.DoubleLFString)
-            }
+            delegate.bridge(self, write: ["internal_error": "Server error"])
         } else if mcpToolUses.count > 0 {
             // Tool calling
             callToolUses()
@@ -507,7 +505,6 @@ extension ChatProxyBridge: LLMClientDelegate {
             return
         }
         
-        delegate.bridge(self, write: "[DONE]" + Constraint.DoubleLFString)
         delegate.bridgeWriteEndChunk(self)
         
         llmClient?.stop()

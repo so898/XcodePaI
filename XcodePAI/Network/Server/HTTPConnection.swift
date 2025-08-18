@@ -222,7 +222,20 @@ extension HTTPConnection {
 
 // MARK: SSE
 extension HTTPConnection {
+    func writeSSEDict(_ dict: [String: Any], tag: Int? = nil) {
+        if let json = try? JSONSerialization.data(withJSONObject: dict), let jsonStr = String(data: json, encoding: .utf8) {
+            writeSSE(jsonStr, tag: tag)
+        }
+    }
     
+    func writeSSE(_ value: String, tag: Int? = nil) {
+        writeChunk("data: " + value + Constraint.DoubleLFString, tag: tag)
+    }
+    
+    func writeSSEComplete() {
+        writeChunk("[DONE]" + Constraint.DoubleLFString)
+        writeEndChunk()
+    }
 }
 
 // MARK: HTTPConnectionDelegate
