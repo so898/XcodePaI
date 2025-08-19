@@ -156,7 +156,7 @@ class LLMClient {
         if !isReasonComplete {
             if thinkTagComplete == false {
                 if let content = processContent, content.contains("</think>") {
-                    thinkTagComplete = false
+                    thinkTagComplete = true
                     
                     let comps = content.components(separatedBy: "</think>")
                     
