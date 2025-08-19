@@ -13,6 +13,7 @@ class MenuBarManager: NSObject, ObservableObject {
     static let shared = MenuBarManager()
     
     private var menuItem: NSStatusItem?
+    private var settingsWindowController: NSWindowController?
     
     // Menubar icon setup
     func setup() {
@@ -56,8 +57,12 @@ extension MenuBarManager: NSMenuDelegate {
         menu.addItem(NSMenuItem.separator())
         
         item = NSMenuItem(title: "Config...", action: #selector(openSettingsView), keyEquivalent: ",")
-        item.isEnabled = false
+        item.target = self
         menu.addItem(item)
+        
+        menu.addItem(NSMenuItem.separator())
+                
+        menu.addItem(NSMenuItem(title: "Exit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
     }
 }
 
@@ -65,9 +70,44 @@ extension MenuBarManager: NSMenuDelegate {
 extension MenuBarManager {
     
     @objc private func openSettingsView() {
+        if let windowController = settingsWindowController, windowController.window?.isVisible == true {
+            windowController.window?.close()
+            return
+        }
         
+        if settingsWindowController == nil {
+            let settingsView = SettingsView().globalLoading()
+            let hostingController = NSHostingController(rootView: settingsView)
+            
+            let window = SettingsWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+                styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+                backing: .buffered,
+                defer: false)
+            
+            window.minSize = NSSize(width: 800, height: 600)
+            window.toolbarStyle = .unified
+            window.isReleasedWhenClosed = false
+            window.contentViewController = hostingController
+            window.delegate = self
+            
+            let wc = NSWindowController(window: window)
+            self.settingsWindowController = wc
+        }
+        
+        NSApp.setActivationPolicy(.regular)
+
+        settingsWindowController?.showWindow(nil)
+        settingsWindowController?.window?.center()
+        settingsWindowController?.window?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
-    
+}
+
+extension MenuBarManager: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        NSApp.setActivationPolicy(.accessory)
+    }
 }
 
 // icon
