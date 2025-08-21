@@ -355,8 +355,8 @@ class LLMMessageToolCall {
             fatalError("LLM message tool call type could not be properly parsered.")
         }
         
-        if let function = dict["function"] as? [String: Any], let functionName = function["name"] as? String {
-            self.function = LLMFunction(name: functionName, description: function["description"] as? String, parameters: function["parameters"] as? String)
+        if let function = dict["function"] as? [String: Any] {
+            self.function = LLMFunction(name: function["name"] as? String, description: function["description"] as? String, parameters: function["parameters"] as? String, arguments: function["arguments"] as? String)
         } else {
             fatalError("LLM message tool call function could not be properly parsered.")
         }
@@ -368,23 +368,31 @@ class LLMMessageToolCall {
 }
 
 class LLMFunction {
-    let name: String
+    let name: String?
     let description: String?
     let parameters: String?
+    let arguments: String?
     
-    init(name: String, description: String? = nil, parameters: String? = nil) {
+    init(name: String? = nil, description: String? = nil, parameters: String? = nil, arguments: String? = nil) {
         self.name = name
         self.description = description
         self.parameters = parameters
+        self.arguments = arguments
     }
     
     func toDictionary() -> [String: Any] {
-        var dict = ["name": name]
+        var dict = [String: Any]()
+        if let name = name {
+            dict["name"] = name
+        }
         if let description = description {
             dict["description"] = description
         }
         if let parameters = parameters {
             dict["parameters"] = parameters
+        }
+        if let arguments = arguments {
+            dict["arguments"] = arguments
         }
         return dict
     }

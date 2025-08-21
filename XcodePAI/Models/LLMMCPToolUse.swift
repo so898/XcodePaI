@@ -8,7 +8,7 @@
 import Foundation
 
 class LLMMCPToolUse: NSObject {
-    let content: String
+    let content: String?
     
     var toolName: String
     var arguments: String?
@@ -33,6 +33,14 @@ class LLMMCPToolUse: NSObject {
                     fatalError("MCP tool use name parser fail")
                 }
                 processContent = components[1]
+            } else if processContent.count >= 10, processContent.substring(to: 11) == "<argument>" {
+                let components = processContent.replacingOccurrences(of: "<argument>", with: "").components(separatedBy: "</argument>")
+                if components.count == 2 {
+                    arguments = String(components[0])
+                } else {
+                    fatalError("MCP tool use name parser fail")
+                }
+                processContent = components[1]
             } else if processContent.count >= 11, processContent.substring(to: 11) == "<arguments>" {
                 let components = processContent.replacingOccurrences(of: "<arguments>", with: "").components(separatedBy: "</arguments>")
                 if components.count == 2 {
@@ -46,6 +54,12 @@ class LLMMCPToolUse: NSObject {
             }
         }
         
+    }
+
+    init(toolName: String, arguments: String?) {
+        self.content = nil
+        self.toolName = toolName
+        self.arguments = arguments
     }
     
 }

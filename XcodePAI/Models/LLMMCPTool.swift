@@ -82,4 +82,8 @@ final class LLMMCPTool: Identifiable, Codable, Sendable {
         
         return ret
     }
+
+    func toReqeustTool() -> LLMTool {
+        return LLMTool(type: "function", function: LLMFunction(name: toolName, description: description, parameters: schema))
+    }
 }
