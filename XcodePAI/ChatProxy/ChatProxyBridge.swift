@@ -38,6 +38,9 @@ enum ToolRequestCheckProcess {
 let ToolUseStartMark = "<tool_use>"
 let ToolUseEndMark = "</tool_use>"
 
+let ToolUseR1StarkMark = "<｜tool▁calls▁begin｜>"
+let ToolUseR1EndMark = "<｜tool▁calls▁end｜>"
+
 let ToolUseInContentStartMark = "\n\n```tool_use\n\n"
 let ToolUseInContentEndMark = "\n\n~~EOTU~~\n\n```\n\n"
 
@@ -55,8 +58,8 @@ class ChatProxyBridge {
     private var thinkState: ThinkState = .notStarted
     
     private var mcpTools: [LLMMCPTool]?
-    private var toolRequestCheck: ToolRequestCheckProcess = .none
-    private var maybeToolCallInContent: String = ""
+    private var useToolInRequest = false
+    private var toolProcesser = ResponseToolProcesser()
     private var mcpToolUses = [LLMMCPToolUse]()
     
     private var currentRequest: LLMRequest?
@@ -65,6 +68,11 @@ class ChatProxyBridge {
     init(id: String, delegate: ChatProxyBridgeDelegate) {
         self.id = id
         self.delegate = delegate
+
+        toolProcesser.getMCPToolUseCall = {[weak self] toolUse in
+            guard let `self` = self else { return }
+            self.processToolUse(toolUse)
+        }
     }
     
     func receiveRequest(_ request: LLMRequest) {
@@ -73,6 +81,9 @@ class ChatProxyBridge {
         let newRequest = processRequest(request)
         
         // Do LLM request to server, add MCP...
+        if !roleReturned {
+            thinkParser = .inContentWithCodeSnippet
+        }
         thinkState = .notStarted
         
         if let llmClient = llmClient {
@@ -99,6 +110,14 @@ extension ChatProxyBridge {
             }
         }
         newRequest.messages = newMessages
+
+        if useToolInRequest, let mcpTools = mcpTools {
+            var tools = newRequest.tools ?? [LLMTool]()
+            for mcpTool in mcpTools {
+                tools.append(mcpTool.toReqeustTool())
+            }
+            newRequest.tools = tools
+        }
         
         return newRequest
     }
@@ -163,7 +182,7 @@ extension ChatProxyBridge {
             systemPrompt = systemPrompt.replacingOccurrences(of: "{{XCODE_SEARCH_TOOL}}", with: "")
         }
         
-        if let mcpTools = mcpTools, mcpTools.count > 0 {
+        if !useToolInRequest, let mcpTools = mcpTools, mcpTools.count > 0 {
             systemPrompt = systemPrompt.replacingOccurrences(of: "{{USE_TOOLS}}", with: PromptTemplate.systemPromptToolTemplate)
             let toolsStr: String = {
                 var ret = PromptTemplate.systemPromptAvailableToolTemplate
@@ -187,14 +206,25 @@ extension ChatProxyBridge {
         // Remove think part in assistant message
         // Process simple because think could only be at the start of content
         if returnContent.substring(to: ThinkInContentWithCodeSnippetStartMark.count) == ThinkInContentWithCodeSnippetStartMark {
-            let components = returnContent.components(separatedBy: ThinkInContentWithCodeSnippetEndMark)
+            let components = returnContent.split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
             if components.count == 2 {
-                returnContent = components[1]
+                returnContent = String(components[1])
             }
         } else if returnContent.contains(ThinkInContentWithEOTEndMark) {
             let components = returnContent.components(separatedBy: ThinkInContentWithEOTEndMark)
             if components.count == 2 {
                 returnContent = components[1]
+            }
+        }
+
+        // Remove all think parts using code snippet in assistant message
+        while returnContent.contains(ThinkInContentWithCodeSnippetStartMark) {
+            let firstComponents = returnContent.split(separator: ThinkInContentWithCodeSnippetStartMark, maxSplits: 1)
+            if firstComponents.count == 2 {
+                let secondComponents = String(firstComponents[1]).split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
+                if secondComponents.count == 2 {
+                    returnContent = String(firstComponents[0]) + "\n" + String(secondComponents[1])
+                }
             }
         }
         
@@ -215,12 +245,11 @@ extension ChatProxyBridge {
 
 // MARK: tool use
 extension ChatProxyBridge {
-    private func processToolUse(_ content: String) {
+    private func processToolUse(_ toolUse: LLMMCPToolUse) {
 //        print("Tool Use: \(content)")
         guard let mcpTools = mcpTools else {
             return
         }
-        let toolUse = LLMMCPToolUse(content: content)
         
         for mcpTool in mcpTools {
             if toolUse.toolName == mcpTool.toolName {
@@ -244,7 +273,7 @@ extension ChatProxyBridge {
                         self.sendCallToolResult(toolUse: toolUse, content: content, isError: false)
                         
 //                        print("Tool Result[S]: \(content)")
-                    } catch let error {
+                    } catch _ {
                         self.sendCallToolResult(toolUse: toolUse, content: nil, isError: true)
                         
 //                        print("Tool Result[E]: \(error)")
@@ -315,8 +344,7 @@ extension ChatProxyBridge {
                 guard let `self` = self else {
                     return
                 }
-                toolRequestCheck = .none
-                maybeToolCallInContent = ""
+                toolProcesser.reset()
                 mcpToolUses.removeAll()
                 recordAssistantMessages.removeAll()
                 receiveRequest(request)
@@ -344,59 +372,11 @@ extension ChatProxyBridge: LLMClientDelegate {
     }
     
     func client(_ client: LLMClient, receivePart part: LLMAssistantMessage) {
-        var response: LLMResponse?
-        
-        let processContentToolUse: (String?) -> String? = { [weak self] originalContent in
-            guard let `self` = self, let originalContent = originalContent else {
-                return originalContent
-            }
-            var content = originalContent
-            switch toolRequestCheck {
-            case .none:
-                if content.contains("<") {
-                    toolRequestCheck = .mightFound
-                    let components = content.split(separator: "<", maxSplits: 1)
-                    if components.count == 2 {
-                        content = String(components[0])
-                        maybeToolCallInContent = "<" + components[1]
-                    }
-                }
-                break
-            case .mightFound: fallthrough
-            case .found:
-                maybeToolCallInContent += content
-                content = ""
-                break
-            }
-            
-            if maybeToolCallInContent.count > 0 {
-                if toolRequestCheck == .mightFound {
-                    if maybeToolCallInContent.count >= ToolUseStartMark.count {
-                        if maybeToolCallInContent.substring(to: ToolUseStartMark.count) == ToolUseStartMark {
-                            // Found tool use start mark
-                            toolRequestCheck = .found
-                        } else {
-                            // Not found start mark means not tool use action
-                            content = maybeToolCallInContent + content
-                            maybeToolCallInContent = ""
-                            toolRequestCheck = .none
-                        }
-                    }
-                } else if toolRequestCheck == .found {
-                    if maybeToolCallInContent.contains(ToolUseEndMark) {
-                        // Found tool use end mark means tool use action complete
-                        let components = maybeToolCallInContent.components(separatedBy: ToolUseEndMark)
-                        
-                        processToolUse(components[0])
-                        
-                        content = components[1]
-                        maybeToolCallInContent = ""
-                        toolRequestCheck = .none
-                    }
-                }
-            }
-            return content
+        if toolProcesser.processMessage(part) {
+            return
         }
+
+        var response: LLMResponse?
         
         if thinkParser == .inReasoningContent {
             response = LLMResponse(
@@ -410,7 +390,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                         isFullMessage: false,
                         message: LLMResponseChoiceMessage(
                             role: roleReturned ? nil : "assistant",
-                            content: processContentToolUse(part.content),
+                            content: toolProcesser.processContent(part.content ?? ""),
                             reasoningContent: part.reason
                         )
                     )
@@ -469,8 +449,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                     break
                 }
             } else if var content = part.content {
-                thinkParser = .inReasoningContent // Avoid think shown in tool use messages
-                content = processContentToolUse(content) ?? ""
+                content = toolProcesser.processContent(content)
                 if thinkState == .inProgress {
                     thinkState = .completed
                     let endThinkMark: String = {
@@ -539,7 +518,9 @@ extension ChatProxyBridge: LLMClientDelegate {
             
             if mcpToolUses.count > 0 {
                 for toolUse in mcpToolUses {
-                    content = content.replacingOccurrences(of: toolUse.content, with: "")
+                    if let toolUseContent = toolUse.content {
+                        content = content.replacingOccurrences(of: toolUseContent, with: "")
+                    }
                 }
                 recordAssistantMessages.append(LLMMessage(role: "assistant", content: content))
             }
@@ -571,4 +552,176 @@ extension ChatProxyBridge: LLMClientDelegate {
         llmClient = nil
     }
     
+}
+
+class ResponseToolProcesser {
+    
+    private var toolRequestCheck: ToolRequestCheckProcess = .none
+    private var maybeToolCallInContent: String = ""
+    
+    enum StartMarkType {
+        case custom
+        case r1
+    }
+    private var startMarkType: StartMarkType = .custom
+    
+    private var messageToolCalls = [LLMMessageToolCall]()
+    
+    var getMCPToolUseCall: ((LLMMCPToolUse) -> Void)?
+    
+    func processMessage(_ message: LLMAssistantMessage) -> Bool {
+        if let finishReason = message.finishReason, finishReason == "tool_calls" {
+            processToolCalls()
+            return true
+        }
+        if let tools = message.tools, tools.count > 0 {
+            messageToolCalls.append(contentsOf: tools)
+            return true
+        }
+        
+        return false
+    }
+    
+    private func processToolCalls() {
+        var functionName: String?
+        var arguments: String?
+        for toolUse in messageToolCalls {
+            if let name = toolUse.function.name {
+                if let functionName = functionName {
+                    getMCPToolUseCall?(LLMMCPToolUse(toolName: functionName, arguments: arguments))
+                }
+                functionName = name
+                arguments = nil
+            }
+            if let args = toolUse.function.arguments {
+                if arguments == nil {
+                    arguments = args
+                } else {
+                    arguments?.append(args)
+                }
+            }
+        }
+        
+        if let functionName = functionName {
+            getMCPToolUseCall?(LLMMCPToolUse(toolName: functionName, arguments: arguments))
+        }
+    }
+        
+        
+    func processContent(_ originalContent: String) -> String {
+        var content = originalContent
+
+        switch toolRequestCheck {
+        case .none:
+            if content.contains("<") {
+                toolRequestCheck = .mightFound
+                if content.count > 1 {
+                    let components = content.split(separator: "<", maxSplits: 1)
+                    if components.count == 2 {
+                        content = String(components[0])
+                        maybeToolCallInContent = "<" + components[1]
+                    }
+                } else {
+                    content = ""
+                    maybeToolCallInContent = "<"
+                }
+            }
+            break
+        case .mightFound: fallthrough
+        case .found:
+            maybeToolCallInContent += content
+            content = ""
+            break
+        }
+        
+        if maybeToolCallInContent.count > 0 {
+            if toolRequestCheck == .mightFound {
+                if maybeToolCallInContent.contains(">") {
+                    var mark = ""
+                    let components = maybeToolCallInContent.split(separator: ">", maxSplits: 1)
+                    if components.count == 1 {
+                        mark = String(components[0]) + ">"
+                        maybeToolCallInContent = ""
+                    } else if components.count == 2 {
+                        mark = String(components[0]) + ">"
+                        maybeToolCallInContent = String(components[1])
+                    }
+                    
+                    if !mark.isEmpty {
+                        // Found tool use start mark
+                        if mark == ToolUseStartMark{
+                            startMarkType = .custom
+                            toolRequestCheck = .found
+                        } else if mark == ToolUseR1StarkMark {
+                            startMarkType = .r1
+                            toolRequestCheck = .found
+                        }
+                    }
+                    
+                    if toolRequestCheck != .found {
+                        // Not found start mark means not tool use action
+                        content = maybeToolCallInContent + content
+                        maybeToolCallInContent = ""
+                        toolRequestCheck = .none
+                    }
+                }
+            }
+            if toolRequestCheck == .found {
+                if startMarkType == .custom, maybeToolCallInContent.contains(ToolUseEndMark) {
+                    // Found tool use end mark means tool use action complete
+                    let components = maybeToolCallInContent.components(separatedBy: ToolUseEndMark)
+                    
+                    let toolUse = LLMMCPToolUse(content: components[0])
+                    getMCPToolUseCall?(toolUse)
+                    
+                    content = components[1]
+                    maybeToolCallInContent = ""
+                    toolRequestCheck = .none
+                } else if startMarkType == .r1, maybeToolCallInContent.contains(ToolUseR1EndMark) {
+                    let components = maybeToolCallInContent.components(separatedBy: ToolUseR1EndMark)
+                    let calls = components[0].components(separatedBy: "<｜tool▁call▁begin｜>")
+                    for var callContent in calls {
+                        guard !callContent.isEmpty, callContent.contains("<｜tool▁call▁end｜>") else { continue }
+                        
+                        callContent = callContent.replacingOccurrences(of: "<｜tool▁call▁end｜>", with: "")
+                        let lines = callContent.components(separatedBy: "\n")
+                        var functionName: String?
+                        var arguments: String?
+                        for idx in 0..<lines.count {
+                            let line = lines[idx]
+                            if line.contains("function<｜tool▁sep｜>") {
+                                functionName = line.replacingOccurrences(of: "function<｜tool▁sep｜>", with: "")
+                            }
+                            if line.substring(to: 3) == "```" {
+                                continue
+                            }
+                            if arguments != nil {
+                                arguments?.append("\n" + line)
+                            } else {
+                                var lineContent = line
+                                if lineContent.contains("<|") {
+                                    let components = lineContent.components(separatedBy: "<|")
+                                    lineContent = components[0]
+                                }
+                                arguments = lineContent
+                            }
+                        }
+                        
+                        if let functionName = functionName {
+                            getMCPToolUseCall?(LLMMCPToolUse(toolName: functionName, arguments: arguments))
+                        }
+                    }
+                    content = components[1]
+                    maybeToolCallInContent = ""
+                    toolRequestCheck = .none
+                }
+            }
+        }
+        return content
+    }
+    
+    func reset() {
+        toolRequestCheck = .none
+        maybeToolCallInContent = ""
+    }
 }
