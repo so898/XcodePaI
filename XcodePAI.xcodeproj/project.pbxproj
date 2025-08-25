@@ -54,6 +54,7 @@
 		79079A202E51C116004D9D1A /* MCPRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1F2E51C114004D9D1A /* MCPRunner.swift */; };
 		79079A252E54B275004D9D1A /* SettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A242E54B275004D9D1A /* SettingsWindow.swift */; };
 		79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A262E54BFBA004D9D1A /* StorageManager.swift */; };
+		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -106,6 +107,7 @@
 		79079A1F2E51C114004D9D1A /* MCPRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPRunner.swift; sourceTree = "<group>"; };
 		79079A242E54B275004D9D1A /* SettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindow.swift; sourceTree = "<group>"; };
 		79079A262E54BFBA004D9D1A /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
+		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +158,7 @@
 				79079A052E4F9449004D9D1A /* LLMMCP.swift */,
 				79079A062E4F9449004D9D1A /* LLMMCPTool.swift */,
 				79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */,
+				79F28F312E5CD61C00F71A28 /* LLMConfig.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 				79079A112E4FB78C004D9D1A /* MCPDetailView.swift in Sources */,
 				790799F42E4CD21D004D9D1A /* ModelProviderSettingView.swift in Sources */,
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
+				79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */,
 				79079A002E4CFE36004D9D1A /* ChatProxyBridge.swift in Sources */,
 				790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */,
 				790799F92E4CE307004D9D1A /* LLMModelClient.swift in Sources */,

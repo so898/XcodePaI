@@ -50,9 +50,65 @@ extension MenuBarManager: NSMenuDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
-        item = NSMenuItem(title: "XcodePaI model", action: nil, keyEquivalent: "")
-        item.isEnabled = false
-        menu.addItem(item)
+        if let defaultConfig = StorageManager.shared.defaultConfig() {
+            item = NSMenuItem(title: "XcodePaI Config", action: nil, keyEquivalent: "")
+            item.isEnabled = false
+            menu.addItem(item)
+            
+            item = NSMenuItem(title: "Model", action: nil, keyEquivalent: "")
+            item.isEnabled = true
+            menu.addItem(item)
+            
+            var subMenu = NSMenu()
+            var lastProviderName: String?
+            var idx = 0
+            for model in StorageManager.shared.models {
+                if lastProviderName != model.provider {
+                    if lastProviderName != nil {
+                        subMenu.addItem(NSMenuItem.separator())
+                    }
+                    let item = NSMenuItem(title: model.provider, action: nil, keyEquivalent: "")
+                    item.isEnabled = false
+                    subMenu.addItem(item)
+                    lastProviderName = model.provider
+                }
+                
+                let item = NSMenuItem(title: model.id, action: #selector(updateDefaultWith(modelItem:)), keyEquivalent: "")
+                item.isEnabled = true
+                item.target = self
+                item.tag = idx
+                if model.id == defaultConfig.modelName {
+                    item.state = .on
+                } else {
+                    item.state = .off
+                }
+                subMenu.addItem(item)
+                idx += 1
+            }
+            item.submenu = subMenu
+            
+            item = NSMenuItem(title: "MCP", action: nil, keyEquivalent: "")
+            item.isEnabled = true
+            menu.addItem(item)
+            
+            subMenu = NSMenu()
+            idx = 0
+            for mcp in StorageManager.shared.mcps {
+                let item = NSMenuItem(title: mcp.name, action: #selector(updateDefaultWith(mcpItem:)), keyEquivalent: "")
+                item.isEnabled = true
+                item.target = self
+                item.tag = idx
+                if defaultConfig.mcps.contains(mcp.name) {
+                    item.state = .on
+                } else {
+                    item.state = .off
+                }
+                subMenu.addItem(item)
+                idx += 1
+            }
+            item.submenu = subMenu
+        }
+        
         
         menu.addItem(NSMenuItem.separator())
         
@@ -68,6 +124,28 @@ extension MenuBarManager: NSMenuDelegate {
 
 // MARK: Actions
 extension MenuBarManager {
+    
+    @objc private func updateDefaultWith(modelItem: NSMenuItem) {
+        if let config = StorageManager.shared.defaultConfig() {
+            let model = StorageManager.shared.models[modelItem.tag]
+            config.modelName = model.id
+            StorageManager.shared.updateDefaultConfig(config)
+        }
+    }
+    
+    @objc private func updateDefaultWith(mcpItem: NSMenuItem) {
+        if let config = StorageManager.shared.defaultConfig() {
+            let mcp = StorageManager.shared.mcps[mcpItem.tag]
+            if config.mcps.contains(mcp.name) {
+                config.mcps.removeAll { name in
+                    name == mcp.name
+                }
+            } else {
+                config.mcps.append(mcp.name)
+            }
+            StorageManager.shared.updateDefaultConfig(config)
+        }
+    }
     
     @objc private func openSettingsView() {
         if let windowController = settingsWindowController, windowController.window?.isVisible == true {

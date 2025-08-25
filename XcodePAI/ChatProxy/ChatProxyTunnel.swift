@@ -37,7 +37,7 @@ class ChatProxyTunnel {
         if let modelListString = _modelListString {
             return modelListString
         }
-        let models = [ChatProxyLLMModel(id: "XcodePaI", created: Date.currentTimeStamp())]
+        let models = StorageManager.shared.getChatProxyModels()
         
         var modelsList = [Any]()
         for model in models {

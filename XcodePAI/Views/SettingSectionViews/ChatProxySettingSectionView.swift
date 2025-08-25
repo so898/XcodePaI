@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ChatProxySettingSectionView: View {
     @State private var portNumber = "50222"
+    @State private var thinkStyle = 0
+    @State private var toolUseType = 0
     
     var body: some View {
         ScrollView {
@@ -16,7 +18,7 @@ struct ChatProxySettingSectionView: View {
                 
                 // --- Chat Proxy Port ---
                 GridRow(alignment: .center) {
-                    Text("Local LLM Server Port:")
+                    Text("Local Server Port:")
                     TextField("", text: $portNumber)
                         .textFieldStyle(.plain)
                         .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
@@ -27,7 +29,33 @@ struct ChatProxySettingSectionView: View {
                 }
                 
                 GridRow {
-                    Divider().gridCellColumns(2).padding(.vertical, 10)
+                    Divider().gridCellColumns(2)
+                }
+                
+                GridRow(alignment: .center) {
+                    Text("Show Think In:")
+                    Picker("", selection: $thinkStyle) {
+                        Text("Code Snippet (Default)").tag(0)
+                        Text("Text with EOT Mark").tag(1)
+                        Text("In Reasoning (Not Display)").tag(2)
+                    }
+                    .frame(maxWidth: 250, alignment: .leading)
+                }
+                
+                GridRow(alignment: .top) {
+                    Text("Tool Use:")
+                    VStack(alignment: .leading, spacing: 8) {
+                        Picker("", selection: $toolUseType) {
+                            Text("In Reqeust").tag(0)
+                            Text("In System Prompt").tag(1)
+                        }
+                        .pickerStyle(.radioGroup)
+                        .labelsHidden()
+                        
+                        Text("Some provider support use tool with request parameters.")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
             }

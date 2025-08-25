@@ -49,6 +49,8 @@ class ChatProxyBridge {
     let id: String
     let delegate: ChatProxyBridgeDelegate
     
+    var config: LLMConfig?
+    
     private var llmClient: LLMClient?
     private var isConnected = false
     
@@ -76,6 +78,12 @@ class ChatProxyBridge {
     }
     
     func receiveRequest(_ request: LLMRequest) {
+        guard let config = StorageManager.shared.getConfig(request.model), let modelProvider = config.getModelProvider() else {
+            delegate.bridge(self, connected: false)
+            return
+        }
+        self.config = config
+        
         currentRequest = request
         
         let newRequest = processRequest(request)
@@ -90,7 +98,7 @@ class ChatProxyBridge {
             llmClient.stop()
         }
         
-        llmClient = LLMClient(LLMModelProvider(name: "test", url: "xxx", privateKey: "sk-xxx"), delegate: self)
+        llmClient = LLMClient(modelProvider, delegate: self)
         llmClient?.request(newRequest)
     }
 }
@@ -98,8 +106,14 @@ class ChatProxyBridge {
 // MARK: Request
 extension ChatProxyBridge {
     private func processRequest(_ request: LLMRequest) -> LLMRequest {
+        guard let config = config else {
+            return request
+        }
+        
+        mcpTools = config.getTools()
+        
         let newRequest = request
-        newRequest.model = "xxx"
+        newRequest.model = config.modelName
         
         let messages = request.messages
         

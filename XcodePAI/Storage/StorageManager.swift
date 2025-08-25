@@ -16,6 +16,8 @@ class StorageManager {
     public var mcps = [LLMMCP]()
     public var mcpTools = [LLMMCPTool]()
     
+    public var llmConfigs = [LLMConfig]()
+    
     private var cancellables = Set<AnyCancellable>()
     
     func load() {
@@ -37,6 +39,8 @@ class StorageManager {
                     mcpTools.append(contentsOf: thisTools)
                 }
             }
+            
+            llmConfigs = await LocalStorage.shared.getValue(forKey: Constraint.llmConfigStorageKey) ?? [LLMConfig]()
         }
     }
 }
@@ -44,6 +48,7 @@ class StorageManager {
 // MARK: ModelProvider
 extension StorageManager {
     func updateModelProviders(_ providers: [LLMModelProvider]) {
+        modelProviders = providers
         LocalStorage.shared.save(providers, forKey: Constraint.modelProviderStorageKey)
             .sink { _ in }
             .store(in: &cancellables)
@@ -85,6 +90,7 @@ extension StorageManager {
 // MARK: MCP
 extension StorageManager {
     func updateMCPs(_ mcps: [LLMMCP]) {
+        self.mcps = mcps
         LocalStorage.shared.save(mcps, forKey: Constraint.mcpStorageKey)
             .sink { _ in }
             .store(in: &cancellables)
@@ -120,5 +126,58 @@ extension StorageManager {
             }
         }
         LocalStorage.shared.renameStorage(oldKey: Constraint.mcpToolStorageKeyPrefix + from, newKey: Constraint.mcpToolStorageKeyPrefix + to)
+    }
+}
+
+// MARK: LLM Config
+extension StorageManager {
+    func updateLLMConfigs(_ configs: [LLMConfig]) {
+        llmConfigs = configs
+        LocalStorage.shared.save(configs, forKey: Constraint.llmConfigStorageKey)
+            .sink { _ in }
+            .store(in: &cancellables)
+    }
+    
+    func defaultConfig() -> LLMConfig? {
+        for config in llmConfigs {
+            if config.name == Constraint.AppName {
+                return config
+            }
+        }
+        
+        if let model = models.first {
+            let config = LLMConfig(name: Constraint.AppName, modelProvider: model.provider, modelName: model.id)
+            updateDefaultConfig(config)
+            return config
+        }
+        
+        return nil
+    }
+    
+    func updateDefaultConfig(_ config: LLMConfig) {
+        llmConfigs.removeAll { config in
+            config.name == Constraint.AppName
+        }
+        llmConfigs.append(config)
+        updateLLMConfigs(llmConfigs)
+    }
+    
+    func getChatProxyModels() -> [ChatProxyLLMModel] {
+        var ret = [ChatProxyLLMModel]()
+        
+        if let defaultConfig = defaultConfig() {
+            ret.append(defaultConfig.toChatProxyModel())
+        }
+        
+        return ret
+    }
+    
+    func getConfig(_ name: String) -> LLMConfig? {
+        for llmConfig in llmConfigs {
+            if llmConfig.name == name {
+                return llmConfig
+            }
+        }
+        return nil
     }
 }

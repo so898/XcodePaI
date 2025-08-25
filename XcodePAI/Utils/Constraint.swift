@@ -29,4 +29,5 @@ class Constraint {
     static let modelStorageKeyPrefix = "LLMModelStorage_"
     static let mcpStorageKey = "LLMMCPStorage"
     static let mcpToolStorageKeyPrefix = "LLMMCPToolStorage_"
+    static let llmConfigStorageKey = "LLMConfigStorage"
 }
