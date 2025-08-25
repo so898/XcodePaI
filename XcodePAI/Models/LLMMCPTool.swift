@@ -8,7 +8,7 @@
 import Foundation
 import MCP
 
-final class LLMMCPTool: Identifiable, Codable, Sendable {
+class LLMMCPTool: Identifiable, Codable, @unchecked Sendable {
     let id: UUID
     
     var toolName: String {
@@ -17,7 +17,7 @@ final class LLMMCPTool: Identifiable, Codable, Sendable {
         }
     }
     
-    let mcp: String
+    var mcp: String
     let name: String
     let description: String
     let schema: String?

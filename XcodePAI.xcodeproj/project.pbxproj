@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3385C1FC2E4C79A3005C4210 /* ModelProviderEditView.swift */; };
 		790799A62E471FEA004D9D1A /* ChatProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7907999D2E471FEA004D9D1A /* ChatProxy.swift */; };
-		790799A82E471FEA004D9D1A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799A22E471FEA004D9D1A /* ContentView.swift */; };
 		790799A92E471FEA004D9D1A /* XcodePAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799A42E471FEA004D9D1A /* XcodePAIApp.swift */; };
 		790799AA2E471FEA004D9D1A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 790799A12E471FEA004D9D1A /* Assets.xcassets */; };
 		790799AC2E471FFF004D9D1A /* LLMModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790799AB2E471FF8004D9D1A /* LLMModel.swift */; };
@@ -53,6 +52,8 @@
 		79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1B2E50D144004D9D1A /* PromptTemplate.swift */; };
 		79079A1E2E50F452004D9D1A /* LLMMCPToolUse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */; };
 		79079A202E51C116004D9D1A /* MCPRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1F2E51C114004D9D1A /* MCPRunner.swift */; };
+		79079A252E54B275004D9D1A /* SettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A242E54B275004D9D1A /* SettingsWindow.swift */; };
+		79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A262E54BFBA004D9D1A /* StorageManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,7 +61,6 @@
 		790799862E4507BA004D9D1A /* XcodePAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XcodePAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7907999D2E471FEA004D9D1A /* ChatProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxy.swift; sourceTree = "<group>"; };
 		790799A12E471FEA004D9D1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		790799A22E471FEA004D9D1A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		790799A32E471FEA004D9D1A /* XcodePAI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = XcodePAI.entitlements; sourceTree = "<group>"; };
 		790799A42E471FEA004D9D1A /* XcodePAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcodePAIApp.swift; sourceTree = "<group>"; };
 		790799AB2E471FF8004D9D1A /* LLMModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMModel.swift; sourceTree = "<group>"; };
@@ -104,6 +104,8 @@
 		79079A1B2E50D144004D9D1A /* PromptTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptTemplate.swift; sourceTree = "<group>"; };
 		79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMMCPToolUse.swift; sourceTree = "<group>"; };
 		79079A1F2E51C114004D9D1A /* MCPRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPRunner.swift; sourceTree = "<group>"; };
+		79079A242E54B275004D9D1A /* SettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindow.swift; sourceTree = "<group>"; };
+		79079A262E54BFBA004D9D1A /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -233,7 +235,7 @@
 				790799E82E4A565E004D9D1A /* MenuBarView.swift */,
 				790799E12E4A36AC004D9D1A /* SettingSectionViews */,
 				790799DF2E4A342E004D9D1A /* SettingsView.swift */,
-				790799A22E471FEA004D9D1A /* ContentView.swift */,
+				79079A242E54B275004D9D1A /* SettingsWindow.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -292,6 +294,7 @@
 		79079A122E4FBD67004D9D1A /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				79079A262E54BFBA004D9D1A /* StorageManager.swift */,
 				79079A132E4FBD7D004D9D1A /* ModelProviderManager.swift */,
 				79079A152E4FBD95004D9D1A /* ModelManager.swift */,
 				79079A172E4FBDAA004D9D1A /* MCPManager.swift */,
@@ -377,6 +380,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				790799EB2E4A5868004D9D1A /* AppDelegate.swift in Sources */,
+				79079A252E54B275004D9D1A /* SettingsWindow.swift in Sources */,
 				79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */,
 				790799C42E48D914004D9D1A /* LLMResponse.swift in Sources */,
 				790799C22E48BC74004D9D1A /* LLMRequest.swift in Sources */,
@@ -387,6 +391,7 @@
 				790799E72E4A3ED4004D9D1A /* ChatProxySettingSectionView.swift in Sources */,
 				79079A182E4FBDAB004D9D1A /* MCPManager.swift in Sources */,
 				790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */,
+				79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */,
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
 				79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */,
 				790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */,
@@ -396,7 +401,6 @@
 				79079A002E4CFE36004D9D1A /* ChatProxyBridge.swift in Sources */,
 				790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */,
 				790799F92E4CE307004D9D1A /* LLMModelClient.swift in Sources */,
-				790799A82E471FEA004D9D1A /* ContentView.swift in Sources */,
 				790799ED2E4B94B5004D9D1A /* LocalStorage.swift in Sources */,
 				790799E92E4A5665004D9D1A /* MenuBarView.swift in Sources */,
 				790799C92E48F688004D9D1A /* LLMModelProvider.swift in Sources */,

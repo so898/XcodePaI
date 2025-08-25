@@ -5,25 +5,20 @@
 //  Created by Bill Cheng on 2025/8/16.
 //
 
-import Combine
 import Foundation
 
 class ModelManager: ObservableObject {
     var storageKey: String
     
     @Published var models: [LLMModel] = []
-    private var cancellables = Set<AnyCancellable>()
     
     init(_ provider: String) {
-        storageKey = Constraint.modelStorageKeyPrefix + provider
+        storageKey = provider
         loadInitialValue()
     }
     
     private func loadInitialValue() {
-        LocalStorage.shared.fetch(forKey: storageKey)
-            .replaceNil(with: [])
-            .assign(to: \.models, on: self)
-            .store(in: &cancellables)
+        models = StorageManager.shared.modelsWithProvider(name: storageKey)
     }
     
     func loadModels(_ provider: LLMModelProvider, complete: ((Bool) -> Void)?) {
@@ -43,12 +38,11 @@ class ModelManager: ObservableObject {
     }
     
     func changeName(_ provider: String) {
-        let newStorageKey = "LLMModelStorage_" + provider
-        guard newStorageKey != storageKey else {
+        guard provider != storageKey else {
             return
         }
-        LocalStorage.shared.renameStorage(oldKey: storageKey, newKey: newStorageKey)
-        storageKey = newStorageKey
+        StorageManager.shared.renameModels(from: storageKey, to: provider)
+        storageKey = provider
         
         var newModels = [LLMModel]()
         for model in models {
@@ -88,8 +82,6 @@ class ModelManager: ObservableObject {
     
     private func saveModels(_ models: [LLMModel]) {
         self.models = models
-        LocalStorage.shared.save(models, forKey: storageKey)
-            .sink { _ in }
-            .store(in: &cancellables)
+        StorageManager.shared.updateModels(models, providerName: storageKey)
     }
 }

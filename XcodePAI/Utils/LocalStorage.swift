@@ -11,8 +11,6 @@ import Combine
 /// Local Storage to store llm and other information
 final class LocalStorage {
     
-    static let LLMServerStorageKey = "llm_servers"
-    
     // MARK: Shared Instance
     static let shared = LocalStorage()
     
@@ -109,8 +107,38 @@ final class LocalStorage {
         }
     }
     
-    // MARK: Combine API
+    /// Rename local file
+    func renameStorage(oldKey: String, newKey: String) {
+        let oldFileURL = fileURL(forKey: oldKey)
+        let newFileURL = fileURL(forKey: newKey)
+        
+        queue.async(flags: .barrier) {
+            guard self.fileManager.fileExists(atPath: oldFileURL.path) else {
+                return
+            }
+            guard ((try? self.fileManager.moveItem(at: oldFileURL, to: newFileURL)) != nil) else {
+                return
+            }
+        }
+    }
     
+    /// Remove local file
+    func removeStorage(key: String) {
+        let fileURL = fileURL(forKey: key)
+        
+        queue.async(flags: .barrier) {
+            guard self.fileManager.fileExists(atPath: fileURL.path) else {
+                return
+            }
+            guard ((try? self.fileManager.removeItem(at: fileURL)) != nil) else {
+                return
+            }
+        }
+    }
+}
+
+// MARK: Combine API
+extension LocalStorage {
     /// Save to file (Combine)
     func save<T: Encodable>(_ value: T?, forKey key: String) -> AnyPublisher<Void, Never> {
         Future { [weak self] promise in
@@ -147,34 +175,30 @@ final class LocalStorage {
         }
         .eraseToAnyPublisher()
     }
+}
+
+// MARK: - Async/Await Extension
+extension LocalStorage {
     
-    /// Rename local file
-    func renameStorage(oldKey: String, newKey: String) {
-        let oldFileURL = fileURL(forKey: oldKey)
-        let newFileURL = fileURL(forKey: newKey)
-        
-        queue.async(flags: .barrier) {
-            guard self.fileManager.fileExists(atPath: oldFileURL.path) else {
-                return
-            }
-            guard ((try? self.fileManager.moveItem(at: oldFileURL, to: newFileURL)) != nil) else {
-                return
+    /// Save to file (Async/Await)
+    func setValue<T: Encodable>(_ value: T?, forKey key: String) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            setValue(value, forKey: key) { error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: ())
+                }
             }
         }
     }
     
-    /// Remove local file
-    func removeStorage(key: String) {
-        let fileURL = fileURL(forKey: key)
-        
-        queue.async(flags: .barrier) {
-            guard self.fileManager.fileExists(atPath: fileURL.path) else {
-                return
-            }
-            guard ((try? self.fileManager.removeItem(at: fileURL)) != nil) else {
-                return
+    /// Load from file (Async/Await)
+    func getValue<T: Decodable>(forKey key: String) async -> T? {
+        return await withCheckedContinuation { continuation in
+            getValue(forKey: key) { (value: T?) in
+                continuation.resume(returning: value)
             }
         }
     }
 }
-

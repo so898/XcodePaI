@@ -12,6 +12,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
         
+        StorageManager.shared.load()
+        
         let _ = MCPRunner.shared
         
         // Menu

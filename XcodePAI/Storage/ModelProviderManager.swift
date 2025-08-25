@@ -5,23 +5,18 @@
 //  Created by Bill Cheng on 2025/8/16.
 //
 
-import Combine
+import Foundation
 
 class ModelProviderManager: ObservableObject {
-    static let storageKey = Constraint.modelProviderStorageKey
     
     @Published private(set) var providers: [LLMModelProvider] = []
-    private var cancellables = Set<AnyCancellable>()
     
     init() {
         loadInitialValue()
     }
     
     private func loadInitialValue() {
-        LocalStorage.shared.fetch(forKey: Self.storageKey)
-            .replaceNil(with: [])
-            .assign(to: \.providers, on: self)
-            .store(in: &cancellables)
+        self.providers = StorageManager.shared.modelProviders
     }
     
     func addModelProvider(_ provider: LLMModelProvider) {
@@ -48,8 +43,6 @@ class ModelProviderManager: ObservableObject {
     
     private func saveModelProviders(_ providers: [LLMModelProvider]) {
         self.providers = providers
-        LocalStorage.shared.save(providers, forKey: Self.storageKey)
-            .sink { _ in }
-            .store(in: &cancellables)
+        StorageManager.shared.updateModelProviders(providers)
     }
 }

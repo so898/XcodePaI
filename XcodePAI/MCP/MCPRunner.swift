@@ -10,73 +10,7 @@ import MCP
 
 class MCPRunner {
     static let shared = MCPRunner()
-    
-    private let queue = DispatchQueue(label: "xcodepai.mcp.runner.queue")
-    
-    private var mcps = [LLMMCP]()
-    private var tools = [LLMMCPTool]()
-    
-    init() {
-        reload()
-    }
-    
-    func reload() {
-        queue.async {[weak self] in
-            guard let `self` = self else {
-                return
-            }
-            
-            mcps.removeAll()
-            tools.removeAll()
-            
-            LocalStorage.shared.getValue(forKey: Constraint.mcpStorageKey) { [weak self] (mcps: [LLMMCP]?) in
-                guard let `self` = self else {
-                    return
-                }
-                queue.async {[weak self] in
-                    guard let `self` = self, let mcps else {
-                        return
-                    }
-                    for mcp in mcps {
-                        self.mcps.append(mcp)
-                        
-                        LocalStorage.shared.getValue(forKey: Constraint.mcpToolStorageKeyPrefix + mcp.name) { [weak self] (tools: [LLMMCPTool]?) in
-                            guard let `self` = self, let tools else {
-                                return
-                            }
-                            queue.async {[weak self] in
-                                guard let `self` = self else {
-                                    return
-                                }
-                                
-                                for tool in tools {
-                                    self.tools.append(tool)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    func tools(_ mcp: String) -> [LLMMCPTool] {
-        var ret = [LLMMCPTool]()
-        queue.sync {[weak self] in
-            guard let `self` = self else {
-                return
-            }
-            
-            for tool in tools {
-                if tool.mcp == mcp {
-                    ret.append(tool)
-                }
-            }
-        }
         
-        return ret
-    }
-    
     func run(mcpName: String, toolName: String, arguments: String?, complete: @escaping (String?, Error?) -> Void) {
         do {
             let (mcp, tool, arguments) = try processMCPToolArgument(mcpName: mcpName, toolName: toolName, arguments: arguments)
@@ -114,23 +48,18 @@ class MCPRunner {
     private func processMCPToolArgument(mcpName: String, toolName: String, arguments: String?) throws -> (LLMMCP, LLMMCPTool, [String: Value]?) {
         var useMCP: LLMMCP?
         var useTool: LLMMCPTool?
-        queue.sync {[weak self] in
-            guard let `self` = self else {
-                return
+        
+        for mcp in StorageManager.shared.mcps {
+            if mcp.name == mcpName {
+                useMCP = mcp
+                break
             }
-            
-            for mcp in mcps {
-                if mcp.name == mcpName {
-                    useMCP = mcp
-                    break
-                }
-            }
-            
-            if let useMCP = useMCP {
-                for tool in tools {
-                    if tool.mcp == useMCP.name, tool.name == toolName {
-                        useTool = tool
-                    }
+        }
+        
+        if let useMCP = useMCP {
+            for tool in StorageManager.shared.mcpTools {
+                if tool.mcp == useMCP.name, tool.name == toolName {
+                    useTool = tool
                 }
             }
         }

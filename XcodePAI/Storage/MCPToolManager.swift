@@ -5,33 +5,28 @@
 //  Created by Bill Cheng on 2025/8/16.
 //
 
-import Combine
+import Foundation
 
 class MCPToolManager: ObservableObject {
     var storageKey: String
     
     @Published var tools: [LLMMCPTool] = []
-    private var cancellables = Set<AnyCancellable>()
     
     init(_ mcp: String) {
-        storageKey = Constraint.mcpToolStorageKeyPrefix + mcp
+        storageKey = mcp
         loadInitialValue()
     }
     
     private func loadInitialValue() {
-        LocalStorage.shared.fetch(forKey: storageKey)
-            .replaceNil(with: [])
-            .assign(to: \.tools, on: self)
-            .store(in: &cancellables)
+        tools = StorageManager.shared.toolsWithMCP(name: storageKey)
     }
     
     func changeName(_ mcp: String) {
-        let newStorageKey = "LLMMCPToolStorage_" + mcp
-        guard newStorageKey != storageKey else {
+        guard mcp != storageKey else {
             return
         }
-        LocalStorage.shared.renameStorage(oldKey: storageKey, newKey: newStorageKey)
-        storageKey = newStorageKey
+        StorageManager.shared.renameTools(from: storageKey, to: mcp)
+        storageKey = mcp
     }
     
     func addTool(_ tool: LLMMCPTool) {
@@ -63,8 +58,6 @@ class MCPToolManager: ObservableObject {
     
     private func saveTools(_ tools: [LLMMCPTool]) {
         self.tools = tools
-        LocalStorage.shared.save(tools, forKey: storageKey)
-            .sink { _ in }
-            .store(in: &cancellables)
+        StorageManager.shared.updateMCPTools(tools, mcpName: storageKey)
     }
 }

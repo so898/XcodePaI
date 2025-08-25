@@ -5,23 +5,19 @@
 //  Created by Bill Cheng on 2025/8/16.
 //
 
-import Combine
+import Foundation
 
 class MCPManager: ObservableObject {
     static let storageKey = Constraint.mcpStorageKey
     
     @Published private(set) var mcps: [LLMMCP] = []
-    private var cancellables = Set<AnyCancellable>()
     
     init() {
         loadInitialValue()
     }
     
     private func loadInitialValue() {
-        LocalStorage.shared.fetch(forKey: Self.storageKey)
-            .replaceNil(with: [])
-            .assign(to: \.mcps, on: self)
-            .store(in: &cancellables)
+        mcps = StorageManager.shared.mcps
     }
     
     func addMCP(_ mcp: LLMMCP) {
@@ -48,8 +44,6 @@ class MCPManager: ObservableObject {
     
     private func saveMCPs(_ mcps: [LLMMCP]) {
         self.mcps = mcps
-        LocalStorage.shared.save(mcps, forKey: Self.storageKey)
-            .sink { _ in }
-            .store(in: &cancellables)
+        StorageManager.shared.updateMCPs(mcps)
     }
 }
