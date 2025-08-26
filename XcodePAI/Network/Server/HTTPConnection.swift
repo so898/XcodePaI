@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol HTTPConnectionDelegate {
+protocol HTTPConnectionDelegate: AnyObject {
     func connection(_ connection: HTTPConnection, didReceiveRequest request: HTTPRequest)
     func connection(_ connection: HTTPConnection, didSentResponse success: Bool)
     func connection(_ connection: HTTPConnection, didWrite tag: Int?)
@@ -48,12 +48,12 @@ struct HTTPResponse {
 
 class HTTPConnection {
     private let connection: TCPConnection
-    private let delegate: HTTPConnectionDelegate
+    private weak var delegate: HTTPConnectionDelegate?
     
     init(_ connection: TCPConnection, delegate: HTTPConnectionDelegate) {
         self.connection = connection
         self.delegate = delegate
-        connection.start(self)
+        connection.delegate = self
     }
     
     func read() {
@@ -181,7 +181,7 @@ class HTTPConnection {
     }
     
     private func handleFullRequest(_ request: HTTPRequest) {
-        self.delegate.connection(self, didReceiveRequest: request)
+        self.delegate?.connection(self, didReceiveRequest: request)
         
         // Reset status for the next request (keep-alive)
         currentRequest = nil
@@ -241,6 +241,7 @@ extension HTTPConnection {
 // MARK: HTTPConnectionDelegate
 extension HTTPConnection: TCPConnectionDelegate {
     func connectionConnected(_ connection: TCPConnection) {
+        // Read data after connection established
         read()
     }
     
@@ -252,22 +253,22 @@ extension HTTPConnection: TCPConnectionDelegate {
     func connection(_ connection: TCPConnection, didWrite data: Data, tag: Int?) {
         if HTTPResponseWriteTag == tag {
             HTTPResponseWrited = true
-            delegate.connection(self, didSentResponse: true)
+            delegate?.connection(self, didSentResponse: true)
             return
         }
-        delegate.connection(self, didWrite: tag)
+        delegate?.connection(self, didWrite: tag)
     }
     
     func connection(_ connection: TCPConnection, didNotWrite error: any Error, tag: Int?) {
         if HTTPResponseWriteTag == tag {
             HTTPResponseWrited = true
-            delegate.connection(self, didSentResponse: false)
+            delegate?.connection(self, didSentResponse: false)
             return
         }
-        delegate.connection(self, didNotWrite: error, tag: tag)
+        delegate?.connection(self, didNotWrite: error, tag: tag)
     }
     
     func connection(_ connection: TCPConnection, closed error: (any Error)?) {
-        delegate.connection(self, closed: error)
+        delegate?.connection(self, closed: error)
     }
 }

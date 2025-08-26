@@ -8,7 +8,7 @@
 import Foundation
 import Network
 
-protocol TCPConnectionDelegate {
+protocol TCPConnectionDelegate: AnyObject {
     func connectionConnected(_ connection: TCPConnection)
     func connection(_ connection: TCPConnection, didReceiveData data: Data)
     func connection(_ connection: TCPConnection, didWrite data: Data, tag: Int?)
@@ -19,19 +19,19 @@ protocol TCPConnectionDelegate {
 class TCPConnection {
     let connection: NWConnection
     private let queue = DispatchQueue(label: "server.connection")
-    var delegate: TCPConnectionDelegate?
+    weak var delegate: TCPConnectionDelegate?
+    
     init(_ connection: NWConnection) {
         self.connection = connection
     }
     
-    func start(_ delegate: TCPConnectionDelegate) {
-        guard connection.state != .ready else {
-            return
-        }
-        
-        self.delegate = delegate
-        
+    func start() {
+        // Do not check again
+        setupHandlers()
         connection.start(queue: queue)
+    }
+    
+    private func setupHandlers() {
         connection.stateUpdateHandler = {[weak self] newState in
             guard let `self` = self else {
                 return
@@ -46,12 +46,14 @@ class TCPConnection {
             case .ready:
                 print("Connection ready")
                 self.delegate?.connectionConnected(self)
+                // 连接准备好后立即开始读取数据
+                self.receiveData()
             case .failed(let error):
-                print("Connection failed")
-                self.delegate?.connection(self, closed: error)
+                print("Connection failed: \(error)")
+                self.cleanup(error)
             case .cancelled:
                 print("Connection cancelled")
-                self.delegate?.connection(self, closed: nil)
+                self.cleanup(nil)
             @unknown default:
                 fatalError()
             }
@@ -90,7 +92,8 @@ class TCPConnection {
     }
     
     private func receiveData() {
-        connection.receive(minimumIncompleteLength: 1, maximumLength: .max) { [weak self] data, _, isComplete, error in
+        // Read data till connection close
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { [weak self] data, _, isComplete, error in
             guard let `self` = self else { return }
             
             if let error = error {
@@ -98,17 +101,17 @@ class TCPConnection {
                 return
             }
             
-            if let data = data {
+            if let data = data, data.count > 0 {
                 self.delegate?.connection(self, didReceiveData: data)
             }
             
-            // Mux socket, Wait for next HTTP header
-            // if isComplete {
-                // self.queue.async {[weak self] in
-                //     guard let `self` = self else { return }
-                //     self.cleanup()
-                // }
-            // }
+            // If there is more data, keep processing
+            if isComplete {
+                self.cleanup()
+            } else {
+                // Keep reading
+                self.receiveData()
+            }
         }
     }
     
@@ -117,5 +120,4 @@ class TCPConnection {
         delegate = nil
         connection.cancel()
     }
-    
 }

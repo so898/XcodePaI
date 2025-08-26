@@ -31,6 +31,7 @@ class TCPServer {
         parameters.allowLocalEndpointReuse = true
         parameters.allowFastOpen = true
         
+        // 使用正确的端口初始化方式
         guard let listener = try? NWListener(using: parameters, on: NWEndpoint.Port(rawValue: port)!) else {
             fatalError("Failed to create listener on port \(port)")
         }
@@ -47,7 +48,7 @@ class TCPServer {
                 print("Server ready")
                 self.delegate.serverStartListen(port: Int(self.listener.port?.rawValue ?? 0))
             case .failed(let error):
-                print("Server failed")
+                print("Server failed: \(error)")
                 self.delegate.serverStopListen(error: error)
             case .cancelled:
                 print("Server cancelled")
@@ -57,9 +58,13 @@ class TCPServer {
             }
         }
         
+        // Process the connection
         listener.newConnectionHandler = { [weak self] connection in
             guard let `self` = self else { return }
-            self.delegate.serverDidReceive(connection: TCPConnection(connection))
+            let tcpConnection = TCPConnection(connection)
+            // start connection immediatly
+            tcpConnection.start()
+            self.delegate.serverDidReceive(connection: tcpConnection)
         }
     }
     
@@ -67,5 +72,9 @@ class TCPServer {
         listener.start(queue: queue)
         print("Server started on port \(port)")
     }
-
+    
+    // 添加停止方法
+    func stop() {
+        listener.cancel()
+    }
 }
