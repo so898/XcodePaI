@@ -19,10 +19,10 @@ enum ThinkState {
     case completed
 }
 
-enum ThinkParser {
-    case inReasoningContent
-    case inContentWithEOT
-    case inContentWithCodeSnippet
+enum ThinkParser: Int {
+    case inContentWithCodeSnippet = 0
+    case inContentWithEOT = 1
+    case inReasoningContent = 2
 }
 
 let ThinkInContentWithCodeSnippetStartMark = "```think\n\n"
@@ -56,11 +56,11 @@ class ChatProxyBridge {
     
     private var roleReturned = false
     
-    private var thinkParser: ThinkParser = .inReasoningContent
+    private var thinkParser: ThinkParser = Configer.chatProxyThinkStyle
     private var thinkState: ThinkState = .notStarted
     
     private var mcpTools: [LLMMCPTool]?
-    private var useToolInRequest = false
+    private var useToolInRequest = Configer.chatProxyToolUseInRequest
     private var toolProcesser = ResponseToolProcesser()
     private var mcpToolUses = [LLMMCPToolUse]()
     

@@ -55,6 +55,7 @@
 		79079A252E54B275004D9D1A /* SettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A242E54B275004D9D1A /* SettingsWindow.swift */; };
 		79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A262E54BFBA004D9D1A /* StorageManager.swift */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
+		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -108,6 +109,7 @@
 		79079A242E54B275004D9D1A /* SettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindow.swift; sourceTree = "<group>"; };
 		79079A262E54BFBA004D9D1A /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
+		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -297,6 +299,7 @@
 		79079A122E4FBD67004D9D1A /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				79F28F332E5E186800F71A28 /* Configer.swift */,
 				79079A262E54BFBA004D9D1A /* StorageManager.swift */,
 				79079A132E4FBD7D004D9D1A /* ModelProviderManager.swift */,
 				79079A152E4FBD95004D9D1A /* ModelManager.swift */,
@@ -396,6 +399,7 @@
 				790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */,
 				79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */,
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
+				79F28F342E5E187100F71A28 /* Configer.swift in Sources */,
 				79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */,
 				790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */,
 				79079A112E4FB78C004D9D1A /* MCPDetailView.swift in Sources */,

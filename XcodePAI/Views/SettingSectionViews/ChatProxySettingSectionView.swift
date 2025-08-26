@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ChatProxySettingSectionView: View {
-    @State private var portNumber = "50222"
-    @State private var thinkStyle = 0
-    @State private var toolUseType = 0
+    @State private var portNumber = "\(Configer.chatProxyPort)"
+    @State private var thinkStyle: Int = Configer.chatProxyThinkStyle.rawValue
+    @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
     
     var body: some View {
         ScrollView {
@@ -26,6 +27,12 @@ struct ChatProxySettingSectionView: View {
                         .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray))
                         .cornerRadius(5)
                         .frame(width: 80)
+                        .onChange(of: portNumber) { _, newValue in
+                            guard let value = UInt16(newValue) else {
+                                return
+                            }
+                            Configer.chatProxyPort = value
+                        }
                 }
                 
                 GridRow {
@@ -40,6 +47,9 @@ struct ChatProxySettingSectionView: View {
                         Text("In Reasoning (Not Display)").tag(2)
                     }
                     .frame(maxWidth: 250, alignment: .leading)
+                    .onChange(of: thinkStyle, { _, tag in
+                        Configer.chatProxyThinkStyle = .init(rawValue: tag)!
+                    })
                 }
                 
                 GridRow(alignment: .top) {
@@ -51,6 +61,9 @@ struct ChatProxySettingSectionView: View {
                         }
                         .pickerStyle(.radioGroup)
                         .labelsHidden()
+                        .onChange(of: toolUseType) { _, tag in
+                            Configer.chatProxyToolUseInRequest = (tag == 0)
+                        }
                         
                         Text("Some provider support use tool with request parameters.")
                             .font(.footnote)

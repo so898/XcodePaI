@@ -16,7 +16,15 @@ class ChatProxy {
     private var tunnels = [ChatProxyTunnel]()
     
     init() {
-        server = TCPServer(port: 50222, delegate: self)
+        restart()
+    }
+    
+    func restart() {
+        if let currentServer = server {
+            currentServer.stop()
+            server = nil
+        }
+        server = TCPServer(port: Configer.chatProxyPort, delegate: self)
         server?.start()
     }
     
