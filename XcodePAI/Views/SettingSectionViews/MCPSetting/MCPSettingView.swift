@@ -49,7 +49,7 @@ struct MCPListView: View {
                 
                 HStack {
                     Spacer()
-                    Button("Add a MCP service...") {
+                    Button("Add MCP service...") {
                         isShowingSheet = true
                     }
                     .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 16))

@@ -49,7 +49,7 @@ struct ModelProviderListView: View {
                 
                 HStack {
                     Spacer()
-                    Button("Add a Model Provider...") {
+                    Button("Add Model Provider...") {
                         isShowingSheet = true
                     }
                     .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 16))

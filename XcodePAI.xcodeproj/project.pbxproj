@@ -56,6 +56,7 @@
 		79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A262E54BFBA004D9D1A /* StorageManager.swift */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
+		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -110,6 +111,7 @@
 		79079A262E54BFBA004D9D1A /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
+		79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyEditView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -251,7 +253,7 @@
 				790799E22E4A36C8004D9D1A /* GeneralSettingSectionView.swift */,
 				790799F52E4CD53D004D9D1A /* ModelProviderSetting */,
 				79079A0B2E4F95B7004D9D1A /* MCPSetting */,
-				790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */,
+				79F28F352E5E241D00F71A28 /* ChatProxy */,
 			);
 			path = SettingSectionViews;
 			sourceTree = "<group>";
@@ -307,6 +309,15 @@
 				79079A192E4FBDBD004D9D1A /* MCPToolManager.swift */,
 			);
 			path = Storage;
+			sourceTree = "<group>";
+		};
+		79F28F352E5E241D00F71A28 /* ChatProxy */ = {
+			isa = PBXGroup;
+			children = (
+				790799E62E4A3ECA004D9D1A /* ChatProxySettingSectionView.swift */,
+				79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */,
+			);
+			path = ChatProxy;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -406,6 +417,7 @@
 				790799F42E4CD21D004D9D1A /* ModelProviderSettingView.swift in Sources */,
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
 				79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */,
+				79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */,
 				79079A002E4CFE36004D9D1A /* ChatProxyBridge.swift in Sources */,
 				790799E02E4A3433004D9D1A /* SettingsView.swift in Sources */,
 				790799F92E4CE307004D9D1A /* LLMModelClient.swift in Sources */,

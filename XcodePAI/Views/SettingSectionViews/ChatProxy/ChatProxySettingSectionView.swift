@@ -13,6 +13,8 @@ struct ChatProxySettingSectionView: View {
     @State private var thinkStyle: Int = Configer.chatProxyThinkStyle.rawValue
     @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
     
+    @State private var isShowingSheet = false
+    
     var body: some View {
         ScrollView {
             Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 18) {
@@ -81,8 +83,79 @@ struct ChatProxySettingSectionView: View {
             }
             .gridColumnAlignment(.trailing)
             .padding(30)
+            
+            Divider().padding(.leading)
+            
+            Form {
+                CustomConfigInfoSection()
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                
+                Section {
+//                    ForEach(mcpManager.mcps) { mcp in
+//                        NavigationLink(value: mcp) {
+//                            MCPRow(mcp: mcp)
+//                        }
+//                    }
+                }
+            }
+            .formStyle(.grouped)
+            .scrollContentBackground(.hidden)
+            
+            HStack {
+                Spacer()
+                Button("Add custom config...") {
+                    isShowingSheet = true
+                }
+                .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 16))
+            }
         }
         .background(Color(nsColor: .textBackgroundColor))
         .navigationTitle("Chat Proxy")
+        .sheet(isPresented: $isShowingSheet) {
+//            ChatProxyEditView(mcp: nil){ mcp, tools in
+//                mcpManager.addMCP(mcp)
+//                
+//                let toolManager = MCPToolManager(mcp.name)
+//                toolManager.replaceTools(tools ?? [])
+//            }
+        }
+    }
+}
+
+struct CustomConfigInfoSection: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 16) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(LinearGradient(colors: [.init(nsColor: .lightGray), .init(nsColor: .darkGray)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    Image(systemName: "bookmark.square").font(.system(size: 32)).foregroundColor(.white)
+                }
+                .frame(width: 54, height: 54)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Custom Config").font(.headline)
+                    Text("Save custom configurations for your selected model and MCPs, and effortlessly access them in the Xcode Chat window.").font(.subheadline).foregroundColor(.secondary).fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+        .cornerRadius(12)
+        .padding(.horizontal)
+    }
+}
+
+struct CustomConfigRow: View {
+    @ObservedObject var mcp: LLMMCP
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            MCPIconView(mcp: mcp, size: 24)
+            Text(mcp.name)
+            Spacer()
+            Text(mcp.enabled ? "Enabled" : "Disabled")
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
+        .padding(.horizontal, 8)
     }
 }
