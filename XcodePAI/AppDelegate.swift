@@ -11,6 +11,7 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
+        NSApp.setActivationPolicy(.accessory)
         
         StorageManager.shared.load()
         
