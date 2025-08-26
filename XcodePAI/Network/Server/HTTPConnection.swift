@@ -192,6 +192,8 @@ class HTTPConnection {
         // Keep receiving data
         if accumulatedData.count > 0 {
             processAccumulatedData()
+        } else {
+            accumulatedData = Data()
         }
     }
     
