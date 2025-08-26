@@ -20,19 +20,26 @@ struct ChatProxySettingSectionView: View {
                 // --- Chat Proxy Port ---
                 GridRow(alignment: .center) {
                     Text("Local Server Port:")
-                    TextField("", text: $portNumber)
-                        .textFieldStyle(.plain)
-                        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                        .background(Color.black.opacity(0.3))
-                        .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray))
-                        .cornerRadius(5)
-                        .frame(width: 80)
-                        .onChange(of: portNumber) { _, newValue in
-                            guard let value = UInt16(newValue) else {
-                                return
+                    HStack(spacing: 10) {
+                        TextField("", text: $portNumber)
+                            .textFieldStyle(.plain)
+                            .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+                            .background(Color.black.opacity(0.3))
+                            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray))
+                            .cornerRadius(5)
+                            .frame(width: 80)
+                            .onChange(of: portNumber) { _, newValue in
+                                guard let value = UInt16(newValue) else {
+                                    return
+                                }
+                                Configer.chatProxyPort = value
                             }
-                            Configer.chatProxyPort = value
+                        Button("Restart Server") {
+                            ChatProxy.shared.restart()
                         }
+                        .buttonStyle(.bordered)
+                        .controlSize(.large)
+                    }
                 }
                 
                 GridRow {

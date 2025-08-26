@@ -43,7 +43,7 @@ extension MenuBarManager: NSMenuDelegate {
         
         if (true) {
             // Port display
-            item = NSMenuItem(title: "Local Port: 50222", action: nil, keyEquivalent: "")
+            item = NSMenuItem(title: "Local Port: \(Configer.chatProxyPort)", action: nil, keyEquivalent: "")
             item.isEnabled = false
             menu.addItem(item)
         }
