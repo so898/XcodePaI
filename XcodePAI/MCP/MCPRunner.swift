@@ -8,130 +8,126 @@
 import Foundation
 import MCP
 
+// MARK: - Error Definitions
+enum MCPError: LocalizedError {
+    case mcpNotFound
+    case toolNotFound
+    case invalidURL
+    case noTextContent
+    case toolExecutionError(String)
+    
+    var errorDescription: String? {
+        switch self {
+        case .mcpNotFound:
+            return "MCP not found"
+        case .toolNotFound:
+            return "MCP tool not found"
+        case .invalidURL:
+            return "Invalid URL"
+        case .noTextContent:
+            return "MCP tool returned no text content"
+        case .toolExecutionError(let message):
+            return "Tool execution error: \(message)"
+        }
+    }
+}
+
 class MCPRunner {
     static let shared = MCPRunner()
-        
-    func run(mcpName: String, toolName: String, arguments: String?, complete: @escaping (String?, Error?) -> Void) {
-        do {
-            let (mcp, tool, arguments) = try processMCPToolArgument(mcpName: mcpName, toolName: toolName, arguments: arguments)
+    
+    // MARK: - Public Interface
+    func run(mcpName: String, toolName: String, arguments: String?, complete: @escaping (Result<String, Error>) -> Void) {
+        Task { [weak self] in
+            guard let self = self else { return }
             
-            Task {[weak self] in
-                guard let `self` = self else {
-                    return
+            do {
+                let content = try await self.run(mcpName: mcpName, toolName: toolName, arguments: arguments)
+                await MainActor.run {
+                    complete(.success(content))
                 }
-                do {
-                    let content = try await self.run(mcp: mcp, tool: tool, arguments: arguments)
-                    DispatchQueue.main.async {
-                        complete(content, nil)
-                    }
-                } catch let error {
-                    DispatchQueue.main.async {
-                        complete(nil, error)
-                    }
+            } catch {
+                await MainActor.run {
+                    complete(.failure(error))
                 }
-            }
-        } catch let error {
-            DispatchQueue.main.async {
-                complete(nil, error)
             }
         }
     }
     
     func run(mcpName: String, toolName: String, arguments: String?) async throws -> String {
         let (mcp, tool, arguments) = try processMCPToolArgument(mcpName: mcpName, toolName: toolName, arguments: arguments)
-        
-        let content = try await self.run(mcp: mcp, tool: tool, arguments: arguments)
-        
-        return content
+        return try await run(mcp: mcp, tool: tool, arguments: arguments)
     }
     
+    // MARK: - Private Helpers
     private func processMCPToolArgument(mcpName: String, toolName: String, arguments: String?) throws -> (LLMMCP, LLMMCPTool, [String: Value]?) {
-        var useMCP: LLMMCP?
-        var useTool: LLMMCPTool?
-        
-        for mcp in StorageManager.shared.mcps {
-            if mcp.name == mcpName {
-                useMCP = mcp
-                break
-            }
+        // Find MCP
+        guard let mcp = StorageManager.shared.mcps.first(where: { $0.name == mcpName }) else {
+            throw MCPError.mcpNotFound
         }
         
-        if let useMCP = useMCP {
-            for tool in StorageManager.shared.mcpTools {
-                if tool.mcp == useMCP.name, tool.name == toolName {
-                    useTool = tool
-                }
-            }
+        // Find Tool
+        guard let tool = StorageManager.shared.mcpTools.first(where: { $0.mcp == mcpName && $0.name == toolName }) else {
+            throw MCPError.toolNotFound
         }
         
-        guard let mcp = useMCP else {
-            throw NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP not found"])
-        }
-        
-        guard let tool = useTool else {
-            throw NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP tool not found"])
-        }
-        
-        let arguments: [String: Value]? = {
-            guard let arguments = arguments, let data = arguments.data(using: .utf8) else {
+        // Parse arguments
+        let parsedArguments: [String: Value]? = {
+            guard let argumentsString = arguments,
+                  let data = argumentsString.data(using: .utf8) else {
                 return nil
             }
             
-            if let value = try? JSONDecoder().decode([String: Value].self, from: data) {
-                return value
-            }
-            
-            return nil
+            return try? JSONDecoder().decode([String: Value].self, from: data)
         }()
         
-        return (mcp, tool, arguments)
+        return (mcp, tool, parsedArguments)
     }
     
     private func run(mcp: LLMMCP, tool: LLMMCPTool, arguments: [String: Value]?) async throws -> String {
+        // Validate URL
+        guard let url = URL(string: mcp.url) else {
+            throw MCPError.invalidURL
+        }
+        
+        // Create client and transport
         let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
         
         let transport = HTTPClientTransport(
-            endpoint: URL(string: mcp.url)!,
-            streaming: true) { request in
-                guard let headers = mcp.headers else {
-                    return request
-                }
-                var newRequest = request
-                for key in headers.keys {
-                    if let value = headers[key] {
-                        newRequest.setValue(value, forHTTPHeaderField: key)
-                    }
-                }
-                return newRequest
+            endpoint: url,
+            streaming: true
+        ) { request in
+            guard let headers = mcp.headers else { return request }
+            var newRequest = request
+            for (key, value) in headers {
+                newRequest.setValue(value, forHTTPHeaderField: key)
             }
+            return newRequest
+        }
+        
+        // Connect to server
         try await client.connect(transport: transport)
         
-        // Call a tool with arguments
+        // Call tool
         let (content, isError) = try await client.callTool(
             name: tool.name,
             arguments: arguments
         )
         
-        if let isError, isError {
-            throw NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP tool not found"])
+        // Handle errors
+        if let isError = isError, isError {
+            throw MCPError.toolExecutionError("Tool execution failed")
         }
         
-        let retContent: String? = {
-            for item in content {
-                switch item {
-                case .text(let text):
-                    return text
-                default:
-                    break
-                }
+        // Extract text content
+        guard let textContent = content.compactMap({ contentItem -> String? in
+            if case .text(let text) = contentItem {
+                return text
             }
             return nil
-        }()
-        
-        guard let retContent else {
-            throw NSError(domain: "MCPError", code: 0, userInfo: [NSLocalizedDescriptionKey: "MCP tool return no text content"])
+        }).first else {
+            throw MCPError.noTextContent
         }
         
-        return retContent
+        return textContent
     }
 }
