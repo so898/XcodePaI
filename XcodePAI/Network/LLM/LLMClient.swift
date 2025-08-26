@@ -190,12 +190,10 @@ class LLMClient {
 // MARK:  Event Source Functions
 extension LLMClient {
     private func receive(chunk: String) {
-        guard let data = chunk.data(using: .utf8), let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+        guard let data = chunk.data(using: .utf8), let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let response = try? LLMResponse(dict: dict) else {
             return
         }
-        
-        let response = LLMResponse(dict: dict)
-        
+          
         var chunkReason: String?
         var chunkContent: String?
         var chunkTools: [LLMMessageToolCall]?

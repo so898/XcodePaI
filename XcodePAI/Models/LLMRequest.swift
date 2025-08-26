@@ -32,28 +32,23 @@ class LLMRequest {
         self.topP = topP
     }
     
-    init(dict: [String: Any]) {
-        if let model = dict["model"] as? String {
-            self.model = model
-        } else {
-            fatalError("LLM request model could not be properly parsered.")
+    init(dict: [String: Any]) throws {
+        guard let model = dict["model"] as? String else {
+            throw LLMRequestError.invalidModel
+        }
+        self.model = model
+        
+        guard let messages = dict["messages"] as? [[String: Any]] else {
+            throw LLMRequestError.invalidMessages
         }
         
-        if let messages = dict["messages"] as? [[String: Any]] {
-            var parseredMessages = [LLMMessage]()
-            for message in messages {
-                parseredMessages.append(LLMMessage(dict: message))
-            }
-            self.messages = parseredMessages
-        } else {
-            fatalError("LLM request messages could not be properly parsered.")
+        var parsedMessages = [LLMMessage]()
+        for message in messages {
+            parsedMessages.append(try LLMMessage(dict: message))
         }
+        self.messages = parsedMessages
         
-        if let stream = dict["stream"] as? Bool {
-            self.stream = stream
-        } else {
-            self.stream = false
-        }
+        self.stream = dict["stream"] as? Bool ?? false
         
         if let streamOptions = dict["stream_options"] as? [String: Any],
            let includeUsage = streamOptions["include_usage"] as? Bool {
@@ -63,11 +58,11 @@ class LLMRequest {
         }
         
         if let tools = dict["tools"] as? [[String: Any]] {
-            var parseredTools = [LLMTool]()
+            var parsedTools = [LLMTool]()
             for tool in tools {
-                parseredTools.append(LLMTool(dict: tool))
+                parsedTools.append(try LLMTool(dict: tool))
             }
-            self.tools = parseredTools
+            self.tools = parsedTools
         } else {
             self.tools = nil
         }
@@ -91,7 +86,7 @@ class LLMRequest {
             dict["stream_options"] = streamOptions.toDictionary()
         }
         
-        if let tools = tools, tools.count > 0 {
+        if let tools = tools, !tools.isEmpty {
             var toolsArray = [Any]()
             for tool in tools {
                 toolsArray.append(tool.toDictionary())
@@ -119,9 +114,47 @@ class LLMRequest {
     }
 }
 
+enum LLMRequestError: Error, LocalizedError {
+    case invalidModel
+    case invalidMessages
+    case invalidMessageRole
+    case invalidMessageContent
+    case invalidToolType
+    case invalidToolFunction
+    case invalidToolCallId
+    case invalidToolCallType
+    case invalidToolCallFunction
+    case invalidMessageContentType
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidModel:
+            return "LLM request model could not be properly parsed."
+        case .invalidMessages:
+            return "LLM request messages could not be properly parsed."
+        case .invalidMessageRole:
+            return "LLM message role could not be properly parsed."
+        case .invalidMessageContent:
+            return "LLM message could not be properly parsed."
+        case .invalidToolType:
+            return "LLM tool type could not be properly parsed."
+        case .invalidToolFunction:
+            return "LLM tool function could not be properly parsed."
+        case .invalidToolCallId:
+            return "LLM message tool call id could not be properly parsed."
+        case .invalidToolCallType:
+            return "LLM message tool call type could not be properly parsed."
+        case .invalidToolCallFunction:
+            return "LLM message tool call function could not be properly parsed."
+        case .invalidMessageContentType:
+            return "LLM message content could not be properly parsed."
+        }
+    }
+}
+
 enum LLMMessageType {
     case content
-    case mutipleContent
+    case multipleContent
     case toolCall
 }
 
@@ -133,13 +166,13 @@ class LLMMessage {
     // Content
     let content: String?
     
-    // Mutiple Content
+    // Multiple Content
     let contents: [LLMMessageContent]?
     
     // Tool Calls
     let toolCalls: [LLMMessageToolCall]?
     
-    init(role: String, name: String? = nil, content: String? = nil, contents: [LLMMessageContent]? = nil, toolCalls: [LLMMessageToolCall]? = nil) {
+    init(role: String, name: String? = nil, content: String? = nil, contents: [LLMMessageContent]? = nil, toolCalls: [LLMMessageToolCall]? = nil) throws {
         self.role = role
         self.name = name
         self.content = content
@@ -147,7 +180,7 @@ class LLMMessage {
         self.toolCalls = toolCalls
         
         guard content != nil || contents != nil || toolCalls != nil else {
-            fatalError("LLM message could not be properly parsered.")
+            throw LLMRequestError.invalidMessageContent
         }
         
         if content != nil {
@@ -155,7 +188,7 @@ class LLMMessage {
         }
         
         if contents != nil {
-            self.type = .mutipleContent
+            self.type = .multipleContent
         }
         
         if toolCalls != nil {
@@ -175,7 +208,7 @@ class LLMMessage {
     init(role: String, name: String? = nil, contents: [LLMMessageContent]) {
         self.role = role
         self.name = name
-        self.type = .mutipleContent
+        self.type = .multipleContent
         self.content = nil
         self.contents = contents
         self.toolCalls = nil
@@ -190,12 +223,11 @@ class LLMMessage {
         self.toolCalls = toolCalls
     }
     
-    init(dict: [String: Any]) {
-        if let role = dict["role"] as? String {
-            self.role = role
-        } else {
-            fatalError("LLM message role could not be properly parsered.")
+    init(dict: [String: Any]) throws {
+        guard let role = dict["role"] as? String else {
+            throw LLMRequestError.invalidMessageRole
         }
+        self.role = role
         
         self.name = dict["name"] as? String
         
@@ -205,25 +237,25 @@ class LLMMessage {
             self.contents = nil
             self.toolCalls = nil
         } else if let contents = dict["content"] as? [[String: Any]] {
-            self.type = .mutipleContent
-            var parseredContents = [LLMMessageContent]()
+            self.type = .multipleContent
+            var parsedContents = [LLMMessageContent]()
             for content in contents {
-                parseredContents.append(LLMMessageContent(dict: content))
+                parsedContents.append(try LLMMessageContent(dict: content))
             }
-            self.contents = parseredContents
+            self.contents = parsedContents
             self.content = nil
             self.toolCalls = nil
-        } else if let toolCalls = dict["tools_calls"] as? [[String: Any]] {
+        } else if let toolCalls = dict["tool_calls"] as? [[String: Any]] { // Fixed typo: tools_calls -> tool_calls
             self.type = .toolCall
-            var parseredToolCalls = [LLMMessageToolCall]()
+            var parsedToolCalls = [LLMMessageToolCall]()
             for toolCall in toolCalls {
-                parseredToolCalls.append(LLMMessageToolCall(dict: toolCall))
+                parsedToolCalls.append(try LLMMessageToolCall(dict: toolCall))
             }
-            self.toolCalls = parseredToolCalls
+            self.toolCalls = parsedToolCalls
             self.content = nil
             self.contents = nil
         } else {
-            fatalError("LLM message could not be properly parsered.")
+            throw LLMRequestError.invalidMessageContent
         }
     }
     
@@ -237,7 +269,7 @@ class LLMMessage {
             if let content = content {
                 dict["content"] = content
             }
-        case .mutipleContent:
+        case .multipleContent:
             if let contents = contents {
                 var contentsArray = [Any]()
                 for content in contents {
@@ -258,7 +290,7 @@ class LLMMessage {
     }
 }
 
-enum LLMMessageContentType{
+enum LLMMessageContentType {
     case text
     case imageUrl
 }
@@ -266,7 +298,6 @@ enum LLMMessageContentType{
 class LLMMessageContent {
     let type: LLMMessageContentType
     let text: String?
-    
     let imageUrl: LLMMessageContentImageUrl?
     
     init(text: String) {
@@ -281,23 +312,23 @@ class LLMMessageContent {
         self.imageUrl = LLMMessageContentImageUrl(url: imageUrl)
     }
     
-    init(dict: [String: Any]) {
-        if let type = dict["type"] as? String {
-            if type == "text", let text = dict["text"] as? String {
-                self.type = .text
-                self.text = text
-                self.imageUrl = nil
-            } else if type == "image_url",
-                      let imageUrl = dict["image_url"] as? [String: Any],
-                      let url = imageUrl["url"] as? String {
-                self.type = .imageUrl
-                self.text = nil
-                self.imageUrl = LLMMessageContentImageUrl(url: url)
-            } else {
-                fatalError("LLM message content type could not be properly parsered.")
-            }
+    init(dict: [String: Any]) throws {
+        guard let type = dict["type"] as? String else {
+            throw LLMRequestError.invalidMessageContentType
+        }
+        
+        if type == "text", let text = dict["text"] as? String {
+            self.type = .text
+            self.text = text
+            self.imageUrl = nil
+        } else if type == "image_url",
+                  let imageUrl = dict["image_url"] as? [String: Any],
+                  let url = imageUrl["url"] as? String {
+            self.type = .imageUrl
+            self.text = nil
+            self.imageUrl = LLMMessageContentImageUrl(url: url)
         } else {
-            fatalError("LLM message content could not be properly parsered.")
+            throw LLMRequestError.invalidMessageContentType
         }
     }
     
@@ -342,24 +373,26 @@ class LLMMessageToolCall {
         self.function = function
     }
     
-    init(dict: [String: Any]) {
-        if let id = dict["id"] as? String {
-            self.id = id
-        } else {
-            fatalError("LLM message tool call id could not be properly parsered.")
+    init(dict: [String: Any]) throws {
+        guard let id = dict["id"] as? String else {
+            throw LLMRequestError.invalidToolCallId
         }
+        self.id = id
         
-        if let type = dict["type"] as? String {
-            self.type = type
-        } else {
-            fatalError("LLM message tool call type could not be properly parsered.")
+        guard let type = dict["type"] as? String else {
+            throw LLMRequestError.invalidToolCallType
         }
+        self.type = type
         
-        if let function = dict["function"] as? [String: Any] {
-            self.function = LLMFunction(name: function["name"] as? String, description: function["description"] as? String, parameters: function["parameters"] as? String, arguments: function["arguments"] as? String)
-        } else {
-            fatalError("LLM message tool call function could not be properly parsered.")
+        guard let function = dict["function"] as? [String: Any] else {
+            throw LLMRequestError.invalidToolCallFunction
         }
+        self.function = LLMFunction(
+            name: function["name"] as? String,
+            description: function["description"] as? String,
+            parameters: function["parameters"] as? String,
+            arguments: function["arguments"] as? String
+        )
     }
     
     func toDictionary() -> [String: Any] {
@@ -419,18 +452,25 @@ class LLMTool {
         self.function = function
     }
     
-    init(dict: [String: Any]) {
-        if let type = dict["type"] as? String {
-            self.type = type
-        } else {
-            fatalError("LLM tool type could not be properly parsered.")
+    init(dict: [String: Any]) throws {
+        guard let type = dict["type"] as? String else {
+            throw LLMRequestError.invalidToolType
+        }
+        self.type = type
+        
+        guard let function = dict["function"] as? [String: Any] else {
+            throw LLMRequestError.invalidToolFunction
         }
         
-        if let function = dict["function"] as? [String: Any], let functionName = function["name"] as? String {
-            self.function = LLMFunction(name: functionName, description: function["description"] as? String, parameters: function["parameters"] as? String)
-        } else {
-            fatalError("LLM tool function could not be properly parsered.")
+        guard let functionName = function["name"] as? String else {
+            throw LLMRequestError.invalidToolFunction
         }
+        
+        self.function = LLMFunction(
+            name: functionName,
+            description: function["description"] as? String,
+            parameters: function["parameters"] as? String
+        )
     }
     
     func toDictionary() -> [String: Any] {

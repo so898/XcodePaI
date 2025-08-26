@@ -75,12 +75,10 @@ extension ChatProxyTunnel{
 // MARK: Completions Response
 extension ChatProxyTunnel{
     func receiveCompletionsRequest(body: Data) {
-        guard let jsonDict = try? JSONSerialization.jsonObject(with: body) as? [String: Any] else {
+        guard let jsonDict = try? JSONSerialization.jsonObject(with: body) as? [String: Any], let originalRequest = try? LLMRequest(dict: jsonDict) else {
             writeServerErrorResponse()
             return
         }
-        
-        let originalRequest = LLMRequest(dict: jsonDict)
         
         bridge.receiveRequest(originalRequest)
     }

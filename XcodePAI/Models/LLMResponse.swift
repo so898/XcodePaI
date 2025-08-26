@@ -7,6 +7,32 @@
 
 import Foundation
 
+enum LLMResponseError: Error, LocalizedError {
+    case invalidId
+    case invalidModel
+    case invalidObject
+    case invalidCreated
+    case invalidChoices
+    case invalidChoice
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidId:
+            return "LLM response id could not be properly parsed."
+        case .invalidModel:
+            return "LLM response model could not be properly parsed."
+        case .invalidObject:
+            return "LLM response object could not be properly parsed."
+        case .invalidCreated:
+            return "LLM response created could not be properly parsed."
+        case .invalidChoices:
+            return "LLM response choices could not be properly parsed."
+        case .invalidChoice:
+            return "LLM choice could not be properly parsed."
+        }
+    }
+}
+
 class LLMResponse {
     let id: String
     let model: String
@@ -28,45 +54,45 @@ class LLMResponse {
         self.usage = usage
     }
     
-    init(dict: [String: Any]) {
+    init(dict: [String: Any]) throws {
         if let id = dict["id"] as? String {
             self.id = id
         } else {
-            fatalError("LLM response id could not be properly parsered.")
+            throw LLMResponseError.invalidId
         }
         
         if let model = dict["model"] as? String {
             self.model = model
         } else {
-            fatalError("LLM response model could not be properly parsered.")
+            throw LLMResponseError.invalidModel
         }
         
         if let object = dict["object"] as? String {
             self.object = object
         } else {
-            fatalError("LLM response object could not be properly parsered.")
+            throw LLMResponseError.invalidObject
         }
         
         if let created = dict["created"] as? Int {
             self.created = created
         } else {
-            fatalError("LLM response created could not be properly parsered.")
+            throw LLMResponseError.invalidCreated
         }
         
         self.systemFingerprint = dict["system_fingerprint"] as? String
         
         if let choices = dict["choices"] as? [[String: Any]] {
-            var parseredChoicesArray = [LLMResponseChoice]()
+            var parsedChoicesArray = [LLMResponseChoice]()
             for choice in choices {
-                parseredChoicesArray.append(LLMResponseChoice(dict: choice))
+                try parsedChoicesArray.append(LLMResponseChoice(dict: choice))
             }
-            self.choices = parseredChoicesArray
+            self.choices = parsedChoicesArray
         } else {
-            fatalError("LLM response choices could not be properly parsered.")
+            throw LLMResponseError.invalidChoices
         }
         
         if let usage = dict["usage"] as? [String: Any] {
-            self.usage = LLMResponseUsage(dict: usage)
+            self.usage = try LLMResponseUsage(dict: usage)
         } else {
             self.usage = nil
         }
@@ -104,11 +130,11 @@ class LLMResponseChoice {
         self.message = message
     }
     
-    init(dict: [String: Any]) {
+    init(dict: [String: Any]) throws {
         if let index = dict["index"] as? Int {
             self.index = index
         } else {
-            fatalError("LLM choice could not be properly parsered.")
+            throw LLMResponseError.invalidChoice
         }
         
         self.finishReason = dict["finish_reason"] as? String
@@ -117,12 +143,12 @@ class LLMResponseChoice {
         // maybe compatible with it later
         if let delta = dict["delta"] as? [String: Any] {
             self.isFullMessage = false
-            self.message = LLMResponseChoiceMessage(dict: delta)
+            self.message = try LLMResponseChoiceMessage(dict: delta)
         } else if let message = dict["message"] as? [String: Any] {
             self.isFullMessage = true
-            self.message = LLMResponseChoiceMessage(dict: message)
-        }else {
-            fatalError("LLM choice could not be properly parsered.")
+            self.message = try LLMResponseChoiceMessage(dict: message)
+        } else {
+            throw LLMResponseError.invalidChoice
         }
     }
     
@@ -211,7 +237,7 @@ class LLMResponseChoiceMessage {
         self.toolCalls = nil
     }
     
-    init(dict: [String: Any]) {
+    init(dict: [String: Any]) throws {
         self.role = dict["role"] as? String
         
         if let content = dict["content"] as? String {
@@ -250,11 +276,11 @@ class LLMResponseChoiceMessage {
             self.toolCalls = nil
         } else if let toolCalls = dict["tool_calls"] as? [[String: Any]] {
             self.type = .toolCall
-            var parseredToolCalls = [LLMMessageToolCall]()
+            var parsedToolCalls = [LLMMessageToolCall]()
             for toolCall in toolCalls {
-                parseredToolCalls.append(LLMMessageToolCall(dict: toolCall))
+                try parsedToolCalls.append(LLMMessageToolCall(dict: toolCall))
             }
-            self.toolCalls = parseredToolCalls
+            self.toolCalls = parsedToolCalls
             self.content = nil
             self.reasoningContent = nil
             self.toolCallId = nil
@@ -299,26 +325,26 @@ class LLMResponseChoiceMessage {
 }
 
 class LLMResponseUsage {
-    let comletionTokens: Int?
+    let completionTokens: Int?
     let promptTokens: Int?
     let totalTokens: Int?
     
-    init(comletionTokens: Int?, promptTokens: Int?, totalTokens: Int?) {
-        self.comletionTokens = comletionTokens
+    init(completionTokens: Int?, promptTokens: Int?, totalTokens: Int?) {
+        self.completionTokens = completionTokens
         self.promptTokens = promptTokens
         self.totalTokens = totalTokens
     }
     
-    init(dict: [String: Any]) {
-        self.comletionTokens = dict["completion_tokens"] as? Int
+    init(dict: [String: Any]) throws {
+        self.completionTokens = dict["completion_tokens"] as? Int
         self.promptTokens = dict["prompt_tokens"] as? Int
         self.totalTokens = dict["total_tokens"] as? Int
     }
     
     func toDictionary() -> [String: Any] {
         var dict = [String: Any]()
-        if let comletionTokens = comletionTokens {
-            dict["completion_tokens"] = comletionTokens
+        if let completionTokens = completionTokens {
+            dict["completion_tokens"] = completionTokens
         }
         if let promptTokens = promptTokens {
             dict["prompt_tokens"] = promptTokens
