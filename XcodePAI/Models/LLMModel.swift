@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-typealias ChatProxyLLMModel = LLMModel
+typealias ChatProxyModel = LLMModel
 
 /// Represents an LLM model with observable properties
 class LLMModel: Identifiable, ObservableObject, Codable {

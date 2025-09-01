@@ -13,7 +13,10 @@ struct ChatProxySettingSectionView: View {
     @State private var thinkStyle: Int = Configer.chatProxyThinkStyle.rawValue
     @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
     
+    @StateObject private var configManager = LLMConfigManager()
+    
     @State private var isShowingSheet = false
+    @State private var editConfig: LLMConfig?
     
     var body: some View {
         ScrollView {
@@ -92,11 +95,11 @@ struct ChatProxySettingSectionView: View {
                     .listRowBackground(Color.clear)
                 
                 Section {
-//                    ForEach(mcpManager.mcps) { mcp in
-//                        NavigationLink(value: mcp) {
-//                            MCPRow(mcp: mcp)
-//                        }
-//                    }
+                    ForEach(configManager.configs) { config in
+                        CustomConfigRow(config: config) {
+                            editConfig = config
+                        }
+                    }
                 }
             }
             .formStyle(.grouped)
@@ -105,6 +108,7 @@ struct ChatProxySettingSectionView: View {
             HStack {
                 Spacer()
                 Button("Add custom config...") {
+                    editConfig = nil
                     isShowingSheet = true
                 }
                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 16))
@@ -113,12 +117,18 @@ struct ChatProxySettingSectionView: View {
         .background(Color(nsColor: .textBackgroundColor))
         .navigationTitle("Chat Proxy")
         .sheet(isPresented: $isShowingSheet) {
-//            ChatProxyEditView(mcp: nil){ mcp, tools in
-//                mcpManager.addMCP(mcp)
-//                
-//                let toolManager = MCPToolManager(mcp.name)
-//                toolManager.replaceTools(tools ?? [])
-//            }
+            ChatProxyEditView(config: nil) { config in
+                configManager.addConfig(config)
+            } removeConfig: { config in
+                configManager.deleteConfig(config)
+            }
+        }
+        .sheet(item: $editConfig) { config in
+            ChatProxyEditView(config: config) { config in
+                configManager.addOrUpdateConfig(config)
+            } removeConfig: { config in
+                configManager.deleteConfig(config)
+            }
         }
     }
 }
@@ -145,17 +155,42 @@ struct CustomConfigInfoSection: View {
 }
 
 struct CustomConfigRow: View {
-    @ObservedObject var mcp: LLMMCP
+    @ObservedObject var config: LLMConfig
+    var editConfigAction: () -> Void
     
     var body: some View {
         HStack(spacing: 12) {
-            MCPIconView(mcp: mcp, size: 24)
-            Text(mcp.name)
+            ConfigIconView(config: config, size: 24)
+            Text(config.name)
             Spacer()
-            Text(mcp.enabled ? "Enabled" : "Disabled")
-                .foregroundColor(.secondary)
+            if config !== StorageManager.shared.defaultConfig() {
+                Button(action: {
+                    editConfigAction()
+                }) {
+                    Image(systemName: "pencil")
+                        .frame(width: 10, height: 10)
+                }
+                .buttonStyle(GetButtonStyle())
+            }
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
+    }
+}
+
+struct ConfigIconView: View {
+    @ObservedObject var config: LLMConfig
+    let size: CGFloat
+    
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: size * 0.2, style: .continuous)
+                .fill(Color.blue.opacity(0.7))
+            Image(systemName: "text.book.closed")
+                .resizable()
+                .renderingMode(.template)
+                .padding(4)
+        }
+        .frame(width: size, height: size)
     }
 }

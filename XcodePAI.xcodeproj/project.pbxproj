@@ -57,6 +57,7 @@
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
+		79F743072E65E8E800C35D1B /* LLMConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F743062E65E8E400C35D1B /* LLMConfigManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -112,6 +113,7 @@
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
 		79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyEditView.swift; sourceTree = "<group>"; };
+		79F743062E65E8E400C35D1B /* LLMConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfigManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -307,6 +309,7 @@
 				79079A152E4FBD95004D9D1A /* ModelManager.swift */,
 				79079A172E4FBDAA004D9D1A /* MCPManager.swift */,
 				79079A192E4FBDBD004D9D1A /* MCPToolManager.swift */,
+				79F743062E65E8E400C35D1B /* LLMConfigManager.swift */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -426,6 +429,7 @@
 				790799C92E48F688004D9D1A /* LLMModelProvider.swift in Sources */,
 				790799C02E48B833004D9D1A /* HTTPSSEClient.swift in Sources */,
 				790799A92E471FEA004D9D1A /* XcodePAIApp.swift in Sources */,
+				79F743072E65E8E800C35D1B /* LLMConfigManager.swift in Sources */,
 				790799BA2E48932C004D9D1A /* Extensions.swift in Sources */,
 				79079A142E4FBD7E004D9D1A /* ModelProviderManager.swift in Sources */,
 				79079A202E51C116004D9D1A /* MCPRunner.swift in Sources */,

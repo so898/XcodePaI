@@ -162,8 +162,8 @@ extension StorageManager {
         updateLLMConfigs(llmConfigs)
     }
     
-    func getChatProxyModels() -> [ChatProxyLLMModel] {
-        var ret = [ChatProxyLLMModel]()
+    func getChatProxyModels() -> [ChatProxyModel] {
+        var ret = [ChatProxyModel]()
         
         if let defaultConfig = defaultConfig() {
             ret.append(defaultConfig.toChatProxyModel())

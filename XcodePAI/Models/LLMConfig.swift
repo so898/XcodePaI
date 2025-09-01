@@ -7,7 +7,7 @@
 
 import Foundation
 
-class LLMConfig: Identifiable, Codable {
+class LLMConfig: Identifiable, Codable, ObservableObject {
     let id: UUID
     
     let name: String
@@ -50,7 +50,7 @@ class LLMConfig: Identifiable, Codable {
         try container.encode(mcps, forKey: .mcps)
     }
     
-    func toChatProxyModel() -> ChatProxyLLMModel {
+    func toChatProxyModel() -> ChatProxyModel {
         return .init(id: name)
     }
     
