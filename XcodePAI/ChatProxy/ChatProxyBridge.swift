@@ -89,7 +89,7 @@ class ChatProxyBridge {
         let newRequest = processRequest(request)
         
         // Do LLM request to server, add MCP...
-        if !roleReturned {
+        if roleReturned {
             thinkParser = .inContentWithCodeSnippet
         }
         thinkState = .notStarted
