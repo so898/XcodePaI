@@ -9,40 +9,52 @@ import SwiftUI
 
 struct SettingsView: View {
     
-    @State private var selectedTabId = 0
-    
     // Tab model
     struct TabItem: Identifiable {
         let id: Int
         let title: String
         let imageName: String
+        let view: AnyView
     }
     
+    @State private var selection: Int = 0
+    
     // Tab Infos
-    let tabs = [
-        TabItem(id: 0, title: "General", imageName: "gearshape"),
-        TabItem(id: 1, title: "Provider", imageName: "sparkles.square.filled.on.square"),
-        TabItem(id: 2, title: "MCP", imageName: "square.stack.3d.forward.dottedline"),
-        TabItem(id: 3, title: "Chat Proxy", imageName: "chart.bar.horizontal.page"),
-        TabItem(id: 4, title: "Completion", imageName: "pencil.and.list.clipboard"),
-        TabItem(id: 5, title: "About", imageName: "info.circle.fill"),
-    ]
+    var tabs: [TabItem] {
+        [
+            TabItem(id: 0, title: "General", imageName: "gearshape", view: AnyView(GeneralSettingSectionView())),
+            TabItem(id: 1, title: "Provider", imageName: "sparkles.square.filled.on.square", view: AnyView(ModelProviderSettingSectionView())),
+            TabItem(id: 2, title: "MCP", imageName: "square.stack.3d.forward.dottedline", view: AnyView(MCPSettingSectionView())),
+            TabItem(id: 3, title: "Chat Proxy", imageName: "chart.bar.horizontal.page", view: AnyView(ChatProxySettingSectionView())),
+            TabItem(id: 4, title: "Completion", imageName: "pencil.and.list.clipboard", view: AnyView(GeneralSettingSectionView())),
+            TabItem(id: 5, title: "About", imageName: "info.circle.fill", view: AnyView(GeneralSettingSectionView()))
+        ]
+    }
     
     var body: some View {
-        TabView {
-            ForEach(tabs) { tab in
-                Tab(tab.title, systemImage: tab.imageName) {
-                    switch tab.id {
-                    case 0: GeneralSettingSectionView()
-                    case 1: ModelProviderSettingSectionView()
-                    case 2: MCPSettingSectionView()
-                    case 3: ChatProxySettingSectionView()
-                    default: GeneralSettingSectionView()
+        NavigationSplitView {
+            List(selection: $selection) {
+                ForEach(tabs) { tab in
+                    HStack {
+                        Image(systemName: tab.imageName)
+                        Text(tab.title)
                     }
+                    .tag(tab.id)
                 }
             }
+            .listStyle(.sidebar)
+            .navigationTitle("Settings")
+            .frame(minWidth: 180, idealWidth: 200, maxWidth: 250)
+        } detail: {
+            Group {
+                if let selectedTab = tabs.first(where: { $0.id == selection }) {
+                    selectedTab.view
+                } else {
+                    GeneralSettingSectionView()
+                }
+            }
+            .navigationTitle(tabs.first { $0.id == selection }?.title ?? "General")
         }
-        .tabViewStyle(SidebarAdaptableTabViewStyle())
         .background(Color(nsColor: .windowBackgroundColor))
     }
 }
