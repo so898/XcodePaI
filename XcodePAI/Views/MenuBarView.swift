@@ -21,10 +21,10 @@ class MenuBarManager: NSObject, ObservableObject {
         
         if let statusBarButton = menuItem?.button {
             let hostingView = NSHostingView(rootView: StatusBarIconView())
-            hostingView.frame = NSRect(x: 0, y: 0, width: 22, height: 22)
+            hostingView.frame = NSRect(x: 0, y: 0, width: 32, height: 22)
             
             statusBarButton.addSubview(hostingView)
-            statusBarButton.frame = NSRect(x: 0, y: 0, width: 22, height: 22)
+            statusBarButton.frame = NSRect(x: 0, y: 0, width: 32, height: 22)
         }
         
         let menu = NSMenu()
