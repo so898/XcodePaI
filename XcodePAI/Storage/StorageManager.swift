@@ -169,6 +169,12 @@ extension StorageManager {
             ret.append(defaultConfig.toChatProxyModel())
         }
         
+        for config in llmConfigs {
+            if config.name != Constraint.AppName {
+                ret.append(config.toChatProxyModel())
+            }
+        }
+        
         return ret
     }
     

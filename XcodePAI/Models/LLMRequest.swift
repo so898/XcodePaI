@@ -171,6 +171,8 @@ class LLMMessage {
     
     // Tool Calls
     let toolCalls: [LLMMessageToolCall]?
+
+    var tool_call_id: String?
     
     init(role: String, name: String? = nil, content: String? = nil, contents: [LLMMessageContent]? = nil, toolCalls: [LLMMessageToolCall]? = nil) throws {
         self.role = role
@@ -222,6 +224,16 @@ class LLMMessage {
         self.contents = nil
         self.toolCalls = toolCalls
     }
+
+    init(toolCallId: String, functionName: String, content: String) {
+        self.type = .content
+        self.role = "tool"
+        self.name = functionName
+        self.tool_call_id = toolCallId
+        self.content = content
+        self.contents = nil
+        self.toolCalls = nil
+    }
     
     init(dict: [String: Any]) throws {
         guard let role = dict["role"] as? String else {
@@ -230,6 +242,8 @@ class LLMMessage {
         self.role = role
         
         self.name = dict["name"] as? String
+
+        self.tool_call_id = dict["tool_call_id"] as? String
         
         if let content = dict["content"] as? String {
             self.type = .content
@@ -263,6 +277,9 @@ class LLMMessage {
         var dict: [String: Any] = ["role": role]
         if let name = name {
             dict["name"] = name
+        }
+        if let tool_call_id = tool_call_id {
+            dict["tool_call_id"] = tool_call_id
         }
         switch type {
         case .content:

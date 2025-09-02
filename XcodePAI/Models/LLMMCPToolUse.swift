@@ -14,6 +14,10 @@ class LLMMCPToolUse: NSObject {
     var arguments: String?
     
     var tool: LLMMCPTool?
+
+    // Tool calls
+    var tid: String?
+    var type: String?
     
     init(content: String) {
         self.content = content
@@ -56,10 +60,25 @@ class LLMMCPToolUse: NSObject {
         
     }
 
-    init(toolName: String, arguments: String?) {
+    init(toolName: String, arguments: String?, tid: String? = nil, type: String? = nil) {
         self.content = nil
         self.toolName = toolName
         self.arguments = arguments
+        self.tid = tid
+        self.type = type
     }
     
+    // For reqeust message
+    func messageToolCall() -> LLMMessageToolCall {
+        return LLMMessageToolCall(
+            id: tid ?? "",
+            type: type ?? "",
+            function: LLMFunction(
+                name: toolName,
+                description: nil,
+                parameters: nil,
+                arguments: arguments
+            )
+        )
+    }
 }

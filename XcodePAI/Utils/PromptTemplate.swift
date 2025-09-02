@@ -28,8 +28,10 @@ You are a coding assistant—with access to tools—specializing in analyzing co
     
     static let systemPromptAvailableToolTemplateEnd = "\n</tools>\n"
     
+    static let userPromptToolUseResultDescriptionTemplatePrefix = "Here is the result of mcp tool use"
+    
     static let userPromptToolUseResultDescriptionTemplate = """
-        Here is the result of mcp tool use `{{TOOL_NAME}}`{{ARGUMENTS}}:
+        \(userPromptToolUseResultDescriptionTemplatePrefix) `{{TOOL_NAME}}`{{ARGUMENTS}}:
         """
     
     static let userPromptToolUseResultDescriptionArgumentsTemplate = """

@@ -112,14 +112,26 @@ extension ChatProxyBridge {
         
         mcpTools = config.getTools()
         
-        let newRequest = request
+        guard let newRequest = try? LLMRequest(dict: request.toDictionary()) else {
+            return request
+        }
+
         newRequest.model = config.modelName
         
         let messages = request.messages
         
         var newMessages = [LLMMessage]()
+        
+        // Find the last user message
+        var lastUserMessage: LLMMessage?
         for message in messages {
-            if let message = processRequestMessage(message) {
+            if message.role == "user" {
+                lastUserMessage = message
+            }
+        }
+        
+        for message in messages {
+            if let message = processRequestMessage(message, isLastUserMessage: lastUserMessage === message) {
                 newMessages.append(message)
             }
         }
@@ -136,7 +148,7 @@ extension ChatProxyBridge {
         return newRequest
     }
     
-    private func processRequestMessage(_ message: LLMMessage) -> LLMMessage? {
+    private func processRequestMessage(_ message: LLMMessage, isLastUserMessage: Bool = false) -> LLMMessage? {
         
         switch message.role {
         case "developer":
@@ -174,12 +186,22 @@ extension ChatProxyBridge {
             // User Message
             if let content = message.content {
                 print("USER: \n\(content)")
+                return LLMMessage(role: "user", content: processUserMessageContent(content, isLastUserMessage: isLastUserMessage))
             } else if let contents = message.contents {
+                var newContents = [LLMMessageContent]()
                 for content in contents {
                     if content.type == .text, let text = content.text {
                         print("USER: \n\(text)")
+                        if contents.first === content, !text.contains(PromptTemplate.userPromptToolUseResultDescriptionTemplatePrefix){
+                            newContents.append(LLMMessageContent(text: processUserMessageContent(text, isLastUserMessage: isLastUserMessage)))
+                        } else {
+                            newContents.append(content)
+                        }
+                    } else {
+                        newContents.append(content)
                     }
                 }
+                return LLMMessage(role: "user", contents: newContents)
             }
             return message
         default:
@@ -254,6 +276,14 @@ extension ChatProxyBridge {
         }
         
         return returnContent
+    }
+        
+    private func processUserMessageContent(_ content: String, isLastUserMessage: Bool = false) -> String {
+        if isLastUserMessage {
+            // Language
+            return content + "\n请使用中文进行回答。"
+        }
+        return content
     }
 }
 
@@ -342,12 +372,22 @@ extension ChatProxyBridge {
             return ret
         }()
         
-        recordAssistantMessages.append(contentsOf: [
-            LLMMessage(role: "user", contents: [
-                LLMMessageContent(text: recordMessageDescriptionTitle),
-                LLMMessageContent(text: content ?? "")
+        if useToolInRequest {
+            // Follow OpenAI api
+            // Ref: https://community.openai.com/t/formatting-assistant-messages-after-tool-function-calls-in-gpt-conversations/535360/3
+            recordAssistantMessages.append(contentsOf: [
+                LLMMessage(role: "assistant", toolCalls: [toolUse.messageToolCall()]),
+                LLMMessage(toolCallId: toolUse.tid ?? "", functionName: toolUse.toolName, content: content ?? ""),
             ])
-        ])
+        } else {
+            // Use Cherry Studio format
+            recordAssistantMessages.append(contentsOf: [
+                LLMMessage(role: "user", contents: [
+                    LLMMessageContent(text: recordMessageDescriptionTitle),
+                    LLMMessageContent(text: content ?? "")
+                ])
+            ])
+        }
         
         currentRequest?.messages.append(contentsOf: recordAssistantMessages)
     }
@@ -597,15 +637,26 @@ class ResponseToolProcesser {
     }
     
     private func processToolCalls() {
+        var id: String?
+        var type: String?
         var functionName: String?
         var arguments: String?
         for toolUse in messageToolCalls {
             if let name = toolUse.function.name {
                 if let functionName = functionName {
-                    getMCPToolUseCall?(LLMMCPToolUse(toolName: functionName, arguments: arguments))
+                    getMCPToolUseCall?(LLMMCPToolUse(toolName: functionName, arguments: arguments, tid: id, type: type))
                 }
+                id = nil
+                type = nil
                 functionName = name
                 arguments = nil
+            }
+            if !toolUse.id.isEmpty {
+                if id == nil {
+                    id = toolUse.id
+                } else {
+                    id?.append(toolUse.id)
+                }
             }
             if let args = toolUse.function.arguments {
                 if arguments == nil {
@@ -614,10 +665,13 @@ class ResponseToolProcesser {
                     arguments?.append(args)
                 }
             }
+            if type == nil, !toolUse.type.isEmpty {
+                type = toolUse.type
+            }
         }
         
         if let functionName = functionName {
-            getMCPToolUseCall?(LLMMCPToolUse(toolName: functionName, arguments: arguments))
+            getMCPToolUseCall?(LLMMCPToolUse(toolName: functionName, arguments: arguments, tid: id, type: type))
         }
     }
         
@@ -737,5 +791,6 @@ class ResponseToolProcesser {
     func reset() {
         toolRequestCheck = .none
         maybeToolCallInContent = ""
+        messageToolCalls.removeAll()
     }
 }
