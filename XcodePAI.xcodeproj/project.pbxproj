@@ -56,12 +56,12 @@
 		79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A262E54BFBA004D9D1A /* StorageManager.swift */; };
 		7932600F2E675B800017E87F /* XcodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79F743112E672E1200C35D1B /* XcodeKit.framework */; };
 		793260102E675B800017E87F /* XcodeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 79F743112E672E1200C35D1B /* XcodeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		793260132E675DE10017E87F /* MainService in Frameworks */ = {isa = PBXBuildFile; productRef = 793260122E675DE10017E87F /* MainService */; };
 		7932602B2E689FEB0017E87F /* GetSuggestionsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793260242E689FEB0017E87F /* GetSuggestionsCommand.swift */; };
 		7932602D2E689FEB0017E87F /* RejectSuggestionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793260282E689FEB0017E87F /* RejectSuggestionCommand.swift */; };
 		7932602E2E689FEB0017E87F /* NextSuggestionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793260252E689FEB0017E87F /* NextSuggestionCommand.swift */; };
 		7932602F2E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793260292E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift */; };
 		793260302E689FEB0017E87F /* PreviousSuggestionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793260272E689FEB0017E87F /* PreviousSuggestionCommand.swift */; };
+		793260322E68AC070017E87F /* MainAppService in Frameworks */ = {isa = PBXBuildFile; productRef = 793260312E68AC070017E87F /* MainAppService */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
@@ -186,7 +186,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				79079A032E4E191D004D9D1A /* MCP in Frameworks */,
-				793260132E675DE10017E87F /* MainService in Frameworks */,
+				793260322E68AC070017E87F /* MainAppService in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,7 +449,7 @@
 			name = XcodePAI;
 			packageProductDependencies = (
 				79079A022E4E191D004D9D1A /* MCP */,
-				793260122E675DE10017E87F /* MainService */,
+				793260312E68AC070017E87F /* MainAppService */,
 			);
 			productName = XcodePAI;
 			productReference = 790799862E4507BA004D9D1A /* XcodePAI.app */;
@@ -921,9 +921,9 @@
 			package = 79079A012E4E191D004D9D1A /* XCRemoteSwiftPackageReference "swift-sdk" */;
 			productName = MCP;
 		};
-		793260122E675DE10017E87F /* MainService */ = {
+		793260312E68AC070017E87F /* MainAppService */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = MainService;
+			productName = MainAppService;
 		};
 		79F743352E674EA000C35D1B /* EditExtensionService */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -10,15 +10,13 @@ class ToggleRealtimeSuggestionsCommand: NSObject, XCSourceEditorCommand, Command
         with invocation: XCSourceEditorCommandInvocation,
         completionHandler: @escaping (Error?) -> Void
     ) {
-        Task {
-            do {
-                try await IPCClient.shared.toggleRealtimeSuggestion()
-                completionHandler(nil)
-            } catch is CancellationError {
-                completionHandler(nil)
-            } catch {
-                completionHandler(error)
-            }
+        do {
+            try IPCClient.shared.toggleRealtimeSuggestion()
+            completionHandler(nil)
+        } catch is CancellationError {
+            completionHandler(nil)
+        } catch {
+            completionHandler(error)
         }
     }
 }
