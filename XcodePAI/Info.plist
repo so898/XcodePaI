@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>APPLICATION_SUPPORT_FOLDER</key>
+	<string>$(APPLICATION_SUPPORT_FOLDER)</string>
+	<key>BUNDLE_IDENTIFIER_BASE</key>
+	<string>$(BUNDLE_IDENTIFIER_BASE)</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -9,5 +13,7 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>TEAM_ID_PREFIX</key>
+	<string>$(TeamIdentifierPrefix)</string>
 </dict>
 </plist>

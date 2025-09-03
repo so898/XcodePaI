@@ -7,11 +7,13 @@
 
 import Foundation
 import Cocoa
+import SuggestionBasic
+import IPCServer
 
 class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
-        NSApp.setActivationPolicy(.accessory)
+//        NSApp.setActivationPolicy(.accessory)
         
         StorageManager.shared.load()
         
@@ -22,6 +24,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         
         // Chat Proxy
         let _ = ChatProxy.shared
+        
+        
+//        Wormhole.shared.listenMessage(for: "EditContent") { (content: EditorContent, replyHandler: @escaping (Any?) -> Void) in
+//            print("sm.pro: \(content)")
+//        }
+        
+        IPCServer.shared
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {

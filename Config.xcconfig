@@ -1,0 +1,17 @@
+//
+//  Config.xcconfig
+//  XcodePAI
+//
+//  Created by Bill Cheng on 2025/9/2.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+APP_VERSION = 0.0.1
+APP_BUILD = 100
+HOST_APP_NAME = XcodePaI
+BUNDLE_IDENTIFIER_BASE = com.R3Studio.XcodePAI
+APPLICATION_SUPPORT_FOLDER = com.R3Studio.XcodePAI
+EXTENSION_BUNDLE_NAME = XcodePaI
+EXTENSION_BUNDLE_DISPLAY_NAME = XcodePaI
