@@ -11,31 +11,27 @@ let package = Package(
         .library(name: "EditExtensionService", targets: ["EditExtensionService"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.12.1"),
-        .package(url: "https://github.com/GottaGetSwifty/CodableWrappers", from: "2.0.7"),
+        .package(path: "../ThirdParty"),
     ],
     targets: [
         // MARK: - Helpers
         .target(name: "MainAppService", dependencies: [
             "IPCServer",
-            "SuggestionBasic"
         ]),
         .target(name: "EditExtensionService", dependencies: [
             "IPCClient",
-            "SuggestionBasic"
         ]),
         
-        .target(name: "IPCServer", dependencies: ["IPCShared"]),
-        .target(name: "IPCClient", dependencies: ["IPCShared"]),
+        .target(name: "IPCServer", dependencies: [
+            "IPCShared",
+        ]),
+        .target(name: "IPCClient", dependencies: [
+            "IPCShared",
+        ]),
         
-        .target(name: "IPCShared", dependencies: ["SuggestionBasic"]),
+        .target(name: "IPCShared", dependencies: [
+            .product(name: "SuggestionBasic", package: "ThirdParty"),
+        ]),
         
-        .target(
-            name: "SuggestionBasic",
-            dependencies: [
-                .product(name: "Parsing", package: "swift-parsing"),
-                .product(name: "CodableWrappers", package: "CodableWrappers"),
-            ]
-        ),
     ]
 )

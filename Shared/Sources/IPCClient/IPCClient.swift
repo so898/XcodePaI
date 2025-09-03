@@ -7,6 +7,7 @@
 
 import Foundation
 import IPCShared
+import SuggestionBasic
 
 public enum IPCExtensionServiceError: Swift.Error, LocalizedError {
     case failedToGetServiceEndpoint
