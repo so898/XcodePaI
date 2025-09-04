@@ -162,6 +162,7 @@ class LLMMessage {
     let role: String
     let name: String?
     var type: LLMMessageType = .content
+    var partial: Bool = false
     
     // Content
     let content: String?
@@ -174,12 +175,13 @@ class LLMMessage {
 
     var tool_call_id: String?
     
-    init(role: String, name: String? = nil, content: String? = nil, contents: [LLMMessageContent]? = nil, toolCalls: [LLMMessageToolCall]? = nil) throws {
+    init(role: String, name: String? = nil, content: String? = nil, contents: [LLMMessageContent]? = nil, toolCalls: [LLMMessageToolCall]? = nil, partial: Bool = false) throws {
         self.role = role
         self.name = name
         self.content = content
         self.contents = contents
         self.toolCalls = toolCalls
+        self.partial = partial
         
         guard content != nil || contents != nil || toolCalls != nil else {
             throw LLMRequestError.invalidMessageContent
@@ -245,6 +247,8 @@ class LLMMessage {
 
         self.tool_call_id = dict["tool_call_id"] as? String
         
+        self.partial = dict["partial"] as? Bool ?? false
+        
         if let content = dict["content"] as? String {
             self.type = .content
             self.content = content
@@ -280,6 +284,9 @@ class LLMMessage {
         }
         if let tool_call_id = tool_call_id {
             dict["tool_call_id"] = tool_call_id
+        }
+        if partial {
+            dict["partial"] = true
         }
         switch type {
         case .content:

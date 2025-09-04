@@ -15,5 +15,7 @@
 	</dict>
 	<key>TEAM_ID_PREFIX</key>
 	<string>$(TeamIdentifierPrefix)</string>
+	<key>EXTENSION_BUNDLE_NAME</key>
+	<string>$(EXTENSION_BUNDLE_NAME)</string>
 </dict>
 </plist>

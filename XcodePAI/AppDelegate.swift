@@ -7,30 +7,40 @@
 
 import Foundation
 import Cocoa
+import ApplicationServices
 import SuggestionBasic
 import IPCServer
+import XcodeInspector
+import Service
+import SuggestionPortal
 
 class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
+    let service = Service.shared
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
-//        NSApp.setActivationPolicy(.accessory)
+        NSApp.setActivationPolicy(.accessory)
         
         StorageManager.shared.load()
         
-        let _ = MCPRunner.shared
+        _ = MCPRunner.shared
         
         // Menu
         MenuBarManager.shared.setup()
         
         // Chat Proxy
-        let _ = ChatProxy.shared
+        _ = ChatProxy.shared
         
+        // IPC
+        _ = IPCServer.shared
         
-//        Wormhole.shared.listenMessage(for: "EditContent") { (content: EditorContent, replyHandler: @escaping (Any?) -> Void) in
-//            print("sm.pro: \(content)")
-//        }
-        
-        IPCServer.shared
+        if checkAccessibilityPermission() {
+            _ = XcodeInspector.shared
+            service.start()
+            AXIsProcessTrustedWithOptions([
+                kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true,
+            ] as CFDictionary)
+        }
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -39,5 +49,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
         return true
+    }
+    
+    func checkAccessibilityPermission() -> Bool {
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
+        return AXIsProcessTrustedWithOptions(options as CFDictionary)
     }
 }

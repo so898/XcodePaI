@@ -62,6 +62,9 @@
 		7932602F2E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793260292E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift */; };
 		793260302E689FEB0017E87F /* PreviousSuggestionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793260272E689FEB0017E87F /* PreviousSuggestionCommand.swift */; };
 		793260322E68AC070017E87F /* MainAppService in Frameworks */ = {isa = PBXBuildFile; productRef = 793260312E68AC070017E87F /* MainAppService */; };
+		79CFC6AB2E69EB1900367E78 /* SyncTextSettingsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6AA2E69EB1900367E78 /* SyncTextSettingsCommand.swift */; };
+		79CFC6AE2E69FCD400367E78 /* CoroutineHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6AD2E69FCCB00367E78 /* CoroutineHTTPClient.swift */; };
+		79CFC6B02E6A0CE300367E78 /* PartialSuggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6AF2E6A0CCA00367E78 /* PartialSuggestion.swift */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
@@ -165,6 +168,9 @@
 		793260282E689FEB0017E87F /* RejectSuggestionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RejectSuggestionCommand.swift; sourceTree = "<group>"; };
 		793260292E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleRealtimeSuggestionsCommand.swift; sourceTree = "<group>"; };
 		793260432E68B3BD0017E87F /* ThirdPartyTool */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyTool; sourceTree = "<group>"; };
+		79CFC6AA2E69EB1900367E78 /* SyncTextSettingsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncTextSettingsCommand.swift; sourceTree = "<group>"; };
+		79CFC6AD2E69FCCB00367E78 /* CoroutineHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoroutineHTTPClient.swift; sourceTree = "<group>"; };
+		79CFC6AF2E6A0CCA00367E78 /* PartialSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialSuggestion.swift; sourceTree = "<group>"; };
 		79E631042E69E41A005BB62B /* ThirdPartyCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyCore; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
@@ -263,6 +269,7 @@
 				790799A02E471FEA004D9D1A /* Models */,
 				79079A042E4E1930004D9D1A /* MCP */,
 				7907999F2E471FEA004D9D1A /* ChatProxy */,
+				79CFC6AC2E69FA6E00367E78 /* Completions */,
 				790799A12E471FEA004D9D1A /* Assets.xcassets */,
 				790799A32E471FEA004D9D1A /* XcodePAI.entitlements */,
 				790799EA2E4A5864004D9D1A /* AppDelegate.swift */,
@@ -306,6 +313,7 @@
 		790799BC2E48B699004D9D1A /* Client */ = {
 			isa = PBXGroup;
 			children = (
+				79CFC6AD2E69FCCB00367E78 /* CoroutineHTTPClient.swift */,
 				790799BD2E48B6B8004D9D1A /* HTTPClient.swift */,
 				790799BF2E48B82E004D9D1A /* HTTPSSEClient.swift */,
 			);
@@ -398,6 +406,14 @@
 			path = Storage;
 			sourceTree = "<group>";
 		};
+		79CFC6AC2E69FA6E00367E78 /* Completions */ = {
+			isa = PBXGroup;
+			children = (
+				79CFC6AF2E6A0CCA00367E78 /* PartialSuggestion.swift */,
+			);
+			path = Completions;
+			sourceTree = "<group>";
+		};
 		79F28F352E5E241D00F71A28 /* ChatProxy */ = {
 			isa = PBXGroup;
 			children = (
@@ -426,6 +442,7 @@
 				793260252E689FEB0017E87F /* NextSuggestionCommand.swift */,
 				793260272E689FEB0017E87F /* PreviousSuggestionCommand.swift */,
 				793260292E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift */,
+				79CFC6AA2E69EB1900367E78 /* SyncTextSettingsCommand.swift */,
 				79F7432E2E67325A00C35D1B /* Helpers.swift */,
 				79F743222E672E2700C35D1B /* EditExtension.entitlements */,
 				79F743232E672E2700C35D1B /* Info.plist */,
@@ -561,6 +578,7 @@
 				79F28F342E5E187100F71A28 /* Configer.swift in Sources */,
 				79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */,
 				790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */,
+				79CFC6AE2E69FCD400367E78 /* CoroutineHTTPClient.swift in Sources */,
 				79079A112E4FB78C004D9D1A /* MCPDetailView.swift in Sources */,
 				790799F42E4CD21D004D9D1A /* ModelProviderSettingView.swift in Sources */,
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
@@ -581,6 +599,7 @@
 				790799F22E4BB5E2004D9D1A /* ModelProviderIconListView.swift in Sources */,
 				790799BE2E48B6BD004D9D1A /* HTTPClient.swift in Sources */,
 				790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */,
+				79CFC6B02E6A0CE300367E78 /* PartialSuggestion.swift in Sources */,
 				790799B62E487F83004D9D1A /* HTTPConnection.swift in Sources */,
 				790799B22E4873B7004D9D1A /* TCPServer.swift in Sources */,
 				79079A072E4F9449004D9D1A /* LLMMCPTool.swift in Sources */,
@@ -606,6 +625,7 @@
 				7932602F2E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift in Sources */,
 				793260302E689FEB0017E87F /* PreviousSuggestionCommand.swift in Sources */,
 				79F7432F2E67325E00C35D1B /* Helpers.swift in Sources */,
+				79CFC6AB2E69EB1900367E78 /* SyncTextSettingsCommand.swift in Sources */,
 				79F743292E672E2700C35D1B /* SourceEditorExtension.swift in Sources */,
 				79F743332E6735CC00C35D1B /* AcceptSuggestionCommand.swift in Sources */,
 			);
@@ -759,7 +779,7 @@
 				CURRENT_PROJECT_VERSION = "$(APP_BUILD)";
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = FYT366469V;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -795,7 +815,7 @@
 				CURRENT_PROJECT_VERSION = "$(APP_BUILD)";
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = FYT366469V;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;

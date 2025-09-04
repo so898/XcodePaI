@@ -34,6 +34,10 @@ class LLMModelProvider: Identifiable, ObservableObject, Codable {
         return url + "/v1/models"
     }
     
+    func completionsUrl() -> String {
+        return url + "/v1/completions"
+    }
+    
     func chatCompletionsUrl() -> String {
         return url + "/v1/chat/completions"
     }
