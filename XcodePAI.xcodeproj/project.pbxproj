@@ -164,7 +164,8 @@
 		793260272E689FEB0017E87F /* PreviousSuggestionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviousSuggestionCommand.swift; sourceTree = "<group>"; };
 		793260282E689FEB0017E87F /* RejectSuggestionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RejectSuggestionCommand.swift; sourceTree = "<group>"; };
 		793260292E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleRealtimeSuggestionsCommand.swift; sourceTree = "<group>"; };
-		793260432E68B3BD0017E87F /* ThirdParty */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdParty; sourceTree = "<group>"; };
+		793260432E68B3BD0017E87F /* ThirdPartyTool */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyTool; sourceTree = "<group>"; };
+		79E631042E69E41A005BB62B /* ThirdPartyCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyCore; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
 		79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyEditView.swift; sourceTree = "<group>"; };
@@ -208,7 +209,8 @@
 			isa = PBXGroup;
 			children = (
 				79F7432B2E672E9200C35D1B /* Config.xcconfig */,
-				793260432E68B3BD0017E87F /* ThirdParty */,
+				793260432E68B3BD0017E87F /* ThirdPartyTool */,
+				79E631042E69E41A005BB62B /* ThirdPartyCore */,
 				79F743082E67275000C35D1B /* Shared */,
 				790799A52E471FEA004D9D1A /* XcodePAI */,
 				79F743262E672E2700C35D1B /* EditExtension */,

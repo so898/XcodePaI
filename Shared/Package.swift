@@ -1,22 +1,25 @@
-// swift-tools-version: 6.1
+// swift-tools-version: 5.7
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
     name: "Shared",
-    platforms: [.macOS(.v15)],
+    platforms: [.macOS(.v12)],
     products: [
         .library(name: "MainAppService", targets: ["MainAppService"]),
         .library(name: "EditExtensionService", targets: ["EditExtensionService"]),
     ],
     dependencies: [
-        .package(path: "../ThirdParty"),
+        .package(path: "../ThirdPartyTool"),
+        .package(path: "../ThirdPartyCore"),
     ],
     targets: [
         // MARK: - Helpers
         .target(name: "MainAppService", dependencies: [
             "IPCServer",
+            .product(name: "AppMonitoring", package: "ThirdPartyTool"),
+            .product(name: "Service", package: "ThirdPartyCore"),
         ]),
         .target(name: "EditExtensionService", dependencies: [
             "IPCClient",
@@ -30,7 +33,7 @@ let package = Package(
         ]),
         
         .target(name: "IPCShared", dependencies: [
-            .product(name: "SuggestionBasic", package: "ThirdParty"),
+            .product(name: "SuggestionBasic", package: "ThirdPartyTool"),
         ]),
         
     ]
