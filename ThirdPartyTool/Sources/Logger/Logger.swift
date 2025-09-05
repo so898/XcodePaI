@@ -7,7 +7,7 @@ enum LogLevel: String {
     case error
 }
 
-public final class Logger {
+public final class Logger: Sendable {
     private let subsystem: String
     private let category: String
     private let osLog: OSLog

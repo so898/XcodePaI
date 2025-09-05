@@ -46,6 +46,15 @@
       }
     },
     {
+      "identity" : "highlightr",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/devm33/Highlightr",
+      "state" : {
+        "branch" : "master",
+        "revision" : "81d8c8b3733939bf5d9e52cd6318f944cc033bd2"
+      }
+    },
+    {
       "identity" : "keyboardshortcuts",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/intitni/KeyboardShortcuts",

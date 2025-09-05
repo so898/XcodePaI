@@ -109,6 +109,6 @@ public extension IPCClient {
             throw IPCExtensionServiceError.failedToCreateIPCConnection
         }
         
-        wormhole.sendDataMessage(Data(), identifier: "toggleRealtimeSuggestion")
+        wormhole.sendMessage(Data(), identifier: "toggleRealtimeSuggestion")
     }
 }
