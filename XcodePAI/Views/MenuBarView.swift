@@ -87,28 +87,29 @@ extension MenuBarManager: NSMenuDelegate {
             }
             item.submenu = subMenu
             
-            item = NSMenuItem(title: "MCP", action: nil, keyEquivalent: "")
-            item.isEnabled = true
-            menu.addItem(item)
-            
-            subMenu = NSMenu()
-            idx = 0
-            for mcp in StorageManager.shared.mcps {
-                let item = NSMenuItem(title: mcp.name, action: #selector(updateDefaultWith(mcpItem:)), keyEquivalent: "")
+            if !StorageManager.shared.mcps.isEmpty {
+                item = NSMenuItem(title: "MCP", action: nil, keyEquivalent: "")
                 item.isEnabled = true
-                item.target = self
-                item.tag = idx
-                if defaultConfig.mcps.contains(mcp.name) {
-                    item.state = .on
-                } else {
-                    item.state = .off
+                menu.addItem(item)
+                
+                subMenu = NSMenu()
+                idx = 0
+                for mcp in StorageManager.shared.mcps {
+                    let item = NSMenuItem(title: mcp.name, action: #selector(updateDefaultWith(mcpItem:)), keyEquivalent: "")
+                    item.isEnabled = true
+                    item.target = self
+                    item.tag = idx
+                    if defaultConfig.mcps.contains(mcp.name) {
+                        item.state = .on
+                    } else {
+                        item.state = .off
+                    }
+                    subMenu.addItem(item)
+                    idx += 1
                 }
-                subMenu.addItem(item)
-                idx += 1
+                item.submenu = subMenu
             }
-            item.submenu = subMenu
         }
-        
         
         menu.addItem(NSMenuItem.separator())
         
