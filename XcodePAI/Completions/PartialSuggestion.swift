@@ -27,7 +27,7 @@ extension PartialSuggestion: SuggestionPortalProtocol {
 //            return []
 //        }
         
-        let completionContent = try await LLMModelClient.doPartialCompletionRequest(model, provider: provider, prompt: prefixContent ?? "")
+        let completionContent = try await LLMCompletionClient.doPartialCompletionRequest(model, provider: provider, prompt: prefixContent ?? "")
         
         guard let completionContent, !completionContent.isEmpty else {
             return []

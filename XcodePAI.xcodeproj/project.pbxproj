@@ -65,6 +65,7 @@
 		79CFC6AB2E69EB1900367E78 /* SyncTextSettingsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6AA2E69EB1900367E78 /* SyncTextSettingsCommand.swift */; };
 		79CFC6AE2E69FCD400367E78 /* CoroutineHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6AD2E69FCCB00367E78 /* CoroutineHTTPClient.swift */; };
 		79CFC6B02E6A0CE300367E78 /* PartialSuggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6AF2E6A0CCA00367E78 /* PartialSuggestion.swift */; };
+		79CFC6B42E6B3EE900367E78 /* LLMCompletionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6B32E6B3EE200367E78 /* LLMCompletionClient.swift */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
@@ -171,6 +172,7 @@
 		79CFC6AA2E69EB1900367E78 /* SyncTextSettingsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncTextSettingsCommand.swift; sourceTree = "<group>"; };
 		79CFC6AD2E69FCCB00367E78 /* CoroutineHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoroutineHTTPClient.swift; sourceTree = "<group>"; };
 		79CFC6AF2E6A0CCA00367E78 /* PartialSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialSuggestion.swift; sourceTree = "<group>"; };
+		79CFC6B32E6B3EE200367E78 /* LLMCompletionClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCompletionClient.swift; sourceTree = "<group>"; };
 		79E631042E69E41A005BB62B /* ThirdPartyCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyCore; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 			isa = PBXGroup;
 			children = (
 				790799F82E4CE300004D9D1A /* LLMModelClient.swift */,
+				79CFC6B32E6B3EE200367E78 /* LLMCompletionClient.swift */,
 				790799C62E48F61D004D9D1A /* LLMClient.swift */,
 			);
 			path = LLM;
@@ -565,6 +568,7 @@
 				79079A252E54B275004D9D1A /* SettingsWindow.swift in Sources */,
 				79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */,
 				790799C42E48D914004D9D1A /* LLMResponse.swift in Sources */,
+				79CFC6B42E6B3EE900367E78 /* LLMCompletionClient.swift in Sources */,
 				790799C22E48BC74004D9D1A /* LLMRequest.swift in Sources */,
 				790799A62E471FEA004D9D1A /* ChatProxy.swift in Sources */,
 				790799AC2E471FFF004D9D1A /* LLMModel.swift in Sources */,

@@ -5,7 +5,9 @@
 //  Created by Bill Cheng on 2025/9/5.
 //
 
-struct LLMResponseUsageValue: Codable {
+import Foundation
+
+struct LLMCompletionResponseUsageValue: Codable {
     let prompt_tokens: Int
     let completion_tokens: Int
     let total_tokens: Int
@@ -20,7 +22,7 @@ class LLMCompletionClient {
     
     struct PrefixCompleteResponse: Codable {
         let choices: [PrefixCompleteResponseChoice]
-        let usage: LLMResponseUsageValue
+        let usage: LLMCompletionResponseUsageValue
     }
     
     struct PrefixCompleteResponseChoice: Codable {
@@ -31,7 +33,7 @@ class LLMCompletionClient {
     static let fimSuffix = "<|fim_suffix|>"
     static let fimMiddle = "<|fim_middle|>"
     
-    static func doCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, suffix: String? = nil) async throws -> String? {
+    static func doPrefixCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, suffix: String? = nil) async throws -> String? {
         let bodyPrompt: String = {
             if let suffix {
                 return fimPrefix + prompt + fimSuffix + suffix + fimMiddle
@@ -40,6 +42,20 @@ class LLMCompletionClient {
         }()
         
         let response: PrefixCompleteResponse = try await CoroutineHTTPClient.shared.post(provider.completionsUrl(), body: PrefixCompleteBody(model: model.id, prompt: bodyPrompt), headers: provider.requestHeaders())
+        
+        // TODO: Record token usages
+        
+        return response.choices.first?.text
+    }
+    
+    struct PrefixSufficCompleteBody: Codable {
+        let model: String
+        let prompt: String
+        let suffix: String
+    }
+    
+    static func doPrefixSuffixCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prefix: String, suffix: String) async throws -> String? {
+        let response: PrefixCompleteResponse = try await CoroutineHTTPClient.shared.post(provider.completionsUrl(), body: PrefixSufficCompleteBody(model: model.id, prompt: prefix, suffix: suffix), headers: provider.requestHeaders())
         
         // TODO: Record token usages
         
