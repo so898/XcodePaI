@@ -225,24 +225,13 @@ public struct AsyncCodeBlock: View {
             HStack() {
                 CustomScrollView {
                     VStack(alignment: .leading, spacing: 0) {
-                        if #available(macOS 26.0, *) {
-                            ForEach(Array(lines.dropFirst()).enumerated(), id: \.offset) { _, line in
-                                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                                    Text(line)
-                                        .foregroundColor(foregroundTextColor)
-                                        .lineSpacing(lineSpacing)
-                                }
-                                .frame(minHeight: lineHeight)
+                        ForEach(Array(lines.dropFirst().enumerated()), id: \.offset) { index, line in
+                            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                Text(line)
+                                    .foregroundColor(foregroundTextColor)
+                                    .lineSpacing(lineSpacing)
                             }
-                        } else {
-                            ForEach(Array(lines.dropFirst()), id: \.self) { line in
-                                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                                    Text(line)
-                                        .foregroundColor(foregroundTextColor)
-                                        .lineSpacing(lineSpacing)
-                                }
-                                .frame(minHeight: lineHeight)
-                            }
+                            .frame(minHeight: lineHeight)
                         }
                     }
                 }

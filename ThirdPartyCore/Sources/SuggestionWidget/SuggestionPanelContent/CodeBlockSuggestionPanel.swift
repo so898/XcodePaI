@@ -15,14 +15,15 @@ public final class ExpandableSuggestionService: ObservableObject {
 }
 
 struct CodeBlockSuggestionPanel: View {
-    let suggestion: CodeSuggestionProvider
+    let code: String
+    let language: String
+    let startLineIndex: Int
     let firstLineIndent: Double
     let lineHeight: Double
     let isPanelDisplayed: Bool
     @Environment(CursorPositionTracker.self) var cursorPositionTracker
     @Environment(\.colorScheme) var colorScheme
     @AppStorage(\.suggestionCodeFont) var codeFont
-    /// <#Description#>
     @AppStorage(\.suggestionDisplayCompactMode) var suggestionDisplayCompactMode
     @AppStorage(\.suggestionPresentationMode) var suggestionPresentationMode
     @AppStorage(\.hideCommonPrecedingSpacesInSuggestion) var hideCommonPrecedingSpaces
@@ -43,9 +44,9 @@ struct CodeBlockSuggestionPanel: View {
                VStack(spacing: 0) {
                    WithPerceptionTracking {
                        AsyncCodeBlock(
-                           code: suggestion.code,
-                           language: suggestion.language,
-                           startLineIndex: suggestion.startLineIndex,
+                           code: code,
+                           language: language,
+                           startLineIndex: startLineIndex,
                            scenario: "suggestion",
                            firstLineIndent: firstLineIndent,
                            lineHeight: lineHeight,
@@ -92,7 +93,7 @@ struct CodeBlockSuggestionPanel: View {
                                }
                                return nil
                            }(),
-                           dimmedCharacterCount: suggestion.startLineIndex
+                           dimmedCharacterCount: startLineIndex
                                == cursorPositionTracker.cursorPosition.line
                                ? cursorPositionTracker.cursorPosition.character
                            : 0,
@@ -111,8 +112,7 @@ struct CodeBlockSuggestionPanel: View {
 // MARK: - Previews
 
 #Preview("Code Block Suggestion Panel") {
-    CodeBlockSuggestionPanel(suggestion: CodeSuggestionProvider(
-        code: """
+    CodeBlockSuggestionPanel(code: """
         LazyVGrid(columns: [GridItem(.fixed(30)), GridItem(.flexible())]) {
         ForEach(0..<viewModel.suggestion.count, id: \\.self) { index in // lkjaskldjalksjdlkasjdlkajslkdjas
             Text(viewModel.suggestion[index])
@@ -121,10 +121,7 @@ struct CodeBlockSuggestionPanel: View {
         }
         """,
         language: "swift",
-        startLineIndex: 8,
-        suggestionCount: 2,
-        currentSuggestionIndex: 0
-    ), firstLineIndent: 0, lineHeight: 12, isPanelDisplayed: true, suggestionDisplayCompactMode: .init(
+        startLineIndex: 8,firstLineIndent: 0, lineHeight: 12, isPanelDisplayed: true, suggestionDisplayCompactMode: .init(
         wrappedValue: false,
         "suggestionDisplayCompactMode",
         store: {

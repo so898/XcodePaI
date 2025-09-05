@@ -94,7 +94,14 @@ struct SharedPanelView: View {
             case .nearbyTextCursor:
                 EmptyView()
             case .floatingWidget:
-                CodeBlockSuggestionPanel(suggestion: suggestion, firstLineIndent: 0, lineHeight: 12, isPanelDisplayed: true)
+                CodeBlockSuggestionPanel(
+                    code: suggestion.code,
+                    language: suggestion.language,
+                    startLineIndex: suggestion.startLineIndex,
+                    firstLineIndent: 0,
+                    lineHeight: 12,
+                    isPanelDisplayed: true
+                )
             }
         }
     }

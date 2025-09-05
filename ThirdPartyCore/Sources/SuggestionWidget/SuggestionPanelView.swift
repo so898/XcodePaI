@@ -43,7 +43,9 @@ struct SuggestionPanelView: View {
             WithPerceptionTracking {
                 if let content = store.content {
                     CodeBlockSuggestionPanel(
-                        suggestion: content,
+                        code: content.code,
+                        language: content.language,
+                        startLineIndex: content.startLineIndex,
                         firstLineIndent: store.firstLineIndent,
                         lineHeight: store.lineHeight,
                         isPanelDisplayed: store.isPanelDisplayed
