@@ -1,40 +1,43 @@
 //
-//  PartialSuggestion.swift
+//  PrefixSuffixSuggestion.swift
 //  XcodePAI
 //
-//  Created by Bill Cheng on 2025/9/5.
+//  Created by Bill Cheng on 2025/9/6.
 //
 
 import Foundation
 import SuggestionBasic
 import SuggestionPortal
 
-struct PartialSuggestion {
+struct PrefixSuffixSuggestion {
+    
     let model: LLMModel
     let provider: LLMModelProvider
     
-    let maxTokens: Int
+    let inPrompt: Bool
+    let hasSuffix: Bool
 }
 
-extension PartialSuggestion: SuggestionPortalProtocol {
+extension PrefixSuffixSuggestion: SuggestionPortalProtocol {
     func requestSuggestion(fileURL: URL, originalContent: String, cursorPosition: CursorPosition, prefixContent: String?, suffixContent: String?) async throws -> [CodeSuggestion] {
         
-//        guard let model, let provider else {
-//            return []
-//        }
+        //        guard let model, let provider else {
+        //            return []
+        //        }
         
         print("Code suggestion Request for: \(fileURL)")
         
-        let completionContent = try await LLMCompletionClient.doPartialCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", maxTokens: maxTokens)
-        
-        guard var completionContent, !completionContent.isEmpty else {
+        let completionContent: String? = try await {
+            if inPrompt {
+                try await LLMCompletionClient.doPromptSuffixCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil)
+            } else {
+                try await LLMCompletionClient.doPromptCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil)
+            }
+        }()
+                
+        guard let completionContent, !completionContent.isEmpty else {
             return []
         }
-        
-        if completionContent.hasSuffix("```") {
-            completionContent = completionContent.substring(to: completionContent.count - 3)
-        }
-        
         let startPosition = CursorPosition(line: cursorPosition.line,
                                            character: 0)
         let endPosition = CursorPosition(line: cursorPosition.line,
