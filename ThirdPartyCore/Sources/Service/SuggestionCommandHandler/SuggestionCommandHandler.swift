@@ -1,6 +1,6 @@
 import SuggestionBasic
 
-protocol SuggestionCommandHandler {
+public protocol SuggestionCommandHandler {
     @ServiceActor
     func presentSuggestions(editor: EditorContent) async throws -> UpdatedContent?
     @ServiceActor

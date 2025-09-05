@@ -19,7 +19,6 @@ let package = Package(
         .target(name: "MainAppService", dependencies: [
             "IPCServer",
             .product(name: "AppMonitoring", package: "ThirdPartyTool"),
-            .product(name: "Service", package: "ThirdPartyCore"),
         ]),
         .target(name: "EditExtensionService", dependencies: [
             "IPCClient",
@@ -27,6 +26,7 @@ let package = Package(
         
         .target(name: "IPCServer", dependencies: [
             "IPCShared",
+            .product(name: "Service", package: "ThirdPartyCore"),
         ]),
         .target(name: "IPCClient", dependencies: [
             "IPCShared",

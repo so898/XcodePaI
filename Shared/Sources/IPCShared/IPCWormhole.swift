@@ -5,6 +5,7 @@ public enum IPCWormholeError: Error, LocalizedError {
     case timeout
     case serializationError(Error)
     case invalidResponse
+    case emptyResponse
     case groupContainerNotFound
     
     public var errorDescription: String? {
@@ -15,6 +16,8 @@ public enum IPCWormholeError: Error, LocalizedError {
             return "Serialization error: \(error.localizedDescription)"
         case .invalidResponse:
             return "Invalid response"
+        case .emptyResponse:
+            return "Empty Response"
         case .groupContainerNotFound:
             return "Group container not found"
         }
@@ -482,12 +485,7 @@ private struct ReplyHandler<T: Codable>: AnyReplyHandler {
         func handleReply(data: Data) {
             do {
                 if data.isEmpty {
-                    // For empty data, try to create a successful result of Optional type
-                    if let optionalType = T.self as? OptionalProtocol.Type {
-                        completion(.success(optionalType.none as! T))
-                    } else {
-                        completion(.failure(IPCWormholeError.invalidResponse))
-                    }
+                    completion(.failure(IPCWormholeError.emptyResponse))
                 } else {
                     let response = try JSONDecoder().decode(T.self, from: data)
                     completion(.success(response))
@@ -719,50 +717,6 @@ public extension IPCWormhole {
             
             DispatchQueue.main.async {
                 completion(stats)
-            }
-        }
-    }
-}
-
-public extension IPCWormhole {
-    
-    /// Send data message (convenience method)
-    /// - Parameters:
-    ///   - message: Data message to send
-    ///   - identifier: Message identifier
-    func sendDataMessage(_ message: Data, identifier: String) {
-        sendMessage(message, identifier: identifier)
-    }
-    
-    /// Send data message and wait for reply (convenience method)
-    /// - Parameters:
-    ///   - message: Data message to send
-    ///   - identifier: Message identifier
-    ///   - replyTimeout: Reply timeout duration
-    /// - Returns: Reply data message
-    func sendDataMessageWithReply(
-        message: Data,
-        identifier: String,
-        replyTimeout: TimeInterval = 10.0
-    ) async throws -> Data {
-        return try await sendMessageWithReply(
-            message: message,
-            identifier: identifier,
-            replyTimeout: replyTimeout
-        )
-    }
-    
-    /// Listen for data messages (convenience method)
-    /// - Parameters:
-    ///   - identifier: Message identifier
-    ///   - handler: Message handler
-    func listenDataMessage(
-        for identifier: String,
-        handler: @escaping (Data, @escaping (Data?) -> Void) -> Void
-    ) {
-        listenMessage(for: identifier) { (message: Data, reply: @escaping (Any?) -> Void) in
-            handler(message) { replyString in
-                reply(replyString)
             }
         }
     }

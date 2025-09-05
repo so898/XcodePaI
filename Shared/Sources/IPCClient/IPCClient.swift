@@ -39,14 +39,16 @@ public class IPCClient {
         _ editorContent: EditorContent,
         _ id: String
     ) async throws -> UpdatedContent? {
-        let data = try JSONEncoder().encode(editorContent)
         guard let wormhole else {
             throw IPCExtensionServiceError.failedToCreateIPCConnection
         }
         
-        let updatedData = try await wormhole.sendDataMessageWithReply(message: data, identifier: id)
-        
-        return try JSONDecoder().decode(UpdatedContent.self, from: updatedData)
+        do {
+            let updatedContent: UpdatedContent? = try await wormhole.sendMessageWithReply(message: editorContent, identifier: id)
+            return updatedContent
+        } catch IPCWormholeError.emptyResponse {
+            return nil
+        }
     }
     
 }
