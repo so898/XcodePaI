@@ -12,6 +12,7 @@ import WorkspaceSuggestionService
 import XcodeInspector
 import SuggestionWidget
 import Status
+import XcodeThemeController
 
 @globalActor public enum ServiceActor {
     public actor TheActor {}
@@ -30,6 +31,7 @@ public final class Service {
     public let scheduledCleaner: ScheduledCleaner
     let globalShortcutManager: GlobalShortcutManager
     let keyBindingManager: KeyBindingManager
+    let xcodeThemeController: XcodeThemeController = .init()
 
     @Dependency(\.toast) var toast
     var cancellable = Set<AnyCancellable>()
@@ -82,6 +84,7 @@ public final class Service {
         scheduledCleaner.start()
         realtimeSuggestionController.start()
         guiController.start()
+        xcodeThemeController.start()
         globalShortcutManager.start()
         keyBindingManager.start()
 

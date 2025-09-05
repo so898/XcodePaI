@@ -31,6 +31,7 @@ let package = Package(
         // https://github.com/sindresorhus/KeyboardShortcuts
             .package(url: "https://github.com/intitni/KeyboardShortcuts", branch: "main"),
         .package(url: "https://github.com/devm33/CGEventOverride", branch: "devm33/fix-stale-AXIsProcessTrusted"),
+        .package(url: "https://github.com/devm33/Highlightr", branch: "master"),
     ],
     targets: [
         // MARK: - Main
@@ -40,6 +41,7 @@ let package = Package(
                 "SuggestionWidget",
                 "SuggestionService",
                 "KeyBindingManager",
+                "XcodeThemeController",
                 .product(name: "SuggestionProvider", package: "ThirdPartyTool"),
                 .product(name: "Workspace", package: "ThirdPartyTool"),
                 .product(name: "UserDefaultsObserver", package: "ThirdPartyTool"),
@@ -94,6 +96,17 @@ let package = Package(
         // MARK: - Helpers
         
         .target(name: "FileChangeChecker"),
+        
+        // MARK: Theming
+
+        .target(
+            name: "XcodeThemeController",
+            dependencies: [
+                .product(name: "Preferences", package: "ThirdPartyTool"),
+                .product(name: "AppMonitoring", package: "ThirdPartyTool"),
+                .product(name: "Highlightr", package: "Highlightr"),
+            ]
+        ),
         
         // MARK: Key Binding
         
