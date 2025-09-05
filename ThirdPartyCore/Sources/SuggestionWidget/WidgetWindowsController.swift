@@ -392,7 +392,7 @@ extension WidgetWindowsController {
                     send(.panel(noFocus ? .hidePanel : .showPanel))
                     windows.suggestionPanelWindow.alphaValue = noFocus ? 0 : 1
                     windows.widgetWindow.alphaValue = noFocus ? 0 : 1
-                    windows.toastWindow.alphaValue = noFocus ? 0 : 1
+//                    windows.toastWindow.alphaValue = noFocus ? 0 : 1
                 } else if let activeApp, activeApp.isExtensionService {
                     let noFocus = {
                         guard let xcode = latestActiveXcode else { return true }
@@ -416,12 +416,12 @@ extension WidgetWindowsController {
                     } else {
                         0
                     }
-                    windows.toastWindow.alphaValue = noFocus ? 0 : 1
+//                    windows.toastWindow.alphaValue = noFocus ? 0 : 1
                 } else {
                     windows.sharedPanelWindow.alphaValue = 0
                     windows.suggestionPanelWindow.alphaValue = 0
                     windows.widgetWindow.alphaValue = 0
-                    windows.toastWindow.alphaValue = 0
+//                    windows.toastWindow.alphaValue = 0
                 }
             }
         }
@@ -446,11 +446,11 @@ extension WidgetWindowsController {
                 display: false,
                 animate: animated
             )
-            windows.toastWindow.setFrame(
-                widgetLocation.defaultPanelLocation.frame,
-                display: false,
-                animate: animated
-            )
+//            windows.toastWindow.setFrame(
+//                widgetLocation.defaultPanelLocation.frame,
+//                display: false,
+//                animate: animated
+//            )
             windows.sharedPanelWindow.setFrame(
                 widgetLocation.defaultPanelLocation.frame,
                 display: false,
@@ -581,6 +581,7 @@ public final class WidgetWindows {
         )
         it.setIsVisible(true)
         it.canBecomeKeyChecker = { false }
+        print("WIDGET: \(it)")
         return it
     }()
 
@@ -610,6 +611,7 @@ public final class WidgetWindows {
             ).environment(cursorPositionTracker)
         )
         it.setIsVisible(true)
+        print("SHARED: \(it)")
         return it
     }()
 
@@ -640,35 +642,37 @@ public final class WidgetWindows {
         )
         it.canBecomeKeyChecker = { false }
         it.setIsVisible(true)
+        print("SUGGEST: \(it)")
         return it
     }()
 
-    @MainActor
-    // The toast window area is now capturing mouse events
-    // Even in the transparent parts where there's no visible content.
-    lazy var toastWindow = {
-        let it = CanBecomeKeyWindow(
-            contentRect: .zero,
-            styleMask: [.borderless],
-            backing: .buffered,
-            defer: false
-        )
-        it.isReleasedWhenClosed = false
-        it.isOpaque = false
-        it.backgroundColor = .clear
-        it.level = widgetLevel(2)
-        it.collectionBehavior = [.fullScreenAuxiliary, .transient, .canJoinAllSpaces]
-        it.hasShadow = false
-        it.contentView = NSHostingView(
-            rootView: ToastPanelView(store: store.scope(
-                state: \.toastPanel,
-                action: \.toastPanel
-            ))
-        )
-        it.setIsVisible(true)
-        it.canBecomeKeyChecker = { false }
-        return it
-    }()
+//    @MainActor
+//    // The toast window area is now capturing mouse events
+//    // Even in the transparent parts where there's no visible content.
+//    lazy var toastWindow = {
+//        let it = CanBecomeKeyWindow(
+//            contentRect: .zero,
+//            styleMask: [.borderless],
+//            backing: .buffered,
+//            defer: false
+//        )
+//        it.isReleasedWhenClosed = false
+//        it.isOpaque = false
+//        it.backgroundColor = .clear
+//        it.level = widgetLevel(2)
+//        it.collectionBehavior = [.fullScreenAuxiliary, .transient, .canJoinAllSpaces]
+//        it.hasShadow = false
+//        it.contentView = NSHostingView(
+//            rootView: ToastPanelView(store: store.scope(
+//                state: \.toastPanel,
+//                action: \.toastPanel
+//            ))
+//        )
+//        it.setIsVisible(true)
+//        it.canBecomeKeyChecker = { false }
+//        print("TOAST: \(it)")
+//        return it
+//    }()
 
     init(
         store: StoreOf<WidgetFeature>,
@@ -679,7 +683,7 @@ public final class WidgetWindows {
     @MainActor
     func orderFront() {
         widgetWindow.orderFrontRegardless()
-        toastWindow.orderFrontRegardless()
+//        toastWindow.orderFrontRegardless()
         sharedPanelWindow.orderFrontRegardless()
         suggestionPanelWindow.orderFrontRegardless()
     }
