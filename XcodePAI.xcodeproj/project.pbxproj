@@ -273,7 +273,7 @@
 				790799A02E471FEA004D9D1A /* Models */,
 				79079A042E4E1930004D9D1A /* MCP */,
 				7907999F2E471FEA004D9D1A /* ChatProxy */,
-				79CFC6AC2E69FA6E00367E78 /* Completions */,
+				79CFC6AC2E69FA6E00367E78 /* Completion */,
 				790799A12E471FEA004D9D1A /* Assets.xcassets */,
 				790799A32E471FEA004D9D1A /* XcodePAI.entitlements */,
 				790799EA2E4A5864004D9D1A /* AppDelegate.swift */,
@@ -353,6 +353,7 @@
 				790799F52E4CD53D004D9D1A /* ModelProviderSetting */,
 				79079A0B2E4F95B7004D9D1A /* MCPSetting */,
 				79F28F352E5E241D00F71A28 /* ChatProxy */,
+				79CFC6CD2E6C155D00367E78 /* Completion */,
 			);
 			path = SettingSectionViews;
 			sourceTree = "<group>";
@@ -411,13 +412,20 @@
 			path = Storage;
 			sourceTree = "<group>";
 		};
-		79CFC6AC2E69FA6E00367E78 /* Completions */ = {
+		79CFC6AC2E69FA6E00367E78 /* Completion */ = {
 			isa = PBXGroup;
 			children = (
 				79CFC6B72E6B53AF00367E78 /* PrefixSuffixSuggestion.swift */,
 				79CFC6AF2E6A0CCA00367E78 /* PartialSuggestion.swift */,
 			);
-			path = Completions;
+			path = Completion;
+			sourceTree = "<group>";
+		};
+		79CFC6CD2E6C155D00367E78 /* Completion */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Completion;
 			sourceTree = "<group>";
 		};
 		79F28F352E5E241D00F71A28 /* ChatProxy */ = {
