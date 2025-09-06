@@ -43,9 +43,13 @@ public class SuggestionPortal {
             throw SuggestionPortalError.noPortal
         }
         
+        try Task.checkCancellation()
+        
         let result = self.getContentAroundCursor(in: originalContent,
                                                  line: cursorPosition.line,
                                                  character: cursorPosition.character)
+        
+        try Task.checkCancellation()
         
         return try await current.requestSuggestion(fileURL: fileURL, originalContent: originalContent, cursorPosition: cursorPosition, prefixContent: result?.prefixContent, suffixContent: result?.suffixContent)
     }
