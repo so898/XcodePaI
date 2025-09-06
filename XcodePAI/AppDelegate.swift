@@ -19,7 +19,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
-        NSApp.setActivationPolicy(.accessory)
+        if !Configer.openConfigurationWhenStartUp {
+            NSApp.setActivationPolicy(.accessory)
+        }
         
         StorageManager.shared.load()
         
@@ -49,6 +51,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
         return true
+    }
+    
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return false
     }
     
     func checkAccessibilityPermission() -> Bool {

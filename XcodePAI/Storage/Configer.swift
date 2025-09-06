@@ -9,6 +9,16 @@ import Foundation
 
 class Configer {
     
+    static private let openConfigurationWhenStartUpKey = "OpenConfigurationWhenStartUp"
+    static var openConfigurationWhenStartUp: Bool {
+        set {
+            Self.setValue(Self.openConfigurationWhenStartUpKey, value: newValue)
+        }
+        get {
+            return Self.value(Self.openConfigurationWhenStartUpKey, defaultValue: true)!
+        }
+    }
+    
     static private let chatProxyPortStorageKey = "ChatProxyPort"
     static var chatProxyPort: UInt16 {
         set {

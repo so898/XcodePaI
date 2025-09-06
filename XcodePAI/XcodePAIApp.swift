@@ -12,11 +12,12 @@ struct XcodePAIApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
-//         WindowGroup {
-//             VStack {
-//                 SettingsView()
-//                     .globalLoading()
-//             }
-//         }
+         WindowGroup {
+             VStack {
+                 SettingsView()
+                     .globalLoading()
+             }
+         }
+         .defaultLaunchBehavior(Configer.openConfigurationWhenStartUp ? .presented : .suppressed)
     }
 }

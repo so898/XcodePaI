@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GeneralSettingSectionView: View {
     @State private var contentLayout = 0 // 0 for Vertical, 1 for Horizontal
+    @State private var openConfigurationOnStartUp = Configer.openConfigurationWhenStartUp
     @State private var showInMenuBar = true
     @State private var toolbarStyle = "Only Icon (Default)"
     @State private var truncationStyle = "Tail"
@@ -19,6 +20,15 @@ struct GeneralSettingSectionView: View {
     var body: some View {
         ScrollView {
             Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 18) {
+                
+                GridRow {
+                    Text("Configuration window:")
+                    Toggle("Open Configuration when StartUp", isOn: $openConfigurationOnStartUp)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: openConfigurationOnStartUp) { _, newValue in
+                            Configer.openConfigurationWhenStartUp = newValue
+                        }
+                }
                 
                 GridRow(alignment: .top) {
                     Text("Content layout:")
