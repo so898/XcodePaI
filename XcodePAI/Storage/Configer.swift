@@ -9,6 +9,17 @@ import Foundation
 
 class Configer {
     
+    public enum Language: String, CaseIterable, Identifiable {
+        var id: String { self.rawValue }
+        
+        case English = "English"
+        case Chinese = "Chinese"
+        case France = "France"
+        case Russian = "Russian"
+        case Japanese = "Japanese"
+        case Korean = "Korean"
+    }
+    
     static private let openConfigurationWhenStartUpKey = "OpenConfigurationWhenStartUp"
     static var openConfigurationWhenStartUp: Bool {
         set {
@@ -59,6 +70,16 @@ class Configer {
                 return uuid
             }
             return UUID()
+        }
+    }
+    
+    static private let forceLanguageStorageKey = "forceLanguage"
+    static var forceLanguage: Configer.Language {
+        set {
+            Self.setValue(Self.forceLanguageStorageKey, value: newValue.rawValue)
+        }
+        get {
+            return Configer.Language(rawValue: Self.value(Self.forceLanguageStorageKey, defaultValue: Configer.Language.English.rawValue)!) ?? .English
         }
     }
     

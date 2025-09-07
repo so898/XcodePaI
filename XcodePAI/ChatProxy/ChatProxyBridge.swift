@@ -279,9 +279,31 @@ extension ChatProxyBridge {
     }
         
     private func processUserMessageContent(_ content: String, isLastUserMessage: Bool = false) -> String {
-        if isLastUserMessage {
+        let forceLanguage = Configer.forceLanguage
+        if isLastUserMessage, forceLanguage != .English {
             // Language
-            return content + "\n请使用中文进行回答。"
+            let languageContent: String = {
+                switch forceLanguage {
+                case .English:
+                    return ""
+                case .Chinese:
+                    return PromptTemplate.FLChinese
+                case .France:
+                    return PromptTemplate.FLFrance
+                case .Russian:
+                    return PromptTemplate.FLRussian
+                case .Japanese:
+                    return PromptTemplate.FLJapanese
+                case .Korean:
+                    return PromptTemplate.FLKorean
+                }
+            }()
+            
+            if !languageContent.isEmpty {
+                return content + "\n" + languageContent
+            }
+            
+            return content
         }
         return content
     }

@@ -10,6 +10,7 @@ import SwiftUI
 struct GeneralSettingSectionView: View {
     @State private var contentLayout = 0 // 0 for Vertical, 1 for Horizontal
     @State private var openConfigurationOnStartUp = Configer.openConfigurationWhenStartUp
+    @State private var forceLanguage: Configer.Language = Configer.forceLanguage
     @State private var showInMenuBar = true
     @State private var toolbarStyle = "Only Icon (Default)"
     @State private var truncationStyle = "Tail"
@@ -28,6 +29,17 @@ struct GeneralSettingSectionView: View {
                         .onChange(of: openConfigurationOnStartUp) { _, newValue in
                             Configer.openConfigurationWhenStartUp = newValue
                         }
+                }
+                
+                GridRow {
+                    Text("Response Language:")
+                    Picker("", selection: $forceLanguage) {
+                        ForEach(Configer.Language.allCases, id: \.rawValue) { (language: Configer.Language) in
+                            Text(language.rawValue)
+                                .tag(language)
+                        }
+                    }
+                    .frame(maxWidth: 150, alignment: .leading)
                 }
                 
                 GridRow(alignment: .top) {
