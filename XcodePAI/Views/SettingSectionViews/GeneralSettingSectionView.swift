@@ -39,6 +39,9 @@ struct GeneralSettingSectionView: View {
                         }
                     }
                     .frame(maxWidth: 150, alignment: .leading)
+                    .onChange(of: forceLanguage) { _, newValue in
+                        Configer.forceLanguage = newValue
+                    }
                 }
                 
                 GridRow {
