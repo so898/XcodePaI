@@ -90,13 +90,13 @@ struct ChatProxySettingSectionView: View {
             Divider().padding(.leading)
             
             Form {
-                CustomConfigInfoSection()
+                CustomChatProxyModelConfigInfoSection()
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
                 
                 Section {
                     ForEach(configManager.configs) { config in
-                        CustomConfigRow(config: config) {
+                        CustomChatProxyModelConfigRow(config: config) {
                             editConfig = config
                         }
                     }
@@ -133,7 +133,7 @@ struct ChatProxySettingSectionView: View {
     }
 }
 
-struct CustomConfigInfoSection: View {
+struct CustomChatProxyModelConfigInfoSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 16) {
@@ -154,13 +154,13 @@ struct CustomConfigInfoSection: View {
     }
 }
 
-struct CustomConfigRow: View {
+struct CustomChatProxyModelConfigRow: View {
     @ObservedObject var config: LLMConfig
     var editConfigAction: () -> Void
     
     var body: some View {
         HStack(spacing: 12) {
-            ConfigIconView(config: config, size: 24)
+            CustomChatProxyModelConfigIconView(config: config, size: 24)
             Text(config.name)
             Spacer()
             if config !== StorageManager.shared.defaultConfig() {
@@ -178,7 +178,7 @@ struct CustomConfigRow: View {
     }
 }
 
-struct ConfigIconView: View {
+struct  CustomChatProxyModelConfigIconView: View {
     @ObservedObject var config: LLMConfig
     let size: CGFloat
     
