@@ -83,7 +83,7 @@
 		79F743292E672E2700C35D1B /* SourceEditorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F743252E672E2700C35D1B /* SourceEditorExtension.swift */; };
 		79F7432F2E67325E00C35D1B /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F7432E2E67325A00C35D1B /* Helpers.swift */; };
 		79F743332E6735CC00C35D1B /* AcceptSuggestionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F743322E6735CB00C35D1B /* AcceptSuggestionCommand.swift */; };
-		79F743342E674E6200C35D1B /* XcodePaI.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 79F7430D2E672E1200C35D1B /* XcodePaI.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		79F743342E674E6200C35D1B /* XcodePaI Dev.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 79F7430D2E672E1200C35D1B /* XcodePaI Dev.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		79F743362E674EA000C35D1B /* EditExtensionService in Frameworks */ = {isa = PBXBuildFile; productRef = 79F743352E674EA000C35D1B /* EditExtensionService */; };
 /* End PBXBuildFile section */
 
@@ -115,7 +115,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				79F743342E674E6200C35D1B /* XcodePaI.appex in Embed Foundation Extensions */,
+				79F743342E674E6200C35D1B /* XcodePaI Dev.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -178,6 +178,7 @@
 		793260282E689FEB0017E87F /* RejectSuggestionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RejectSuggestionCommand.swift; sourceTree = "<group>"; };
 		793260292E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleRealtimeSuggestionsCommand.swift; sourceTree = "<group>"; };
 		793260432E68B3BD0017E87F /* ThirdPartyTool */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyTool; sourceTree = "<group>"; };
+		7983E1CD2E6DFB800067CFA6 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		79CFC6AA2E69EB1900367E78 /* SyncTextSettingsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncTextSettingsCommand.swift; sourceTree = "<group>"; };
 		79CFC6AD2E69FCCB00367E78 /* CoroutineHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoroutineHTTPClient.swift; sourceTree = "<group>"; };
 		79CFC6AF2E6A0CCA00367E78 /* PartialSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialSuggestion.swift; sourceTree = "<group>"; };
@@ -197,7 +198,7 @@
 		79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyEditView.swift; sourceTree = "<group>"; };
 		79F743062E65E8E400C35D1B /* LLMConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfigManager.swift; sourceTree = "<group>"; };
 		79F743082E67275000C35D1B /* Shared */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Shared; sourceTree = "<group>"; };
-		79F7430D2E672E1200C35D1B /* XcodePaI.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = XcodePaI.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		79F7430D2E672E1200C35D1B /* XcodePaI Dev.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "XcodePaI Dev.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		79F7430F2E672E1200C35D1B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		79F743112E672E1200C35D1B /* XcodeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XcodeKit.framework; path = Library/Frameworks/XcodeKit.framework; sourceTree = DEVELOPER_DIR; };
 		79F743222E672E2700C35D1B /* EditExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EditExtension.entitlements; sourceTree = "<group>"; };
@@ -235,6 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				79F7432B2E672E9200C35D1B /* Config.xcconfig */,
+				7983E1CD2E6DFB800067CFA6 /* Debug.xcconfig */,
 				793260432E68B3BD0017E87F /* ThirdPartyTool */,
 				79E631042E69E41A005BB62B /* ThirdPartyCore */,
 				79F743082E67275000C35D1B /* Shared */,
@@ -249,7 +251,7 @@
 			isa = PBXGroup;
 			children = (
 				790799862E4507BA004D9D1A /* XcodePAI.app */,
-				79F7430D2E672E1200C35D1B /* XcodePaI.appex */,
+				79F7430D2E672E1200C35D1B /* XcodePaI Dev.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -532,7 +534,7 @@
 				79F743352E674EA000C35D1B /* EditExtensionService */,
 			);
 			productName = EditExtension;
-			productReference = 79F7430D2E672E1200C35D1B /* XcodePaI.appex */;
+			productReference = 79F7430D2E672E1200C35D1B /* XcodePaI Dev.appex */;
 			productType = "com.apple.product-type.xcode-extension";
 		};
 /* End PBXNativeTarget section */
@@ -816,7 +818,7 @@
 		};
 		790799932E4507BB004D9D1A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 79F7432B2E672E9200C35D1B /* Config.xcconfig */;
+			baseConfigurationReference = 7983E1CD2E6DFB800067CFA6 /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -888,7 +890,7 @@
 		};
 		79F7431F2E672E1200C35D1B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 79F7432B2E672E9200C35D1B /* Config.xcconfig */;
+			baseConfigurationReference = 7983E1CD2E6DFB800067CFA6 /* Debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = EditExtension/EditExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
