@@ -23,16 +23,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             NSApp.setActivationPolicy(.accessory)
         }
         
-        StorageManager.shared.load()
-        
         _ = MCPRunner.shared
         
         // Menu
         MenuBarManager.shared.setup()
-        
-        if Configer.openConfigurationWhenStartUp {
-            MenuBarManager.shared.openSettingsView()
-        }
         
         // Chat Proxy
         _ = ChatProxy.shared
@@ -40,16 +34,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         // IPC
         _ = IPCServer.shared
         
-        if Utils.checkAccessibilityPermission() {
-            _ = XcodeInspector.shared
-            service.start()
-            AXIsProcessTrustedWithOptions([
-                kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true,
-            ] as CFDictionary)
+        Task {[weak self] in
+            await StorageManager.shared.load()
             
-            for model in StorageManager.shared.completionConfigs {
-                if Configer.completionSelectConfigId == model.id {
-                    SuggestionPortal.shared.current = model.getSuggestion()
+            DispatchQueue.main.async {[weak self] in
+                if Configer.openConfigurationWhenStartUp {
+                    MenuBarManager.shared.openSettingsView()
+                }
+                
+                if Utils.checkAccessibilityPermission() {
+                    _ = XcodeInspector.shared
+                    self?.service.start()
+                    AXIsProcessTrustedWithOptions([
+                        kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true,
+                    ] as CFDictionary)
+                    
+                    for model in StorageManager.shared.completionConfigs {
+                        if Configer.completionSelectConfigId == model.id {
+                            SuggestionPortal.shared.current = model.getSuggestion()
+                        }
+                    }
                 }
             }
         }

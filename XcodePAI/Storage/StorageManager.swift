@@ -22,30 +22,26 @@ class StorageManager {
     
     private var cancellables = Set<AnyCancellable>()
     
-    func load() {
-        Task {[weak self] in
-            guard let `self` = self else { return }
-            
-            modelProviders = await LocalStorage.shared.getValue(forKey: Constraint.modelProviderStorageKey) ?? [LLMModelProvider]()
-            
-            for modelProvider in modelProviders {
-                if let thisModels: [LLMModel] = await LocalStorage.shared.getValue(forKey: Constraint.modelStorageKeyPrefix + modelProvider.name) {
-                    models.append(contentsOf: thisModels)
-                }
+    func load() async {
+        modelProviders = await LocalStorage.shared.getValue(forKey: Constraint.modelProviderStorageKey) ?? [LLMModelProvider]()
+        
+        for modelProvider in modelProviders {
+            if let thisModels: [LLMModel] = await LocalStorage.shared.getValue(forKey: Constraint.modelStorageKeyPrefix + modelProvider.name) {
+                models.append(contentsOf: thisModels)
             }
-            
-            mcps = await LocalStorage.shared.getValue(forKey: Constraint.mcpStorageKey) ?? [LLMMCP]()
-
-            for mcp in mcps {
-                if let thisTools: [LLMMCPTool] = await LocalStorage.shared.getValue(forKey: Constraint.mcpToolStorageKeyPrefix + mcp.name) {
-                    mcpTools.append(contentsOf: thisTools)
-                }
-            }
-            
-            llmConfigs = await LocalStorage.shared.getValue(forKey: Constraint.llmConfigStorageKey) ?? [LLMConfig]()
-            
-            completionConfigs = await LocalStorage.shared.getValue(forKey: Constraint.completionConfigStorageKey) ?? [LLMCompletionConfig]()
         }
+        
+        mcps = await LocalStorage.shared.getValue(forKey: Constraint.mcpStorageKey) ?? [LLMMCP]()
+        
+        for mcp in mcps {
+            if let thisTools: [LLMMCPTool] = await LocalStorage.shared.getValue(forKey: Constraint.mcpToolStorageKeyPrefix + mcp.name) {
+                mcpTools.append(contentsOf: thisTools)
+            }
+        }
+        
+        llmConfigs = await LocalStorage.shared.getValue(forKey: Constraint.llmConfigStorageKey) ?? [LLMConfig]()
+        
+        completionConfigs = await LocalStorage.shared.getValue(forKey: Constraint.completionConfigStorageKey) ?? [LLMCompletionConfig]()
     }
 }
 
