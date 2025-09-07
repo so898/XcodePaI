@@ -7,10 +7,10 @@ public enum LanguageIdentifier: String, Codable, CaseIterable {
     case bibtex
     case clojure
     case coffeescript
-    case c
-    case cpp
-    case csharp
-    case css
+    case c = "c"
+    case cpp = "c++"
+    case csharp = "c#"
+    case css = "css"
     case diff
     case dart
     case dockerfile
@@ -24,15 +24,15 @@ public enum LanguageIdentifier: String, Codable, CaseIterable {
     case handlebars
     case html
     case ini
-    case java
-    case javascript
+    case java = "java"
+    case javascript = "javascript"
     case javascriptreact
-    case json
+    case json = "json"
     case latex
     case less
-    case lua
+    case lua = "lua"
     case makefile
-    case markdown
+    case markdown = "markdown"
     case objc = "objective-c"
     case objcpp = "objective-cpp"
     case perl
@@ -47,18 +47,18 @@ public enum LanguageIdentifier: String, Codable, CaseIterable {
     case rust
     case scss
     case sass
-    case scala
+    case scala = "scale"
     case shaderlab
     case shellscript
-    case sql
-    case swift
-    case typescript
+    case sql = "SQL"
+    case swift = "swift"
+    case typescript = "typescript"
     case typescriptreact
     case tex
     case vb
-    case xml
+    case xml = "XML"
     case xsl
-    case yaml
+    case yaml = "YAML"
 }
 
 public enum CodeLanguage: RawRepresentable, Codable, CaseIterable, Hashable {

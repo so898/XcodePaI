@@ -27,6 +27,21 @@ extension PartialSuggestion: SuggestionPortalProtocol {
         
         print("Code suggestion Request for: \(fileURL)")
         
+        let language: String = {
+            switch languageIdentifierFromFileURL(fileURL) {
+            case .builtIn(let languageId):
+                if !languageId.rawValue.isEmpty {
+                    return languageId.rawValue + " "
+                }
+                break
+            case .plaintext:
+                break
+            case .other(_):
+                break
+            }
+            return ""
+        }()
+        
         let instruction: String? = {
 //            if let suggestionContext {
 //                codeSuggestionPartialChatCompletionContextMark
@@ -38,7 +53,7 @@ extension PartialSuggestion: SuggestionPortalProtocol {
 //            }
         }()
         
-        let completionContent = try await LLMCompletionClient.doPartialCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", system: PromptTemplate.codeSuggestionPartialChatCompletionSystemPrompt, instruction: instruction, maxTokens: maxTokens, headers: headers)
+        let completionContent = try await LLMCompletionClient.doPartialCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", system: PromptTemplate.codeSuggestionPartialChatCompletionSystemPrompt.replacingOccurrences(of: "{{LANGUAGE}}", with: language), instruction: instruction, maxTokens: maxTokens, headers: headers)
         
         guard var completionContent, !completionContent.isEmpty else {
             return []
