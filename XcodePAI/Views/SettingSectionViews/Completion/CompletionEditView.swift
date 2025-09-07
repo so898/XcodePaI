@@ -211,7 +211,9 @@ struct CompletionEditView: View {
     
     @State private var isShowingTestPopover = false
     @State private var isRunningTest = false
-    @State private var testPopoverContent = ""
+    @State private var testPopoverPrefixContent = ""
+    @State private var testPopoverMiddleContent = ""
+    @State private var testPopoverSuffixContent = ""
     
     private var buttonsSection: some View {
         HStack {
@@ -230,14 +232,16 @@ struct CompletionEditView: View {
             }
             
             Button(role: .destructive) {
-                testPopoverContent = ""
+                testPopoverPrefixContent = ""
+                testPopoverMiddleContent = ""
+                testPopoverSuffixContent = ""
                 guard let config = buildConfig() else {
                     return
                 }
                 
                 Task {
                     isRunningTest = true
-                    testPopoverContent = await SuggestionTester.run(config) ?? "Test Fail"
+                    (testPopoverPrefixContent, testPopoverMiddleContent, testPopoverSuffixContent) = await SuggestionTester.run(config) ?? ("", "Test Fail", "")
                     isRunningTest = false
                     isShowingTestPopover = true
                 }
@@ -250,8 +254,15 @@ struct CompletionEditView: View {
             .popover(
                 isPresented: $isShowingTestPopover, arrowEdge: .bottom
             ) {
-                Text(testPopoverContent)
-                    .padding()
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(testPopoverPrefixContent)
+                        .foregroundColor(.secondary)
+                    Text(testPopoverMiddleContent)
+                        .foregroundColor(.green)
+                    Text(testPopoverSuffixContent)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
             }
             
             Spacer()

@@ -47,7 +47,7 @@ class SuggestionTester {
         """
     
     @MainActor
-    static func run(_ config: LLMCompletionConfig) async -> String? {
+    static func run(_ config: LLMCompletionConfig) async -> (String, String, String)? {
         guard let suggest = config.getSuggestion() else {
             return nil
         }
@@ -55,7 +55,7 @@ class SuggestionTester {
         let result = try? await suggest.requestSuggestion(fileURL: URL(string: "file://test.swift")!, originalContent: originContent, cursorPosition: position, prefixContent: prefixContent, suffixContent: suffixContent)
         
         if let suggetsion = result?.first {
-            return prefixContent.substring(to: prefixContent.count - 8) + suggetsion.text + suffixContent
+            return (prefixContent.substring(to: prefixContent.count - 9), suggetsion.text.substring(to: suggetsion.text.count - 1), suffixContent)
         }
         
         return nil
