@@ -7,10 +7,12 @@
 
 import SwiftUI
 import Combine
+import Status
 
 struct CompletionSettingSectionView: View {
     @AppStorage(\.realtimeSuggestionToggle) var realtimeSuggestionToggle
     @State private var axPermissionGranted = Utils.checkAccessibilityPermission()
+    @State private var extensionPermissionStatus = Status.shared.getExtensionStatus()
     @AppStorage(\.realtimeSuggestionDebounce) var realtimeSuggestionDebounce
     
     @StateObject private var configManager = LLMCompletionConfigManager()
@@ -47,7 +49,7 @@ struct CompletionSettingSectionView: View {
                 GridRow(alignment: .top) {
                     Text("Extension Permission")
                     VStack(alignment: .leading, spacing: 8) {
-                        if false {
+                        if extensionPermissionStatus == .granted {
                             Text("Granted")
                                 .foregroundColor(.secondary)
                         } else {
@@ -62,20 +64,16 @@ struct CompletionSettingSectionView: View {
                     }
                 }
                 
-//                GridRow {
-//                    Divider().gridCellColumns(2)
-//                }
-//                
-//                GridRow(alignment: .center) {
-//                    Text("Suggestion Debounce Time")
-//                    TextField("", text: $realtimeSuggestionDebounce)
-//                        .textFieldStyle(.plain)
-//                        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-//                        .background(Color.black.opacity(0.3))
-//                        .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray))
-//                        .cornerRadius(5)
-//                        .frame(width: 80)
-//                }
+                GridRow {
+                    Divider().gridCellColumns(2)
+                }
+                
+                GridRow(alignment: .center) {
+                    Text("Suggestion Debounce Time")
+                    Stepper(value: $realtimeSuggestionDebounce, in: 0.1...5.0, step: 0.1) {
+                        Text("\(realtimeSuggestionDebounce, specifier: "%.1f")")
+                    }
+                }
             }
             .gridColumnAlignment(.trailing)
             .padding(30)
