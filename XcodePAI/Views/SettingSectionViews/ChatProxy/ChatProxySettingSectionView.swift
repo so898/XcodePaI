@@ -24,7 +24,7 @@ struct ChatProxySettingSectionView: View {
                 
                 // --- Chat Proxy Port ---
                 GridRow(alignment: .center) {
-                    Text("Local Server Port:")
+                    Text("Local Server Port")
                     HStack(spacing: 10) {
                         TextField("", text: $portNumber)
                             .textFieldStyle(.plain)
@@ -52,7 +52,7 @@ struct ChatProxySettingSectionView: View {
                 }
                 
                 GridRow(alignment: .center) {
-                    Text("Show Think In:")
+                    Text("Show Think In")
                     Picker("", selection: $thinkStyle) {
                         Text("Code Snippet (Default)").tag(0)
                         Text("Text with EOT Mark").tag(1)
@@ -65,7 +65,7 @@ struct ChatProxySettingSectionView: View {
                 }
                 
                 GridRow(alignment: .top) {
-                    Text("Tool Use:")
+                    Text("Tool Use")
                     VStack(alignment: .leading, spacing: 8) {
                         Picker("", selection: $toolUseType) {
                             Text("In Reqeust").tag(0)
@@ -90,13 +90,13 @@ struct ChatProxySettingSectionView: View {
             Divider().padding(.leading)
             
             Form {
-                CustomChatProxyModelConfigInfoSection()
+                CustomChatProxyConfigInfoSection()
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
                 
                 Section {
                     ForEach(configManager.configs) { config in
-                        CustomChatProxyModelConfigRow(config: config) {
+                        CustomChatProxyConfigRow(config: config) {
                             editConfig = config
                         }
                     }
@@ -133,7 +133,7 @@ struct ChatProxySettingSectionView: View {
     }
 }
 
-struct CustomChatProxyModelConfigInfoSection: View {
+struct CustomChatProxyConfigInfoSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 16) {
@@ -154,13 +154,13 @@ struct CustomChatProxyModelConfigInfoSection: View {
     }
 }
 
-struct CustomChatProxyModelConfigRow: View {
+struct CustomChatProxyConfigRow: View {
     @ObservedObject var config: LLMConfig
     var editConfigAction: () -> Void
     
     var body: some View {
         HStack(spacing: 12) {
-            CustomChatProxyModelConfigIconView(config: config, size: 24)
+            CustomChatProxyConfigIconView(config: config, size: 24)
             Text(config.name)
             Spacer()
             if config !== StorageManager.shared.defaultConfig() {
@@ -178,7 +178,7 @@ struct CustomChatProxyModelConfigRow: View {
     }
 }
 
-struct  CustomChatProxyModelConfigIconView: View {
+struct  CustomChatProxyConfigIconView: View {
     @ObservedObject var config: LLMConfig
     let size: CGFloat
     

@@ -16,6 +16,8 @@ struct PrefixSuffixSuggestion {
     
     let inPrompt: Bool
     let hasSuffix: Bool
+    
+    var headers: [String: String]?
 }
 
 extension PrefixSuffixSuggestion: SuggestionPortalProtocol {
@@ -29,9 +31,9 @@ extension PrefixSuffixSuggestion: SuggestionPortalProtocol {
         
         let completionContent: String? = try await {
             if inPrompt {
-                try await LLMCompletionClient.doPromptSuffixCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil)
+                try await LLMCompletionClient.doPromptSuffixCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil, headers: headers)
             } else {
-                try await LLMCompletionClient.doPromptCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil)
+                try await LLMCompletionClient.doPromptCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil, headers: headers)
             }
         }()
                 

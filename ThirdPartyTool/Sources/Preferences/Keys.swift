@@ -205,10 +205,6 @@ public extension UserDefaultPreferenceKeys {
     var isSuggestionTypeInTheMiddleEnabled: PreferenceKey<Bool> {
         .init(defaultValue: true, key: "IsSuggestionTypeInTheMiddleEnabled")
     }
-    
-    var clsWarningDismissedUntilRelaunch: PreferenceKey<Bool> {
-        .init(defaultValue: false, key: "CLSWarningDismissedUntilRelaunch")
-    }
 }
 
 // MARK: - Theme
@@ -264,21 +260,6 @@ public extension UserDefaultPreferenceKeys {
         .init(
             defaultValue: .init(.init(nsFont: .monospacedSystemFont(ofSize: 12, weight: .regular))),
             key: "SuggestionCodeFont"
-        )
-    }
-}
-
-// MARK: - Bing Search
-
-public extension UserDefaultPreferenceKeys {
-    var bingSearchSubscriptionKey: PreferenceKey<String> {
-        .init(defaultValue: "", key: "BingSearchSubscriptionKey")
-    }
-
-    var bingSearchEndpoint: PreferenceKey<String> {
-        .init(
-            defaultValue: "https://api.bing.microsoft.com/v7.0/search/",
-            key: "BingSearchEndpoint"
         )
     }
 }
@@ -375,42 +356,5 @@ public extension UserDefaultPreferenceKeys {
 
     var useCloudflareDomainNameForLicenseCheck: FeatureFlag {
         .init(defaultValue: false, key: "FeatureFlag-UseCloudflareDomainNameForLicenseCheck")
-    }
-}
-
-// MARK: - Advanced Features
-
-public extension UserDefaultPreferenceKeys {
-
-    var gitHubCopilotProxyUrl: PreferenceKey<String> {
-        .init(defaultValue: "", key: "GitHubCopilotProxyUrl")
-    }
-
-    var gitHubCopilotUseStrictSSL: PreferenceKey<Bool> {
-        .init(defaultValue: true, key: "GitHubCopilotUseStrictSSL")
-    }
-
-    var gitHubCopilotProxyUsername: PreferenceKey<String> {
-        .init(defaultValue: "", key: "GitHubCopilotProxyUsername")
-    }
-
-    var gitHubCopilotProxyPassword: PreferenceKey<String> {
-        .init(defaultValue: "", key: "GitHubCopilotProxyPassword")
-    }
-    
-    var gitHubCopilotMCPConfig: PreferenceKey<String> {
-        .init(defaultValue: "", key: "GitHubCopilotMCPConfig")
-    }
-    
-    var gitHubCopilotMCPUpdatedStatus: PreferenceKey<String> {
-        .init(defaultValue: "", key: "GitHubCopilotMCPUpdatedStatus")
-    }
-
-    var gitHubCopilotEnterpriseURI: PreferenceKey<String> {
-        .init(defaultValue: "", key: "GitHubCopilotEnterpriseURI")
-    }
-
-    var verboseLoggingEnabled: PreferenceKey<Bool> {
-        .init(defaultValue: false, key: "VerboseLoggingEnabled")
     }
 }

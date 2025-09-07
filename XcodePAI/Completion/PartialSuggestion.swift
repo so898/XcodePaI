@@ -14,6 +14,8 @@ struct PartialSuggestion {
     let provider: LLMModelProvider
     
     var maxTokens: Int?
+    
+    var headers: [String: String]?
 }
 
 extension PartialSuggestion: SuggestionPortalProtocol {
@@ -36,7 +38,7 @@ extension PartialSuggestion: SuggestionPortalProtocol {
 //            }
         }()
         
-        let completionContent = try await LLMCompletionClient.doPartialCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", system: PromptTemplate.codeSuggestionPartialChatCompletionSystemPrompt, instruction: instruction, maxTokens: maxTokens)
+        let completionContent = try await LLMCompletionClient.doPartialCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", system: PromptTemplate.codeSuggestionPartialChatCompletionSystemPrompt, instruction: instruction, maxTokens: maxTokens, headers: headers)
         
         guard var completionContent, !completionContent.isEmpty else {
             return []

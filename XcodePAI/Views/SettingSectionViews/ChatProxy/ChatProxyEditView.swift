@@ -54,13 +54,10 @@ struct ChatProxyEditView: View {
     
     private var headerView: some View {
         HStack(spacing: 15) {
-            ZStack(alignment: .center){
-                Image(systemName: "square.stack.3d.forward.dottedline")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 48, height: 48)
+            ZStack {
+                Color.black
+                Image(systemName: "bookmark.square").font(.system(size: 24)).foregroundColor(.white)
             }
-            .background(.black)
             .cornerRadius(10)
             .frame(width: 64, height: 64)
             
@@ -68,7 +65,7 @@ struct ChatProxyEditView: View {
                 Text(currentConfig?.name ?? "Add a custom config")
                     .font(.headline)
                     .fontWeight(.bold)
-                Text(currentConfig != nil ? "Remote config" : "Enter the information for the config.")
+                Text(currentConfig != nil ? "Edit config" : "Enter the information for the config.")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }

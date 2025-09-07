@@ -8,6 +8,7 @@
 import SwiftUI
 import AppKit
 import WorkspaceSuggestionService
+import SuggestionPortal
 
 class MenuBarManager: NSObject, ObservableObject {
     
@@ -42,17 +43,13 @@ extension MenuBarManager: NSMenuDelegate {
         
         var item: NSMenuItem
         
-        if (true) {
-            // Port display
-            item = NSMenuItem(title: "Local Port: \(Configer.chatProxyPort)", action: nil, keyEquivalent: "")
+        if let defaultConfig = StorageManager.shared.defaultConfig() {
+            item = NSMenuItem(title: "ChatProxy", action: nil, keyEquivalent: "")
             item.isEnabled = false
             menu.addItem(item)
-        }
-        
-        menu.addItem(NSMenuItem.separator())
-        
-        if let defaultConfig = StorageManager.shared.defaultConfig() {
-            item = NSMenuItem(title: "XcodePaI Config", action: nil, keyEquivalent: "")
+            
+            // Port display
+            item = NSMenuItem(title: "Local Port: \(Configer.chatProxyPort)", action: nil, keyEquivalent: "")
             item.isEnabled = false
             menu.addItem(item)
             
@@ -112,17 +109,49 @@ extension MenuBarManager: NSMenuDelegate {
             }
         }
         
-        menu.addItem(NSMenuItem.separator())
-        
-        item = NSMenuItem(title: "Completions", action: #selector(toggleCodeCompletion(item:)), keyEquivalent: "")
-        item.isEnabled = true
-        item.target = self
-        if UserDefaults.shared.value(for: \.realtimeSuggestionToggle) {
-            item.state = .on
-        } else {
-            item.state = .off
+        if Utils.checkAccessibilityPermission(){
+            menu.addItem(NSMenuItem.separator())
+            
+            item = NSMenuItem(title: "Completions", action: nil, keyEquivalent: "")
+            item.isEnabled = false
+            menu.addItem(item)
+            
+            let completionEnabled = UserDefaults.shared.value(for: \.realtimeSuggestionToggle)
+            item = NSMenuItem(title: "Realtime Suggestion", action: #selector(toggleCodeCompletion(item:)), keyEquivalent: "")
+            item.isEnabled = true
+            item.target = self
+            if completionEnabled {
+                item.state = .on
+            } else {
+                item.state = .off
+            }
+            menu.addItem(item)
+            
+            var subMenu = NSMenu()
+            
+            if !StorageManager.shared.completionConfigs.isEmpty {
+                item = NSMenuItem(title: "Model", action: nil, keyEquivalent: "")
+                item.isEnabled = true
+                menu.addItem(item)
+                
+                subMenu = NSMenu()
+                var idx = 0
+                for config in StorageManager.shared.completionConfigs {
+                    let item = NSMenuItem(title: config.name, action: #selector(updateCompletionModelWith(modelItem:)), keyEquivalent: "")
+                    item.isEnabled = true
+                    item.target = self
+                    item.tag = idx
+                    if Configer.completionSelectConfigId == config.id {
+                        item.state = .on
+                    } else {
+                        item.state = .off
+                    }
+                    subMenu.addItem(item)
+                    idx += 1
+                }
+                item.submenu = subMenu
+            }
         }
-        menu.addItem(item)
         
         menu.addItem(NSMenuItem.separator())
         
@@ -164,6 +193,12 @@ extension MenuBarManager {
     @objc private func toggleCodeCompletion(item: NSMenuItem) {
         let value = UserDefaults.shared.value(for: \.realtimeSuggestionToggle)
         UserDefaults.shared.set(!value, for: \.realtimeSuggestionToggle)
+    }
+    
+    @MainActor @objc private func updateCompletionModelWith(modelItem: NSMenuItem) {
+        let model = StorageManager.shared.completionConfigs[modelItem.tag]
+        Configer.completionSelectConfigId = model.id
+        SuggestionPortal.shared.current = model.getSuggestion()
     }
     
     @objc private func openSettingsView() {

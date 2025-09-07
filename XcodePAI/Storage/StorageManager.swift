@@ -18,6 +18,8 @@ class StorageManager {
     
     public var llmConfigs = [LLMConfig]()
     
+    public var completionConfigs = [LLMCompletionConfig]()
+    
     private var cancellables = Set<AnyCancellable>()
     
     func load() {
@@ -41,6 +43,8 @@ class StorageManager {
             }
             
             llmConfigs = await LocalStorage.shared.getValue(forKey: Constraint.llmConfigStorageKey) ?? [LLMConfig]()
+            
+            completionConfigs = await LocalStorage.shared.getValue(forKey: Constraint.completionConfigStorageKey) ?? [LLMCompletionConfig]()
         }
     }
 }
@@ -184,6 +188,30 @@ extension StorageManager {
                 return llmConfig
             }
         }
+        return nil
+    }
+}
+
+// MARK: Completion Config
+extension StorageManager {
+    func updateCompletionConfigs(_ configs: [LLMCompletionConfig]) {
+        completionConfigs = configs
+        LocalStorage.shared.save(configs, forKey: Constraint.completionConfigStorageKey)
+            .sink { _ in }
+            .store(in: &cancellables)
+    }
+    
+    func selectedCompletionConfig() -> LLMCompletionConfig? {
+        for config in completionConfigs {
+            if config.id == Configer.completionSelectConfigId {
+                return config
+            }
+        }
+        
+        if let config = completionConfigs.first {
+            return config
+        }
+        
         return nil
     }
 }

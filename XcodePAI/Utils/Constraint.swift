@@ -30,4 +30,5 @@ class Constraint {
     static let mcpStorageKey = "LLMMCPStorage"
     static let mcpToolStorageKeyPrefix = "LLMMCPToolStorage_"
     static let llmConfigStorageKey = "LLMConfigStorage"
+    static let completionConfigStorageKey = "LLMCompletionConfigStorage"
 }

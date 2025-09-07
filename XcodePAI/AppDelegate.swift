@@ -36,12 +36,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         // IPC
         _ = IPCServer.shared
         
-        if checkAccessibilityPermission() {
+        if Utils.checkAccessibilityPermission() {
             _ = XcodeInspector.shared
             service.start()
             AXIsProcessTrustedWithOptions([
                 kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true,
             ] as CFDictionary)
+            
+            for model in StorageManager.shared.completionConfigs {
+                if Configer.completionSelectConfigId == model.id {
+                    SuggestionPortal.shared.current = model.getSuggestion()
+                }
+            }
         }
     }
     
@@ -55,10 +61,5 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return false
-    }
-    
-    func checkAccessibilityPermission() -> Bool {
-        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
-        return AXIsProcessTrustedWithOptions(options as CFDictionary)
     }
 }

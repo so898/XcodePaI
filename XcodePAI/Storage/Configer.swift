@@ -49,6 +49,19 @@ class Configer {
         }
     }
     
+    static private let completionSelectConfigIdStorageKey = "completionSelectConfigId"
+    static var completionSelectConfigId: UUID {
+        set {
+            Self.setValue(Self.completionSelectConfigIdStorageKey, value: newValue.uuidString)
+        }
+        get {
+            if let string = Self.value(Self.completionSelectConfigIdStorageKey, defaultValue: ""), !string.isEmpty, let uuid = UUID(uuidString: string) {
+                return uuid
+            }
+            return UUID()
+        }
+    }
+    
 }
 
 // MARK: Private Functions

@@ -67,6 +67,11 @@
 		79CFC6B02E6A0CE300367E78 /* PartialSuggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6AF2E6A0CCA00367E78 /* PartialSuggestion.swift */; };
 		79CFC6B42E6B3EE900367E78 /* LLMCompletionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6B32E6B3EE200367E78 /* LLMCompletionClient.swift */; };
 		79CFC6B82E6B53BA00367E78 /* PrefixSuffixSuggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6B72E6B53AF00367E78 /* PrefixSuffixSuggestion.swift */; };
+		79CFC6DE2E6C8C1B00367E78 /* CompletionSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6DD2E6C8C1200367E78 /* CompletionSettingSectionView.swift */; };
+		79CFC6E02E6C8CEA00367E78 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6DF2E6C8CE700367E78 /* Utils.swift */; };
+		79CFC6E22E6D546800367E78 /* CompletionEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6E12E6D546200367E78 /* CompletionEditView.swift */; };
+		79CFC6E42E6D548900367E78 /* LLMCompletionConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6E32E6D548300367E78 /* LLMCompletionConfig.swift */; };
+		79CFC6E62E6D73CA00367E78 /* LLMCompletionConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6E52E6D73C400367E78 /* LLMCompletionConfigManager.swift */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
@@ -175,6 +180,11 @@
 		79CFC6AF2E6A0CCA00367E78 /* PartialSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialSuggestion.swift; sourceTree = "<group>"; };
 		79CFC6B32E6B3EE200367E78 /* LLMCompletionClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCompletionClient.swift; sourceTree = "<group>"; };
 		79CFC6B72E6B53AF00367E78 /* PrefixSuffixSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefixSuffixSuggestion.swift; sourceTree = "<group>"; };
+		79CFC6DD2E6C8C1200367E78 /* CompletionSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionSettingSectionView.swift; sourceTree = "<group>"; };
+		79CFC6DF2E6C8CE700367E78 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		79CFC6E12E6D546200367E78 /* CompletionEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionEditView.swift; sourceTree = "<group>"; };
+		79CFC6E32E6D548300367E78 /* LLMCompletionConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCompletionConfig.swift; sourceTree = "<group>"; };
+		79CFC6E52E6D73C400367E78 /* LLMCompletionConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCompletionConfigManager.swift; sourceTree = "<group>"; };
 		79E631042E69E41A005BB62B /* ThirdPartyCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyCore; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
@@ -259,6 +269,7 @@
 				79079A062E4F9449004D9D1A /* LLMMCPTool.swift */,
 				79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */,
 				79F28F312E5CD61C00F71A28 /* LLMConfig.swift */,
+				79CFC6E32E6D548300367E78 /* LLMCompletionConfig.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -286,6 +297,7 @@
 		790799AD2E47203B004D9D1A /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				79CFC6DF2E6C8CE700367E78 /* Utils.swift */,
 				790799AE2E472049004D9D1A /* Constraint.swift */,
 				79079A1B2E50D144004D9D1A /* PromptTemplate.swift */,
 				790799B92E489328004D9D1A /* Extensions.swift */,
@@ -408,6 +420,7 @@
 				79079A172E4FBDAA004D9D1A /* MCPManager.swift */,
 				79079A192E4FBDBD004D9D1A /* MCPToolManager.swift */,
 				79F743062E65E8E400C35D1B /* LLMConfigManager.swift */,
+				79CFC6E52E6D73C400367E78 /* LLMCompletionConfigManager.swift */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -424,6 +437,8 @@
 		79CFC6CD2E6C155D00367E78 /* Completion */ = {
 			isa = PBXGroup;
 			children = (
+				79CFC6DD2E6C8C1200367E78 /* CompletionSettingSectionView.swift */,
+				79CFC6E12E6D546200367E78 /* CompletionEditView.swift */,
 			);
 			path = Completion;
 			sourceTree = "<group>";
@@ -607,6 +622,7 @@
 				790799C92E48F688004D9D1A /* LLMModelProvider.swift in Sources */,
 				790799C02E48B833004D9D1A /* HTTPSSEClient.swift in Sources */,
 				790799A92E471FEA004D9D1A /* XcodePAIApp.swift in Sources */,
+				79CFC6E62E6D73CA00367E78 /* LLMCompletionConfigManager.swift in Sources */,
 				79F743072E65E8E800C35D1B /* LLMConfigManager.swift in Sources */,
 				790799BA2E48932C004D9D1A /* Extensions.swift in Sources */,
 				79079A142E4FBD7E004D9D1A /* ModelProviderManager.swift in Sources */,
@@ -615,12 +631,16 @@
 				790799BE2E48B6BD004D9D1A /* HTTPClient.swift in Sources */,
 				790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */,
 				79CFC6B02E6A0CE300367E78 /* PartialSuggestion.swift in Sources */,
+				79CFC6E02E6C8CEA00367E78 /* Utils.swift in Sources */,
 				790799B62E487F83004D9D1A /* HTTPConnection.swift in Sources */,
 				790799B22E4873B7004D9D1A /* TCPServer.swift in Sources */,
 				79079A072E4F9449004D9D1A /* LLMMCPTool.swift in Sources */,
 				79079A082E4F9449004D9D1A /* LLMMCP.swift in Sources */,
 				79CFC6B82E6B53BA00367E78 /* PrefixSuffixSuggestion.swift in Sources */,
+				79CFC6E22E6D546800367E78 /* CompletionEditView.swift in Sources */,
+				79CFC6DE2E6C8C1B00367E78 /* CompletionSettingSectionView.swift in Sources */,
 				790799FC2E4CF14F004D9D1A /* LoadingView.swift in Sources */,
+				79CFC6E42E6D548900367E78 /* LLMCompletionConfig.swift in Sources */,
 				79079A0F2E4F9B27004D9D1A /* MCPEditView.swift in Sources */,
 				790799AF2E47204C004D9D1A /* Constraint.swift in Sources */,
 				79079A0D2E4F95E8004D9D1A /* MCPSettingView.swift in Sources */,

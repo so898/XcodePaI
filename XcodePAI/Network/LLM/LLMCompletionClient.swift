@@ -34,7 +34,7 @@ class LLMCompletionClient {
     static let fimSuffix = "<|fim_suffix|>"
     static let fimMiddle = "<|fim_middle|>"
     
-    static func doPromptCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, suffix: String? = nil) async throws -> String? {
+    static func doPromptCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, suffix: String? = nil, headers: [String: String]? = nil) async throws -> String? {
         let bodyPrompt: String = {
             if let suffix {
                 return fimPrefix + prompt + fimSuffix + suffix + fimMiddle
@@ -42,22 +42,36 @@ class LLMCompletionClient {
             return fimPrefix + prompt + fimSuffix
         }()
         
-        let response: PrefixCompleteResponse = try await CoroutineHTTPClient.shared.post(provider.completionsUrl(), body: RequestCompleteBody(model: model.id, prompt: bodyPrompt, suffix: nil), headers: provider.requestHeaders())
+        var requestHeaders = provider.requestHeaders()
+        if let headers {
+            headers.forEach { (key: String, value: String) in
+                requestHeaders[key] = value
+            }
+        }
+        
+        let response: PrefixCompleteResponse = try await CoroutineHTTPClient.shared.post(provider.completionsUrl(), body: RequestCompleteBody(model: model.id, prompt: bodyPrompt, suffix: nil), headers: requestHeaders)
         
         // TODO: Record token usages
         
         return response.choices.first?.text
     }
     
-    static func doPromptSuffixCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, suffix: String? = nil) async throws -> String? {
-        let response: PrefixCompleteResponse = try await CoroutineHTTPClient.shared.post(provider.completionsUrl(), body: RequestCompleteBody(model: model.id, prompt: prompt, suffix: suffix), headers: provider.requestHeaders())
+    static func doPromptSuffixCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, suffix: String? = nil, headers: [String: String]? = nil) async throws -> String? {
+        var requestHeaders = provider.requestHeaders()
+        if let headers {
+            headers.forEach { (key: String, value: String) in
+                requestHeaders[key] = value
+            }
+        }
+        
+        let response: PrefixCompleteResponse = try await CoroutineHTTPClient.shared.post(provider.completionsUrl(), body: RequestCompleteBody(model: model.id, prompt: prompt, suffix: suffix), headers: requestHeaders)
         
         // TODO: Record token usages
         
         return response.choices.first?.text
     }
     
-    static func doPartialCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, system: String? = nil, instruction: String? = nil, maxTokens: Int? = 1024) async throws -> String? {
+    static func doPartialCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, system: String? = nil, instruction: String? = nil, maxTokens: Int? = 1024, headers: [String: String]? = nil) async throws -> String? {
         
         var messages = [LLMMessage]()
         if let system {
@@ -74,7 +88,14 @@ class LLMCompletionClient {
             throw CoroutineHTTPClientError.encodingError
         }
         
-        let retData = try await CoroutineHTTPClient.POST(urlString: provider.chatCompletionsUrl(), headers: provider.requestHeaders(), body: data)
+        var requestHeaders = provider.requestHeaders()
+        if let headers {
+            headers.forEach { (key: String, value: String) in
+                requestHeaders[key] = value
+            }
+        }
+        
+        let retData = try await CoroutineHTTPClient.POST(urlString: provider.chatCompletionsUrl(), headers: requestHeaders, body: data)
         
         guard let jsonDict = try? JSONSerialization.jsonObject(with: retData) as? [String: Any] else {
             throw CoroutineHTTPClientError.decodingError

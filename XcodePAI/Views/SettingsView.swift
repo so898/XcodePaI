@@ -26,7 +26,7 @@ struct SettingsView: View {
             TabItem(id: 1, title: "Provider", imageName: "sparkles.square.filled.on.square", view: AnyView(ModelProviderSettingSectionView())),
             TabItem(id: 2, title: "MCP", imageName: "square.stack.3d.forward.dottedline", view: AnyView(MCPSettingSectionView())),
             TabItem(id: 3, title: "Chat Proxy", imageName: "chart.bar.horizontal.page", view: AnyView(ChatProxySettingSectionView())),
-            TabItem(id: 4, title: "Completion", imageName: "pencil.and.list.clipboard", view: AnyView(GeneralSettingSectionView())),
+            TabItem(id: 4, title: "Completions", imageName: "pencil.and.list.clipboard", view: AnyView(CompletionSettingSectionView())),
             TabItem(id: 5, title: "About", imageName: "info.circle.fill", view: AnyView(GeneralSettingSectionView()))
         ]
     }
