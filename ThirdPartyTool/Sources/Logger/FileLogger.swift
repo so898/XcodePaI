@@ -51,9 +51,9 @@ actor FileLoggerImplementation {
 // MARK: - Shared Base File Logger
 actor BaseFileLoggerImplementation {
     #if DEBUG
-    private let logBaseName = "github-copilot-for-xcode-dev"
+    private let logBaseName = "XcodePaI-dev"
     #else
-    private let logBaseName = "github-copilot-for-xcode"
+    private let logBaseName = "XcodePaI"
     #endif
     private let logExtension = "log"
     private let maxLogSize: Int

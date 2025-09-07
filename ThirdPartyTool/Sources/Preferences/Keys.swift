@@ -311,17 +311,6 @@ public extension UserDefaultPreferenceKeys {
         .init(defaultValue: false, key: "FeatureFlag-DisableFunctionCalling")
     }
 
-    var useUserDefaultsBaseAPIKeychain: FeatureFlag {
-        .init(defaultValue: false, key: "FeatureFlag-UseUserDefaultsBaseAPIKeychain")
-    }
-
-    var disableGitHubCopilotSettingsAutoRefreshOnAppear: FeatureFlag {
-        .init(
-            defaultValue: false,
-            key: "FeatureFlag-DisableGitHubCopilotSettingsAutoRefreshOnAppear"
-        )
-    }
-
     var disableEnhancedWorkspace: FeatureFlag {
         .init(
             defaultValue: false,

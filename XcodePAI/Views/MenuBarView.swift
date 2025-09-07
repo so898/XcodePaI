@@ -166,7 +166,7 @@ extension MenuBarManager: NSMenuDelegate {
             }
         }
         
-        if Configer.showXcodeInstpectorDebug {
+        if Configer.showXcodeInstpectorDebug, Utils.checkAccessibilityPermission() {
             
             menu.addItem(NSMenuItem.separator())
             
@@ -174,7 +174,7 @@ extension MenuBarManager: NSMenuDelegate {
             item.isEnabled = true
             menu.addItem(item)
             
-            var subMenu = NSMenu()
+            let subMenu = NSMenu()
             item.submenu = subMenu
             
             let inspector = XcodeInspector.shared

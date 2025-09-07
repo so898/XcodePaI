@@ -160,9 +160,9 @@ struct PseudoCommandHandler {
                         if now.timeIntervalSince(lastBundleNotFoundTime) > 60 * 60 {
                             Self.lastBundleNotFoundTime = now
                             toast.toast(
-                                title: "GitHub Copilot Extension Permission Not Granted",
+                                title: "XcodePaI Extension Permission Not Granted",
                                 content: """
-                                Enable Extensions → Xcode Source Editor → GitHub Copilot \
+                                Enable Extensions → Xcode Source Editor → XcodePaI \
                                 for Xcode for faster and full-featured code completion. \
                                 [View How-to Guide](https://github.com/github/CopilotForXcode/blob/main/TROUBLESHOOTING.md#extension-permission)
                                 """,
@@ -177,7 +177,7 @@ struct PseudoCommandHandler {
                         if now.timeIntervalSince(lastBundleDisabledTime) > 60 * 60 {
                             Self.lastBundleDisabledTime = now
                             toast.toast(
-                                title: "GitHub Copilot Extension Disabled",
+                                title: "XcodePaI Extension Disabled",
                                 content: "Quit and restart Xcode to enable extension.",
                                 level: .warning,
                                 button: .init(

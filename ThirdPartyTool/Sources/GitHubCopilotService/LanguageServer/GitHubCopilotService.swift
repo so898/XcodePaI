@@ -29,11 +29,6 @@ public protocol GitHubCopilotSuggestionServiceType {
     func terminate() async
 }
 
-public extension Notification.Name {
-    static let gitHubCopilotShouldRefreshEditorInformation = Notification
-        .Name("com.tpp.CopilotForXcode.GitHubCopilotShouldRefreshEditorInformation")
-}
-
 public class GitHubCopilotBaseService {
     let projectRootURL: URL
     let sessionId: String
@@ -41,48 +36,6 @@ public class GitHubCopilotBaseService {
     init(projectRootURL: URL, workspaceURL: URL = URL(fileURLWithPath: "/")) throws {
         self.projectRootURL = projectRootURL
         self.sessionId = UUID().uuidString
-    }
-    
-    
-
-    public static func createFoldersIfNeeded() throws -> (
-        applicationSupportURL: URL,
-        gitHubCopilotURL: URL,
-        executableURL: URL,
-        supportURL: URL
-    ) {
-        guard let supportURL = FileManager.default.urls(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask
-        ).first?.appendingPathComponent(
-            Bundle.main
-                .object(forInfoDictionaryKey: "APPLICATION_SUPPORT_FOLDER") as? String
-            ?? "com.tpp.CopilotForXcode"
-        ) else {
-            throw CancellationError()
-        }
-
-        if !FileManager.default.fileExists(atPath: supportURL.path) {
-            try? FileManager.default
-                .createDirectory(at: supportURL, withIntermediateDirectories: false)
-        }
-        let gitHubCopilotFolderURL = supportURL.appendingPathComponent("GitHub Copilot")
-        if !FileManager.default.fileExists(atPath: gitHubCopilotFolderURL.path) {
-            try? FileManager.default
-                .createDirectory(at: gitHubCopilotFolderURL, withIntermediateDirectories: false)
-        }
-        let supportFolderURL = gitHubCopilotFolderURL.appendingPathComponent("support")
-        if !FileManager.default.fileExists(atPath: supportFolderURL.path) {
-            try? FileManager.default
-                .createDirectory(at: supportFolderURL, withIntermediateDirectories: false)
-        }
-        let executableFolderURL = gitHubCopilotFolderURL.appendingPathComponent("executable")
-        if !FileManager.default.fileExists(atPath: executableFolderURL.path) {
-            try? FileManager.default
-                .createDirectory(at: executableFolderURL, withIntermediateDirectories: false)
-        }
-
-        return (supportURL, gitHubCopilotFolderURL, executableFolderURL, supportFolderURL)
     }
     
     public func getSessionId() -> String {
@@ -290,7 +243,6 @@ public final class GitHubCopilotService:
 //                    )
 //                )
             }
-            NotificationCenter.default.publisher(for: .gitHubCopilotShouldRefreshEditorInformation).map { _ in "editorInfo" }
         }
     }
 }
