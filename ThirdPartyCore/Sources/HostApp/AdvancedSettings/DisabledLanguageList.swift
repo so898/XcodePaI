@@ -2,7 +2,7 @@ import SuggestionBasic
 import SwiftUI
 import SharedUIComponents
 
-extension List {
+public extension List {
     @ViewBuilder
     func removeBackground() -> some View {
         if #available(macOS 13.0, *) {
@@ -15,7 +15,7 @@ extension List {
     }
 }
 
-struct DisabledLanguageList: View {
+public struct DisabledLanguageList: View {
     final class Settings: ObservableObject {
         @AppStorage(\.suggestionFeatureDisabledLanguageList)
         var suggestionFeatureDisabledLanguageList: [String]

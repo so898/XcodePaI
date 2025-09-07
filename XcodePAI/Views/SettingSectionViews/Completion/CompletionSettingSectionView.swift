@@ -15,6 +15,7 @@ struct CompletionSettingSectionView: View {
     @State private var extensionPermissionStatus = Status.shared.getExtensionStatus()
     @AppStorage(\.acceptSuggestionWithTab) var acceptSuggestionWithTab
     @AppStorage(\.realtimeSuggestionDebounce) var realtimeSuggestionDebounce
+    @State var isSuggestionFeatureDisabledLanguageListViewOpen = false
     
     @StateObject private var configManager = LLMCompletionConfigManager()
     
@@ -81,9 +82,19 @@ struct CompletionSettingSectionView: View {
                         Text("\(realtimeSuggestionDebounce, specifier: "%.1f")")
                     }
                 }
+                
+                GridRow(alignment: .center) {
+                    Text("Disabled Language List")
+                    Button("Open List") {
+                        isSuggestionFeatureDisabledLanguageListViewOpen = true
+                    }
+                }
             }
             .gridColumnAlignment(.trailing)
             .padding(30)
+            .sheet(isPresented: $isSuggestionFeatureDisabledLanguageListViewOpen) {
+                CompletionDisabledLanguageList(isOpen: $isSuggestionFeatureDisabledLanguageListViewOpen)
+            }
             
             Divider().padding(.leading)
             

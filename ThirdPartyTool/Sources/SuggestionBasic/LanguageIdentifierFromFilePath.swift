@@ -12,39 +12,39 @@ public enum LanguageIdentifier: String, Codable, CaseIterable {
     case csharp = "c#"
     case css = "css"
     case diff
-    case dart
-    case dockerfile
+    case dart = "Dart"
+    case dockerfile = "Docker File"
     case elixir
-    case erlang
-    case fsharp
-    case gitcommit
-    case gitrebase
-    case go
-    case groovy
+    case erlang = "Erlang"
+    case fsharp = "F#"
+    case gitcommit = "Git Commit"
+    case gitrebase = "Git Rebase"
+    case go = "Go"
+    case groovy = "Groovy"
     case handlebars
-    case html
+    case html = "HTML"
     case ini
     case java = "java"
     case javascript = "javascript"
     case javascriptreact
     case json = "json"
-    case latex
+    case latex = "Latex"
     case less
     case lua = "lua"
-    case makefile
+    case makefile = "Makefile"
     case markdown = "markdown"
     case objc = "objective-c"
     case objcpp = "objective-cpp"
-    case perl
-    case perl6
-    case php
-    case powershell
+    case perl = "Perl"
+    case perl6 = "Perl 6"
+    case php = "PHP"
+    case powershell = "Powershell"
     case pug = "jade"
-    case python
-    case r
+    case python = "Python"
+    case r = "R"
     case razor
-    case ruby
-    case rust
+    case ruby = "Ruby"
+    case rust = "Rust"
     case scss
     case sass
     case scala = "scale"
@@ -54,8 +54,8 @@ public enum LanguageIdentifier: String, Codable, CaseIterable {
     case swift = "swift"
     case typescript = "typescript"
     case typescriptreact
-    case tex
-    case vb
+    case tex = "Tex"
+    case vb = "VB"
     case xml = "XML"
     case xsl
     case yaml = "YAML"
