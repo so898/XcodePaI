@@ -13,6 +13,7 @@ struct CompletionSettingSectionView: View {
     @AppStorage(\.realtimeSuggestionToggle) var realtimeSuggestionToggle
     @State private var axPermissionGranted = Utils.checkAccessibilityPermission()
     @State private var extensionPermissionStatus = Status.shared.getExtensionStatus()
+    @AppStorage(\.acceptSuggestionWithTab) var acceptSuggestionWithTab
     @AppStorage(\.realtimeSuggestionDebounce) var realtimeSuggestionDebounce
     
     @StateObject private var configManager = LLMCompletionConfigManager()
@@ -66,6 +67,12 @@ struct CompletionSettingSectionView: View {
                 
                 GridRow {
                     Divider().gridCellColumns(2)
+                }
+                
+                GridRow(alignment: .center) {
+                    Text("Accept suggestions with Tab")
+                    Toggle("Enable", isOn: $acceptSuggestionWithTab)
+                        .toggleStyle(.checkbox)
                 }
                 
                 GridRow(alignment: .center) {
