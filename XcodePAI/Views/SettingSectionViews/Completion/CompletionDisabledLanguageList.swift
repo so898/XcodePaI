@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import SuggestionBasic
 
 struct CompletionDisabledLanguageList: View {
     final class Settings: ObservableObject {
@@ -47,29 +46,48 @@ struct CompletionDisabledLanguageList: View {
             }
             
             List {
-                ForEach(LanguageIdentifier.allCases, id: \.rawValue) { languageId in
+                ForEach(
+                    settings.suggestionFeatureDisabledLanguageList,
+                    id: \.self
+                ) { language in
                     HStack {
-                        Text(languageId.rawValue)
-                        Spacer()
-                        Toggle("", isOn: Binding(get: {
-                            settings.suggestionFeatureDisabledLanguageList.contains(where: { id in
-                                return languageId.rawValue == id
-                            })
-                        }, set: { value, _ in
-                            if value {
-                                settings.suggestionFeatureDisabledLanguageList.append(languageId.rawValue)
-                            } else {
-                                var newList = [String]()
-                                for value in settings.suggestionFeatureDisabledLanguageList {
-                                    if value != languageId.rawValue {
-                                        newList.append(value)
-                                    }
+                        Text(language.capitalized)
+                            .contextMenu {
+                                Button("Remove") {
+                                    settings.suggestionFeatureDisabledLanguageList.removeAll(
+                                        where: { $0 == language }
+                                    )
                                 }
-                                settings.suggestionFeatureDisabledLanguageList = newList
                             }
-                        }))
-                        .toggleStyle(.checkbox)
+                        Spacer()
+                        
+                        Button(action: {
+                            settings.suggestionFeatureDisabledLanguageList.removeAll(
+                                where: { $0 == language }
+                            )
+                        }) {
+                            Image(systemName: "trash.fill")
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
                     }
+                }
+                .modify { view in
+                    if #available(macOS 13.0, *) {
+                        view.listRowSeparator(.hidden).listSectionSeparator(.hidden)
+                    } else {
+                        view
+                    }
+                }
+            }
+            .overlay {
+                if settings.suggestionFeatureDisabledLanguageList.isEmpty {
+                    Text("""
+                    Empty
+                    Disable the language of a file from the XcodePaI menu in the status bar.
+                    """)
+                    .multilineTextAlignment(.center)
+                    .padding()
                 }
             }
         }

@@ -9,6 +9,7 @@ import SwiftUI
 import AppKit
 import WorkspaceSuggestionService
 import SuggestionPortal
+import XcodeInspector
 
 class MenuBarManager: NSObject, ObservableObject {
     
@@ -151,6 +152,18 @@ extension MenuBarManager: NSMenuDelegate {
                 }
                 item.submenu = subMenu
             }
+            
+            if let lang = DisabledLanguageList.shared.activeDocumentLanguage {
+                item = NSMenuItem(title: "\(DisabledLanguageList.shared.isEnabled(lang) ? "Disable" : "Enable") Completions for \(lang.rawValue)", action: #selector(toggleIgnoreLanguageEnabled), keyEquivalent: "")
+                item.isEnabled = true
+                item.target = self
+                menu.addItem(item)
+            } else {
+                item = NSMenuItem(title: "No Active Document", action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                item.target = nil
+                menu.addItem(item)
+            }
         }
         
         menu.addItem(NSMenuItem.separator())
@@ -199,6 +212,16 @@ extension MenuBarManager {
         let model = StorageManager.shared.completionConfigs[modelItem.tag]
         Configer.completionSelectConfigId = model.id
         SuggestionPortal.shared.current = model.getSuggestion()
+    }
+    
+    @objc func toggleIgnoreLanguageEnabled() {
+        guard let lang = DisabledLanguageList.shared.activeDocumentLanguage else { return }
+        
+        if DisabledLanguageList.shared.isEnabled(lang) {
+            DisabledLanguageList.shared.disable(lang)
+        } else {
+            DisabledLanguageList.shared.enable(lang)
+        }
     }
     
     @objc public func openSettingsView() {
