@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AppKit
+import WorkspaceSuggestionService
 
 class MenuBarManager: NSObject, ObservableObject {
     
@@ -113,6 +114,18 @@ extension MenuBarManager: NSMenuDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
+        item = NSMenuItem(title: "Completions", action: #selector(toggleCodeCompletion(item:)), keyEquivalent: "")
+        item.isEnabled = true
+        item.target = self
+        if UserDefaults.shared.value(for: \.realtimeSuggestionToggle) {
+            item.state = .on
+        } else {
+            item.state = .off
+        }
+        menu.addItem(item)
+        
+        menu.addItem(NSMenuItem.separator())
+        
         item = NSMenuItem(title: "Config...", action: #selector(openSettingsView), keyEquivalent: ",")
         item.target = self
         menu.addItem(item)
@@ -146,6 +159,11 @@ extension MenuBarManager {
             }
             StorageManager.shared.updateDefaultConfig(config)
         }
+    }
+    
+    @objc private func toggleCodeCompletion(item: NSMenuItem) {
+        let value = UserDefaults.shared.value(for: \.realtimeSuggestionToggle)
+        UserDefaults.shared.set(!value, for: \.realtimeSuggestionToggle)
     }
     
     @objc private func openSettingsView() {
