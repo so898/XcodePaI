@@ -166,6 +166,116 @@ extension MenuBarManager: NSMenuDelegate {
             }
         }
         
+        if Configer.showXcodeInstpectorDebug {
+            
+            menu.addItem(NSMenuItem.separator())
+            
+            item = NSMenuItem(title: "Xcode Inspector Debug", action: nil, keyEquivalent: "")
+            item.isEnabled = true
+            menu.addItem(item)
+            
+            var subMenu = NSMenu()
+            item.submenu = subMenu
+            
+            let inspector = XcodeInspector.shared
+            
+            item = NSMenuItem(title: "Active Project: \(inspector.activeProjectRootURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+            item.isEnabled = false
+            subMenu.addItem(item)
+            
+            item = NSMenuItem(title: "Active Workspace: \(inspector.activeWorkspaceURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+            item.isEnabled = false
+            subMenu.addItem(item)
+            
+            item = NSMenuItem(title: "Active Document: \(inspector.activeDocumentURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+            item.isEnabled = false
+            subMenu.addItem(item)
+            
+            if let focusedWindow = inspector.focusedWindow {
+                item = NSMenuItem(title: "Active Window: \(focusedWindow.uiElement.identifier)", action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                subMenu.addItem(item)
+            } else {
+                item = NSMenuItem(title: "Active Window: N/A", action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                subMenu.addItem(item)
+            }
+            
+            if let focusedElement = inspector.focusedElement {
+                item = NSMenuItem(title: "Focused Element: \(focusedElement.description)", action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                subMenu.addItem(item)
+            } else {
+                item = NSMenuItem(title: "Focused Element: N/A", action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                subMenu.addItem(item)
+            }
+            
+            if let sourceEditor = inspector.focusedEditor {
+                let label = sourceEditor.element.description
+                item = NSMenuItem(title: "Active Source Editor: \(label.isEmpty ? "Unknown" : label)", action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                subMenu.addItem(item)
+            } else {
+                item = NSMenuItem(title: "Active Source Editor: N/A", action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                subMenu.addItem(item)
+            }
+            
+            menu.items.append(.separator())
+            
+            for xcode in inspector.xcodes {
+                var item = NSMenuItem(
+                    title: "Xcode \(xcode.processIdentifier)",
+                    action: nil,
+                    keyEquivalent: ""
+                )
+                subMenu.addItem(item)
+                let xcodeMenu = NSMenu()
+                item.submenu = xcodeMenu
+                
+                item = NSMenuItem(title: "Is Active: \(xcode.isActive)", action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                xcodeMenu.addItem(item)
+                
+                item = NSMenuItem(title: "Active Project: \(inspector.activeProjectRootURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                xcodeMenu.addItem(item)
+                
+                item = NSMenuItem(title: "Active Workspace: \(inspector.activeWorkspaceURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                xcodeMenu.addItem(item)
+                
+                item = NSMenuItem(title: "Active Document: \(inspector.activeDocumentURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+                item.isEnabled = false
+                xcodeMenu.addItem(item)
+                
+                for (key, workspace) in xcode.realtimeWorkspaces {
+                    let workspaceItem = NSMenuItem(
+                        title: "Workspace \(key)",
+                        action: nil,
+                        keyEquivalent: ""
+                    )
+                    xcodeMenu.items.append(workspaceItem)
+                    let workspaceMenu = NSMenu()
+                    workspaceItem.submenu = workspaceMenu
+                    let tabsItem = NSMenuItem(
+                        title: "Tabs",
+                        action: nil,
+                        keyEquivalent: ""
+                    )
+                    workspaceMenu.addItem(tabsItem)
+                    let tabsMenu = NSMenu()
+                    tabsItem.submenu = tabsMenu
+                    for tab in workspace.tabs {
+                        item = NSMenuItem(title: tab, action: nil, keyEquivalent: "")
+                        item.isEnabled = false
+                        tabsMenu.addItem(item)
+                    }
+                }
+            }
+        }
+        
         menu.addItem(NSMenuItem.separator())
         
         item = NSMenuItem(title: "Config...", action: #selector(openSettingsView), keyEquivalent: ",")

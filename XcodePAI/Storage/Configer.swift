@@ -83,6 +83,15 @@ class Configer {
         }
     }
     
+    static private let showXcodeInstpectorDebugStorageKey = "showXcodeInstpectorDebug"
+    static var showXcodeInstpectorDebug: Bool {
+        set {
+            Self.setValue(Self.showXcodeInstpectorDebugStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(Self.showXcodeInstpectorDebugStorageKey, defaultValue: false)!
+        }
+    }
 }
 
 // MARK: Private Functions

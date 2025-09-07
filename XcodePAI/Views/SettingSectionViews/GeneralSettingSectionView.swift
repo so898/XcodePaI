@@ -11,19 +11,14 @@ struct GeneralSettingSectionView: View {
     @State private var contentLayout = 0 // 0 for Vertical, 1 for Horizontal
     @State private var openConfigurationOnStartUp = Configer.openConfigurationWhenStartUp
     @State private var forceLanguage: Configer.Language = Configer.forceLanguage
-    @State private var showInMenuBar = true
-    @State private var toolbarStyle = "Only Icon (Default)"
-    @State private var truncationStyle = "Tail"
-    @State private var portNumber = "9090"
-    @State private var overrideProxyOnLaunch = true
-    @State private var startRecordingOnLaunch = true
+    @State private var showXcodeInstpectorDebug = Configer.showXcodeInstpectorDebug
     
     var body: some View {
         ScrollView {
             Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 18) {
                 
                 GridRow {
-                    Text("Configuration window:")
+                    Text("Configuration window")
                     Toggle("Open Configuration when StartUp", isOn: $openConfigurationOnStartUp)
                         .toggleStyle(.checkbox)
                         .onChange(of: openConfigurationOnStartUp) { _, newValue in
@@ -36,7 +31,7 @@ struct GeneralSettingSectionView: View {
                 }
                 
                 GridRow {
-                    Text("Response Language:")
+                    Text("Response Language")
                     Picker("", selection: $forceLanguage) {
                         ForEach(Configer.Language.allCases, id: \.rawValue) { (language: Configer.Language) in
                             Text(language.rawValue)
@@ -44,6 +39,19 @@ struct GeneralSettingSectionView: View {
                         }
                     }
                     .frame(maxWidth: 150, alignment: .leading)
+                }
+                
+                GridRow {
+                    Divider().gridCellColumns(2)
+                }
+                
+                GridRow {
+                    Text("Xcode Inspector Debug")
+                    Toggle("Show In Statusbar Menu", isOn: $showXcodeInstpectorDebug)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: showXcodeInstpectorDebug) { _, newValue in
+                            Configer.showXcodeInstpectorDebug = newValue
+                        }
                 }
             }
             .gridColumnAlignment(.trailing)
