@@ -104,6 +104,8 @@ struct CompletionSettingSectionView: View {
                 }
                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 16))
             }
+            
+            Spacer(minLength: 20)
         }
         .background(Color(nsColor: .textBackgroundColor))
         .navigationTitle("Completions")
