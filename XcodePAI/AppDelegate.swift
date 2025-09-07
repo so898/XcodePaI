@@ -30,6 +30,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         // Menu
         MenuBarManager.shared.setup()
         
+        if Configer.openConfigurationWhenStartUp {
+            MenuBarManager.shared.openSettingsView()
+        }
+        
         // Chat Proxy
         _ = ChatProxy.shared
         

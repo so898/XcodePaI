@@ -18,6 +18,6 @@ struct XcodePAIApp: App {
                      .globalLoading()
              }
          }
-         .defaultLaunchBehavior(Configer.openConfigurationWhenStartUp ? .presented : .suppressed)
+         .defaultLaunchBehavior(.suppressed)
     }
 }

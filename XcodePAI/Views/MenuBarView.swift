@@ -201,7 +201,7 @@ extension MenuBarManager {
         SuggestionPortal.shared.current = model.getSuggestion()
     }
     
-    @objc private func openSettingsView() {
+    @objc public func openSettingsView() {
         if let windowController = settingsWindowController, windowController.window?.isVisible == true {
             windowController.window?.close()
             return
