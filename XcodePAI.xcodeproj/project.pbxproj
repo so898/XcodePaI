@@ -72,6 +72,7 @@
 		79CFC6E22E6D546800367E78 /* CompletionEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6E12E6D546200367E78 /* CompletionEditView.swift */; };
 		79CFC6E42E6D548900367E78 /* LLMCompletionConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6E32E6D548300367E78 /* LLMCompletionConfig.swift */; };
 		79CFC6E62E6D73CA00367E78 /* LLMCompletionConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6E52E6D73C400367E78 /* LLMCompletionConfigManager.swift */; };
+		79CFC6E82E6DB20B00367E78 /* SuggestionTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6E72E6DB20400367E78 /* SuggestionTester.swift */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
@@ -185,6 +186,7 @@
 		79CFC6E12E6D546200367E78 /* CompletionEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionEditView.swift; sourceTree = "<group>"; };
 		79CFC6E32E6D548300367E78 /* LLMCompletionConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCompletionConfig.swift; sourceTree = "<group>"; };
 		79CFC6E52E6D73C400367E78 /* LLMCompletionConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCompletionConfigManager.swift; sourceTree = "<group>"; };
+		79CFC6E72E6DB20400367E78 /* SuggestionTester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionTester.swift; sourceTree = "<group>"; };
 		79E631042E69E41A005BB62B /* ThirdPartyCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyCore; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
@@ -430,6 +432,7 @@
 			children = (
 				79CFC6B72E6B53AF00367E78 /* PrefixSuffixSuggestion.swift */,
 				79CFC6AF2E6A0CCA00367E78 /* PartialSuggestion.swift */,
+				79CFC6E72E6DB20400367E78 /* SuggestionTester.swift */,
 			);
 			path = Completion;
 			sourceTree = "<group>";
@@ -646,6 +649,7 @@
 				79079A0D2E4F95E8004D9D1A /* MCPSettingView.swift in Sources */,
 				790799B42E487E08004D9D1A /* TCPConnection.swift in Sources */,
 				790799FE2E4CF7C0004D9D1A /* ModelAddView.swift in Sources */,
+				79CFC6E82E6DB20B00367E78 /* SuggestionTester.swift in Sources */,
 				790799C72E48F624004D9D1A /* LLMClient.swift in Sources */,
 				79079A0A2E4F94FB004D9D1A /* Components.swift in Sources */,
 			);

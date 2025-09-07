@@ -209,6 +209,10 @@ struct CompletionEditView: View {
         }
     }
     
+    @State private var isShowingTestPopover = false
+    @State private var isRunningTest = false
+    @State private var testPopoverContent = ""
+    
     private var buttonsSection: some View {
         HStack {
             if currentConfig != nil {
@@ -219,12 +223,35 @@ struct CompletionEditView: View {
                     dismiss()
                 } label: {
                     Text("Delete Config")
-                        .frame(maxWidth: .infinity)
                 }
                 .tint(Color.red.opacity(0.7))
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
-                .frame(maxWidth: 200)
+            }
+            
+            Button(role: .destructive) {
+                testPopoverContent = ""
+                guard let config = buildConfig() else {
+                    return
+                }
+                
+                Task {
+                    isRunningTest = true
+                    testPopoverContent = await SuggestionTester.run(config) ?? "Test Fail"
+                    isRunningTest = false
+                    isShowingTestPopover = true
+                }
+            } label: {
+                Text("Test Config")
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+            .disabled(model.isEmpty || name.isEmpty || isRunningTest)
+            .popover(
+                isPresented: $isShowingTestPopover, arrowEdge: .bottom
+            ) {
+                Text(testPopoverContent)
+                    .padding()
             }
             
             Spacer()
@@ -237,23 +264,10 @@ struct CompletionEditView: View {
             
             
             Button("Save") {
-                
-                let modelValues = model.components(separatedBy: "+")
-                guard modelValues.count == 2 else {
+                guard let config = buildConfig() else {
                     return
                 }
-                
-                let modelName = modelValues[0]
-                let modelProvider = modelValues[1]
-                
-                var headers = [String: String]()
-                for header in self.headers {
-                    headers[header.key] = header.value
-                }
-                
-                let newConfig = LLMCompletionConfig(id: currentConfig?.id ?? UUID(), name: name, modelProvider: modelProvider, modelName: modelName, type: type, inPrompt: inPrompt, hasSuffix: hasSuffix, maxTokens: Int(maxTokens), headers: headers)
-
-                createOrUpdateConfig(newConfig)
+                createOrUpdateConfig(config)
                 
                 dismiss()
             }
@@ -261,6 +275,25 @@ struct CompletionEditView: View {
             .controlSize(.large)
             .disabled(model.isEmpty || name.isEmpty)
         }
+    }
+    
+    private func buildConfig() -> LLMCompletionConfig? {
+        let modelValues = model.components(separatedBy: "+")
+        guard modelValues.count == 2 else {
+            return nil
+        }
+        
+        let modelName = modelValues[0]
+        let modelProvider = modelValues[1]
+        
+        var headers = [String: String]()
+        for header in self.headers {
+            headers[header.key] = header.value
+        }
+        
+        let newConfig = LLMCompletionConfig(id: currentConfig?.id ?? UUID(), name: name, modelProvider: modelProvider, modelName: modelName, type: type, inPrompt: inPrompt, hasSuffix: hasSuffix, maxTokens: Int(maxTokens), headers: headers)
+        
+        return newConfig
     }
     
 }
