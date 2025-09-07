@@ -74,6 +74,7 @@
 		79CFC6E62E6D73CA00367E78 /* LLMCompletionConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6E52E6D73C400367E78 /* LLMCompletionConfigManager.swift */; };
 		79CFC6E82E6DB20B00367E78 /* SuggestionTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6E72E6DB20400367E78 /* SuggestionTester.swift */; };
 		79CFC6FE2E6DCF8900367E78 /* CompletionDisabledLanguageList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6FD2E6DCF8200367E78 /* CompletionDisabledLanguageList.swift */; };
+		79CFC7002E6DD93B00367E78 /* AboutSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6FF2E6DD93500367E78 /* AboutSettingSectionView.swift */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
@@ -189,6 +190,7 @@
 		79CFC6E52E6D73C400367E78 /* LLMCompletionConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCompletionConfigManager.swift; sourceTree = "<group>"; };
 		79CFC6E72E6DB20400367E78 /* SuggestionTester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionTester.swift; sourceTree = "<group>"; };
 		79CFC6FD2E6DCF8200367E78 /* CompletionDisabledLanguageList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionDisabledLanguageList.swift; sourceTree = "<group>"; };
+		79CFC6FF2E6DD93500367E78 /* AboutSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingSectionView.swift; sourceTree = "<group>"; };
 		79E631042E69E41A005BB62B /* ThirdPartyCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyCore; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
@@ -370,6 +372,7 @@
 				79079A0B2E4F95B7004D9D1A /* MCPSetting */,
 				79F28F352E5E241D00F71A28 /* ChatProxy */,
 				79CFC6CD2E6C155D00367E78 /* Completion */,
+				79CFC6FF2E6DD93500367E78 /* AboutSettingSectionView.swift */,
 			);
 			path = SettingSectionViews;
 			sourceTree = "<group>";
@@ -604,6 +607,7 @@
 				79CFC6B42E6B3EE900367E78 /* LLMCompletionClient.swift in Sources */,
 				790799C22E48BC74004D9D1A /* LLMRequest.swift in Sources */,
 				790799A62E471FEA004D9D1A /* ChatProxy.swift in Sources */,
+				79CFC7002E6DD93B00367E78 /* AboutSettingSectionView.swift in Sources */,
 				790799AC2E471FFF004D9D1A /* LLMModel.swift in Sources */,
 				79079A1A2E4FBDBE004D9D1A /* MCPToolManager.swift in Sources */,
 				79079A1E2E50F452004D9D1A /* LLMMCPToolUse.swift in Sources */,

@@ -45,7 +45,6 @@ let package = Package(
         .library(name: "AsyncPassthroughSubject", targets: ["AsyncPassthroughSubject"]),
         .library(name: "CustomAsyncAlgorithms", targets: ["CustomAsyncAlgorithms"]),
         .library(name: "AXHelper", targets: ["AXHelper"]),
-        .library(name: "HostAppActivator", targets: ["HostAppActivator"]),
         .library(name: "AppKitExtension", targets: ["AppKitExtension"]),
         .library(name: "SuggestionPortal", targets: ["SuggestionPortal"]),
     ],
@@ -127,12 +126,6 @@ let package = Package(
             ]
         ),
         .target(name: "ActiveApplicationMonitor"),
-        .target(
-            name: "HostAppActivator",
-            dependencies: [
-                "Logger",
-            ]
-        ),
         .target(name: "UserDefaultsObserver"),
         .target(name: "AsyncPassthroughSubject"),
         .target(

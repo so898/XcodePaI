@@ -87,7 +87,6 @@ let package = Package(
                     .product(name: "AppMonitoring", package: "ThirdPartyTool"),
                     .product(name: "Logger", package: "ThirdPartyTool"),
                     .product(name: "CustomAsyncAlgorithms", package: "ThirdPartyTool"),
-                    .product(name: "HostAppActivator", package: "ThirdPartyTool"),
                     .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
                     .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 ]
