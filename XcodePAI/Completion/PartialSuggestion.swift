@@ -48,6 +48,8 @@ extension PartialSuggestion: SuggestionPortalProtocol {
             completionContent = completionContent.substring(to: completionContent.count - 3)
         }
         
+        completionContent += "\n"
+        
         let startPosition = CursorPosition(line: cursorPosition.line,
                                            character: 0)
         let endPosition = CursorPosition(line: cursorPosition.line,
