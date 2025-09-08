@@ -29,7 +29,8 @@ struct SettingsView: View {
             TabItem(id: 2, title: "MCP".localizedString, imageName: "square.stack.3d.forward.dottedline", view: AnyView(MCPSettingSectionView())),
             TabItem(id: 3, title: "Chat Proxy".localizedString, imageName: "chart.bar.horizontal.page", view: AnyView(ChatProxySettingSectionView())),
             TabItem(id: 4, title: "Completions".localizedString, imageName: "pencil.and.list.clipboard", view: AnyView(CompletionSettingSectionView())),
-            TabItem(id: 5, title: "About".localizedString, imageName: "info.circle.fill", view: AnyView(AboutSettingSectionView()))
+            TabItem(id: 5, title: "Plugin".localizedString, imageName: "batteryblock.stack", view: AnyView(PluginSettingSectionView())),
+            TabItem(id: 6, title: "About".localizedString, imageName: "info.circle.fill", view: AnyView(AboutSettingSectionView()))
         ]
     }
     

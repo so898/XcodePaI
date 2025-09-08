@@ -82,6 +82,16 @@
         }
       }
     },
+    "About plugin..." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关于插件…"
+          }
+        }
+      }
+    },
     "About Supported Model Provider..." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -232,6 +242,16 @@
         }
       }
     },
+    "Add plugin..." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加插件..."
+          }
+        }
+      }
+    },
     "Allow suffix" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -271,6 +291,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "语言修改将在应用重启后完全生效。"
+          }
+        }
+      }
+    },
+    "By adding plugins to enhance ChatProxy and code sugestion capabilities, and by modifying parameters to provide more information, the results become more accurate." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过添加插件增强 ChatProxy和代码补全能力，修改传参以提供更多信息，使结果更加精确。"
           }
         }
       }
@@ -456,6 +486,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除 MCP"
+          }
+        }
+      }
+    },
+    "Delete Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除插件"
           }
         }
       }
@@ -656,6 +696,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "扩展 %1$@ → Xcode 源代码编辑器 %2$@ → %3$@，实现更快、功能更全的代码补全。"
+          }
+        }
+      }
+    },
+    "False" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "否"
           }
         }
       }
@@ -970,6 +1020,16 @@
         }
       }
     },
+    "Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件"
+          }
+        }
+      }
+    },
     "Prefix Request" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1268,6 +1328,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用工具"
+          }
+        }
+      }
+    },
+    "True" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
           }
         }
       }
