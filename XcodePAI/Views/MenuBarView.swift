@@ -45,16 +45,16 @@ extension MenuBarManager: NSMenuDelegate {
         var item: NSMenuItem
         
         if let defaultConfig = StorageManager.shared.defaultConfig() {
-            item = NSMenuItem(title: "ChatProxy", action: nil, keyEquivalent: "")
+            item = NSMenuItem(title: "ChatProxy".localizedString, action: nil, keyEquivalent: "")
             item.isEnabled = false
             menu.addItem(item)
             
             // Port display
-            item = NSMenuItem(title: "Local Port: \(Configer.chatProxyPort)", action: nil, keyEquivalent: "")
+            item = NSMenuItem(title: "Local Port: \(Configer.chatProxyPort)".localizedString, action: nil, keyEquivalent: "")
             item.isEnabled = false
             menu.addItem(item)
             
-            item = NSMenuItem(title: "Model", action: nil, keyEquivalent: "")
+            item = NSMenuItem(title: "Model".localizedString, action: nil, keyEquivalent: "")
             item.isEnabled = true
             menu.addItem(item)
             
@@ -87,7 +87,7 @@ extension MenuBarManager: NSMenuDelegate {
             item.submenu = subMenu
             
             if !StorageManager.shared.mcps.isEmpty {
-                item = NSMenuItem(title: "MCP", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "MCP".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = true
                 menu.addItem(item)
                 
@@ -113,12 +113,12 @@ extension MenuBarManager: NSMenuDelegate {
         if Utils.checkAccessibilityPermission(){
             menu.addItem(NSMenuItem.separator())
             
-            item = NSMenuItem(title: "Completions", action: nil, keyEquivalent: "")
+            item = NSMenuItem(title: "Completions".localizedString, action: nil, keyEquivalent: "")
             item.isEnabled = false
             menu.addItem(item)
             
             let completionEnabled = UserDefaults.shared.value(for: \.realtimeSuggestionToggle)
-            item = NSMenuItem(title: "Realtime Suggestion", action: #selector(toggleCodeCompletion(item:)), keyEquivalent: "")
+            item = NSMenuItem(title: "Realtime Suggestion".localizedString, action: #selector(toggleCodeCompletion(item:)), keyEquivalent: "")
             item.isEnabled = true
             item.target = self
             if completionEnabled {
@@ -131,7 +131,7 @@ extension MenuBarManager: NSMenuDelegate {
             var subMenu = NSMenu()
             
             if !StorageManager.shared.completionConfigs.isEmpty {
-                item = NSMenuItem(title: "Model", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Model".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = true
                 menu.addItem(item)
                 
@@ -159,7 +159,7 @@ extension MenuBarManager: NSMenuDelegate {
                 item.target = self
                 menu.addItem(item)
             } else {
-                item = NSMenuItem(title: "No Active Document", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "No Active Document".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 item.target = nil
                 menu.addItem(item)
@@ -170,7 +170,7 @@ extension MenuBarManager: NSMenuDelegate {
             
             menu.addItem(NSMenuItem.separator())
             
-            item = NSMenuItem(title: "Xcode Inspector Debug", action: nil, keyEquivalent: "")
+            item = NSMenuItem(title: "Xcode Inspector Debug".localizedString, action: nil, keyEquivalent: "")
             item.isEnabled = true
             menu.addItem(item)
             
@@ -179,45 +179,45 @@ extension MenuBarManager: NSMenuDelegate {
             
             let inspector = XcodeInspector.shared
             
-            item = NSMenuItem(title: "Active Project: \(inspector.activeProjectRootURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+            item = NSMenuItem(title: "Active Project: \(inspector.activeProjectRootURL?.path ?? "N/A")".localizedString, action: nil, keyEquivalent: "")
             item.isEnabled = false
             subMenu.addItem(item)
             
-            item = NSMenuItem(title: "Active Workspace: \(inspector.activeWorkspaceURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+            item = NSMenuItem(title: "Active Workspace: \(inspector.activeWorkspaceURL?.path ?? "N/A")".localizedString, action: nil, keyEquivalent: "")
             item.isEnabled = false
             subMenu.addItem(item)
             
-            item = NSMenuItem(title: "Active Document: \(inspector.activeDocumentURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+            item = NSMenuItem(title: "Active Document: \(inspector.activeDocumentURL?.path ?? "N/A")".localizedString, action: nil, keyEquivalent: "")
             item.isEnabled = false
             subMenu.addItem(item)
             
             if let focusedWindow = inspector.focusedWindow {
-                item = NSMenuItem(title: "Active Window: \(focusedWindow.uiElement.identifier)", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Active Window: \(focusedWindow.uiElement.identifier)".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 subMenu.addItem(item)
             } else {
-                item = NSMenuItem(title: "Active Window: N/A", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Active Window: N/A".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 subMenu.addItem(item)
             }
             
             if let focusedElement = inspector.focusedElement {
-                item = NSMenuItem(title: "Focused Element: \(focusedElement.description)", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Focused Element: \(focusedElement.description)".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 subMenu.addItem(item)
             } else {
-                item = NSMenuItem(title: "Focused Element: N/A", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Focused Element: N/A".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 subMenu.addItem(item)
             }
             
             if let sourceEditor = inspector.focusedEditor {
                 let label = sourceEditor.element.description
-                item = NSMenuItem(title: "Active Source Editor: \(label.isEmpty ? "Unknown" : label)", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Active Source Editor: \(label.isEmpty ? "Unknown" : label)".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 subMenu.addItem(item)
             } else {
-                item = NSMenuItem(title: "Active Source Editor: N/A", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Active Source Editor: N/A".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 subMenu.addItem(item)
             }
@@ -234,25 +234,25 @@ extension MenuBarManager: NSMenuDelegate {
                 let xcodeMenu = NSMenu()
                 item.submenu = xcodeMenu
                 
-                item = NSMenuItem(title: "Is Active: \(xcode.isActive)", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Is Active: \(xcode.isActive)".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 xcodeMenu.addItem(item)
                 
-                item = NSMenuItem(title: "Active Project: \(inspector.activeProjectRootURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Active Project: \(inspector.activeProjectRootURL?.path ?? "N/A")".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 xcodeMenu.addItem(item)
                 
-                item = NSMenuItem(title: "Active Workspace: \(inspector.activeWorkspaceURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Active Workspace: \(inspector.activeWorkspaceURL?.path ?? "N/A")".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 xcodeMenu.addItem(item)
                 
-                item = NSMenuItem(title: "Active Document: \(inspector.activeDocumentURL?.path ?? "N/A")", action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Active Document: \(inspector.activeDocumentURL?.path ?? "N/A")".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false
                 xcodeMenu.addItem(item)
                 
                 for (key, workspace) in xcode.realtimeWorkspaces {
                     let workspaceItem = NSMenuItem(
-                        title: "Workspace \(key)",
+                        title: "Workspace \(key)".localizedString,
                         action: nil,
                         keyEquivalent: ""
                     )
@@ -260,7 +260,7 @@ extension MenuBarManager: NSMenuDelegate {
                     let workspaceMenu = NSMenu()
                     workspaceItem.submenu = workspaceMenu
                     let tabsItem = NSMenuItem(
-                        title: "Tabs",
+                        title: "Tabs".localizedString,
                         action: nil,
                         keyEquivalent: ""
                     )
@@ -278,13 +278,13 @@ extension MenuBarManager: NSMenuDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
-        item = NSMenuItem(title: "Config...", action: #selector(openSettingsView), keyEquivalent: ",")
+        item = NSMenuItem(title: "Config...".localizedString, action: #selector(openSettingsView), keyEquivalent: ",")
         item.target = self
         menu.addItem(item)
         
         menu.addItem(NSMenuItem.separator())
                 
-        menu.addItem(NSMenuItem(title: "Exit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: "Exit".localizedString, action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
     }
 }
 

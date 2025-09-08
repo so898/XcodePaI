@@ -62,7 +62,7 @@ struct ChatProxyEditView: View {
             .frame(width: 64, height: 64)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(currentConfig?.name ?? "Add a custom config")
+                Text(currentConfig?.name ?? "Add a custom config".localizedString)
                     .font(.headline)
                     .fontWeight(.bold)
                 Text(currentConfig != nil ? "Edit config" : "Enter the information for the config.")
@@ -79,8 +79,8 @@ struct ChatProxyEditView: View {
     private var formSection: some View {
         VStack(spacing: 8) {
             VStack(spacing: 0) {
-                FormFieldRow(label: "Name", content: {
-                    TextField("Name", text: $name)
+                FormFieldRow(label: "Name".localizedString, content: {
+                    TextField("Name".localizedString, text: $name)
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.trailing)
                 })
@@ -89,7 +89,7 @@ struct ChatProxyEditView: View {
             .cornerRadius(12)
             
             VStack(spacing: 0) {
-                FormFieldRow(label: "Model", content: {
+                FormFieldRow(label: "Model".localizedString, content: {
                     Spacer()
                     Picker("", selection: $model) {
                         let groupedModels = Dictionary(grouping: StorageManager.shared.models, by: \.provider)

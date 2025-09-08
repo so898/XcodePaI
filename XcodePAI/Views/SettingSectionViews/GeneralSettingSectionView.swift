@@ -13,6 +13,8 @@ struct GeneralSettingSectionView: View {
     @State private var forceLanguage: Configer.Language = Configer.forceLanguage
     @State private var showXcodeInstpectorDebug = Configer.showXcodeInstpectorDebug
     
+    @StateObject private var languageManager = LanguageManager.shared
+    
     var body: some View {
         ScrollView {
             Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 18) {
@@ -30,11 +32,26 @@ struct GeneralSettingSectionView: View {
                     Divider().gridCellColumns(2)
                 }
                 
+                GridRow(alignment: .top) {
+                    Text("Display Language")
+                    VStack(alignment: .leading) {
+                        Picker("", selection: $languageManager.currentLanguage) {
+                            ForEach(languageManager.supportedLanguages(), id: \.key) { (lang: (key: String?, name: String)) in
+                                Text(lang.name).tag(lang.key as String?)
+                            }
+                        }
+                        .frame(maxWidth: 150, alignment: .leading)
+                        Text("Application restart required for language changed.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
                 GridRow {
                     Text("Response Language")
                     Picker("", selection: $forceLanguage) {
                         ForEach(Configer.Language.allCases, id: \.rawValue) { (language: Configer.Language) in
-                            Text(language.rawValue)
+                            Text(language.rawValue.localizedString)
                                 .tag(language)
                         }
                     }

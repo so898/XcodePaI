@@ -26,6 +26,12 @@ extension String {
     }
 }
 
+extension String {
+    var localizedString: String {
+        return NSLocalizedString(self, bundle: Bundle.main, comment: "")
+    }
+}
+
 // MARK: Substring extension
 extension String {
     func index(from: Int) -> Index {
@@ -46,5 +52,36 @@ extension String {
         let startIndex = index(from: r.lowerBound)
         let endIndex = index(from: r.upperBound)
         return String(self[startIndex..<endIndex])
+    }
+}
+
+extension Bundle {
+    private static var languageBundleKey: UInt8 = 0
+    
+    static var currentLanguage: String? {
+        get {
+            return UserDefaults.standard.string(forKey: "AppLanguage")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "AppLanguage")
+            if let language = newValue, let path = Bundle.main.path(forResource: language, ofType: "lproj") {
+                object_setClass(Bundle.main, CustomBundle.self)
+                (Bundle.main as? CustomBundle)?.bundle = Bundle(path: path)
+            } else {
+                object_setClass(Bundle.main, CustomBundle.self)
+                (Bundle.main as? CustomBundle)?.bundle = nil
+            }
+        }
+    }
+}
+
+private class CustomBundle: Bundle, @unchecked Sendable {
+    var bundle: Bundle?
+    
+    override func localizedString(forKey key: String, value: String?, table tableName: String?) -> String {
+        if let bundle = bundle {
+            return bundle.localizedString(forKey: key, value: value, table: tableName)
+        }
+        return super.localizedString(forKey: key, value: value, table: tableName)
     }
 }

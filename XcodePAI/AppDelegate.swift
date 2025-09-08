@@ -19,6 +19,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
+        if let preferredLanguage = UserDefaults.standard.string(forKey: "AppLanguage") {
+            Bundle.currentLanguage = preferredLanguage
+        }
+        
         if !Configer.openConfigurationWhenStartUp {
             NSApp.setActivationPolicy(.accessory)
         }

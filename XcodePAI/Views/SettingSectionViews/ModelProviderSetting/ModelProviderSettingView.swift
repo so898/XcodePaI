@@ -97,7 +97,7 @@ struct ModelProviderInfoSection: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("LLM Model Provider").font(.headline)
                     Text("Supercharge your Xcode experience with your choice of third-party model. Third-party models will have access to your project files and code.").font(.subheadline).foregroundColor(.secondary).fixedSize(horizontal: false, vertical: true)
-                    Link("About Supported Model Provider...", destination: URL(string: "https://www.apple.com")!).font(.subheadline).padding(.top, 4)
+//                    Link("About Supported Model Provider...", destination: URL(string: "https://www.apple.com")!).font(.subheadline).padding(.top, 4)
                 }
             }
         }

@@ -99,7 +99,7 @@ struct ModelProviderEditView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(currentProvider?.name ?? "Add a Model Provider")
+                Text(currentProvider?.name ?? "Add a Model Provider".localizedString)
                     .font(.headline)
                     .fontWeight(.bold)
                 Text(currentProvider != nil ? "Internet hosted model provider" : "Enter the information for the provider.")
@@ -116,8 +116,8 @@ struct ModelProviderEditView: View {
     private var formSection: some View {
         VStack(spacing: 8) {
             VStack(spacing: 0) {
-                FormFieldRow(label: "Name", content: {
-                    TextField("Name", text: $name)
+                FormFieldRow(label: "Name".localizedString, content: {
+                    TextField("Name".localizedString, text: $name)
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.trailing)
                 })
@@ -126,8 +126,8 @@ struct ModelProviderEditView: View {
             .cornerRadius(12)
             
             VStack(spacing: 0) {
-                FormFieldRow(label: "URL", content: {
-                    TextField("https://model.example.com", text: $url)
+                FormFieldRow(label: "URL".localizedString, content: {
+                    TextField("https://model.example.com".localizedString, text: $url)
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.trailing)
                 })
@@ -136,16 +136,16 @@ struct ModelProviderEditView: View {
             .cornerRadius(12)
 
             VStack(spacing: 0) {
-                FormFieldRow(label: "API Key Header", content: {
-                    TextField("Header Key (Optional)", text: $keyHeader)
+                FormFieldRow(label: "API Key Header".localizedString, content: {
+                    TextField("Header Key (Optional)".localizedString, text: $keyHeader)
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.trailing)
                 })
                 
                 Divider().padding(.leading)
                 
-                FormFieldRow(label: "API Key", content: {
-                    SecureField("Enter API Key", text: $apiKey)
+                FormFieldRow(label: "API Key".localizedString, content: {
+                    SecureField("Enter API Key".localizedString, text: $apiKey)
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.trailing)
                 })
@@ -154,7 +154,7 @@ struct ModelProviderEditView: View {
             .cornerRadius(12)
             
             VStack(spacing: 0) {
-                FormFieldRow(label: "Custom URL", content: {
+                FormFieldRow(label: "Custom URL".localizedString, content: {
                     Spacer()
                     Toggle("", isOn: $customUrls)
                         .toggleStyle(.switch)
@@ -165,20 +165,20 @@ struct ModelProviderEditView: View {
                     
                     Divider().padding(.leading)
                     
-                    FormFieldRow(label: "Models URL", content: {
-                        TextField("/v1/models", text: $customModelsUrl)
+                    FormFieldRow(label: "Models URL".localizedString, content: {
+                        TextField("/v1/models".localizedString, text: $customModelsUrl)
                             .textFieldStyle(.plain)
                             .multilineTextAlignment(.trailing)
                     })
                     
-                    FormFieldRow(label: "Chat URL", content: {
-                        TextField("/v1/chat/completions", text: $customChatUrl)
+                    FormFieldRow(label: "Chat URL".localizedString, content: {
+                        TextField("/v1/chat/completions".localizedString, text: $customChatUrl)
                             .textFieldStyle(.plain)
                             .multilineTextAlignment(.trailing)
                     })
                     
-                    FormFieldRow(label: "Completion URL", content: {
-                        TextField("/v1/completions", text: $customCompletionUrl)
+                    FormFieldRow(label: "Completion URL".localizedString, content: {
+                        TextField("/v1/completions".localizedString, text: $customCompletionUrl)
                             .textFieldStyle(.plain)
                             .multilineTextAlignment(.trailing)
                     })

@@ -118,7 +118,7 @@ struct MCPEditView: View {
             .frame(width: 64, height: 64)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(currentMCP?.name ?? "Add a MCP service")
+                Text(currentMCP?.name ?? "Add a MCP service".localizedString)
                     .font(.headline)
                     .fontWeight(.bold)
                 Text(currentMCP != nil ? "Remote MCP" : "Enter the information for the MCP.")
@@ -135,8 +135,8 @@ struct MCPEditView: View {
     private var formSection: some View {
         VStack(spacing: 8) {
             VStack(spacing: 0) {
-                FormFieldRow(label: "Name", content: {
-                    TextField("Name", text: $name)
+                FormFieldRow(label: "Name".localizedString, content: {
+                    TextField("Name".localizedString, text: $name)
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.trailing)
                 })
@@ -145,8 +145,8 @@ struct MCPEditView: View {
             .cornerRadius(12)
             
             VStack(spacing: 0) {
-                FormFieldRow(label: "URL", content: {
-                    TextField("https://mcp.example.com", text: $url)
+                FormFieldRow(label: "URL".localizedString, content: {
+                    TextField("https://mcp.example.com".localizedString, text: $url)
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.trailing)
                 })
@@ -158,11 +158,11 @@ struct MCPEditView: View {
                 
                 ForEach ($headers) { header in
                     FormKVFieldRow {
-                        TextField("Header Key", text: header.key)
+                        TextField("Header Key".localizedString, text: header.key)
                             .textFieldStyle(.plain)
                             .multilineTextAlignment(.leading)
                     } value: {
-                        TextField("Header Value", text: header.value)
+                        TextField("Header Value".localizedString, text: header.value)
                             .textFieldStyle(.plain)
                             .multilineTextAlignment(.trailing)
                     } deleteAction: {

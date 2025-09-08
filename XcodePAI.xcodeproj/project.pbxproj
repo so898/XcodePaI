@@ -62,6 +62,8 @@
 		7932602F2E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793260292E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift */; };
 		793260302E689FEB0017E87F /* PreviousSuggestionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793260272E689FEB0017E87F /* PreviousSuggestionCommand.swift */; };
 		793260322E68AC070017E87F /* MainAppService in Frameworks */ = {isa = PBXBuildFile; productRef = 793260312E68AC070017E87F /* MainAppService */; };
+		795A74402E6F3CD000F4BA1E /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */; };
+		795A74422E6F43D300F4BA1E /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74412E6F43D200F4BA1E /* LanguageManager.swift */; };
 		79CFC6AB2E69EB1900367E78 /* SyncTextSettingsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6AA2E69EB1900367E78 /* SyncTextSettingsCommand.swift */; };
 		79CFC6AE2E69FCD400367E78 /* CoroutineHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6AD2E69FCCB00367E78 /* CoroutineHTTPClient.swift */; };
 		79CFC6B02E6A0CE300367E78 /* PartialSuggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6AF2E6A0CCA00367E78 /* PartialSuggestion.swift */; };
@@ -178,6 +180,8 @@
 		793260282E689FEB0017E87F /* RejectSuggestionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RejectSuggestionCommand.swift; sourceTree = "<group>"; };
 		793260292E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleRealtimeSuggestionsCommand.swift; sourceTree = "<group>"; };
 		793260432E68B3BD0017E87F /* ThirdPartyTool */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyTool; sourceTree = "<group>"; };
+		795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		795A74412E6F43D200F4BA1E /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
 		7983E1CD2E6DFB800067CFA6 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		79CFC6AA2E69EB1900367E78 /* SyncTextSettingsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncTextSettingsCommand.swift; sourceTree = "<group>"; };
 		79CFC6AD2E69FCCB00367E78 /* CoroutineHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoroutineHTTPClient.swift; sourceTree = "<group>"; };
@@ -295,6 +299,7 @@
 				79CFC6AC2E69FA6E00367E78 /* Completion */,
 				790799A12E471FEA004D9D1A /* Assets.xcassets */,
 				790799A32E471FEA004D9D1A /* XcodePAI.entitlements */,
+				795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */,
 				790799EA2E4A5864004D9D1A /* AppDelegate.swift */,
 				790799A42E471FEA004D9D1A /* XcodePAIApp.swift */,
 				790799FA2E4CE7A9004D9D1A /* Info.plist */,
@@ -310,6 +315,7 @@
 				79079A1B2E50D144004D9D1A /* PromptTemplate.swift */,
 				790799B92E489328004D9D1A /* Extensions.swift */,
 				790799EC2E4B94B4004D9D1A /* LocalStorage.swift */,
+				795A74412E6F43D200F4BA1E /* LanguageManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -561,6 +567,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 7907997D2E4507BA004D9D1A;
 			minimizedProjectReferenceProxies = 1;
@@ -583,6 +590,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				795A74402E6F3CD000F4BA1E /* Localizable.xcstrings in Resources */,
 				790799AA2E471FEA004D9D1A /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -638,6 +646,7 @@
 				79CFC6E62E6D73CA00367E78 /* LLMCompletionConfigManager.swift in Sources */,
 				79F743072E65E8E800C35D1B /* LLMConfigManager.swift in Sources */,
 				790799BA2E48932C004D9D1A /* Extensions.swift in Sources */,
+				795A74422E6F43D300F4BA1E /* LanguageManager.swift in Sources */,
 				79079A142E4FBD7E004D9D1A /* ModelProviderManager.swift in Sources */,
 				79079A202E51C116004D9D1A /* MCPRunner.swift in Sources */,
 				790799F22E4BB5E2004D9D1A /* ModelProviderIconListView.swift in Sources */,
@@ -754,6 +763,7 @@
 				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -813,6 +823,7 @@
 				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};
@@ -837,7 +848,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = XcodePAI/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = XcodePaI;
+				INFOPLIST_KEY_CFBundleDisplayName = "${HOST_APP_NAME}";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
