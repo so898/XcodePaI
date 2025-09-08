@@ -20,6 +20,10 @@ struct ModelProviderEditView: View {
     @State private var apiKey: String = ""
     @State private var keyHeader: String = ""
     @State private var name: String = ""
+    @State private var customModelsUrl: String = ""
+    @State private var customChatUrl: String = ""
+    @State private var customCompletionUrl: String = ""
+    @State private var customUrls: Bool = false
     
     @State private var showIconList = false
 
@@ -35,7 +39,11 @@ struct ModelProviderEditView: View {
             _apiKey = State(initialValue: currentProvider.privateKey ?? "")
             _keyHeader = State(initialValue: currentProvider.authHeaderKey ?? "")
             _name = State(initialValue: currentProvider.name)
+            _customModelsUrl = State(initialValue: currentProvider.customModelsUrl ?? "")
+            _customChatUrl = State(initialValue: currentProvider.customChatUrl ?? "")
+            _customCompletionUrl = State(initialValue: currentProvider.customCompletionUrl ?? "")
         }
+        _customUrls = State(initialValue: !customModelsUrl.isEmpty || !customChatUrl.isEmpty || !customCompletionUrl.isEmpty)
         self.removeProvider = removeProvider
     }
 
@@ -108,6 +116,16 @@ struct ModelProviderEditView: View {
     private var formSection: some View {
         VStack(spacing: 8) {
             VStack(spacing: 0) {
+                FormFieldRow(label: "Name", content: {
+                    TextField("Name", text: $name)
+                        .textFieldStyle(.plain)
+                        .multilineTextAlignment(.trailing)
+                })
+            }
+            .background(Color.black.opacity(0.25))
+            .cornerRadius(12)
+            
+            VStack(spacing: 0) {
                 FormFieldRow(label: "URL", content: {
                     TextField("https://model.example.com", text: $url)
                         .textFieldStyle(.plain)
@@ -136,11 +154,35 @@ struct ModelProviderEditView: View {
             .cornerRadius(12)
             
             VStack(spacing: 0) {
-                FormFieldRow(label: "Description", content: {
-                    TextField("Name", text: $name)
-                        .textFieldStyle(.plain)
-                        .multilineTextAlignment(.trailing)
+                FormFieldRow(label: "Custom URL", content: {
+                    Spacer()
+                    Toggle("", isOn: $customUrls)
+                        .toggleStyle(.switch)
+                        .labelsHidden()
                 })
+                                
+                if customUrls {
+                    
+                    Divider().padding(.leading)
+                    
+                    FormFieldRow(label: "Models URL", content: {
+                        TextField("/v1/models", text: $customModelsUrl)
+                            .textFieldStyle(.plain)
+                            .multilineTextAlignment(.trailing)
+                    })
+                    
+                    FormFieldRow(label: "Chat URL", content: {
+                        TextField("/v1/chat/completions", text: $customChatUrl)
+                            .textFieldStyle(.plain)
+                            .multilineTextAlignment(.trailing)
+                    })
+                    
+                    FormFieldRow(label: "Completion URL", content: {
+                        TextField("/v1/completions", text: $customCompletionUrl)
+                            .textFieldStyle(.plain)
+                            .multilineTextAlignment(.trailing)
+                    })
+                }
             }
             .background(Color.black.opacity(0.25))
             .cornerRadius(12)
@@ -177,7 +219,20 @@ struct ModelProviderEditView: View {
             Button("Save") {
                 // Do the check
                 
-                createOrUpdateProvider(LLMModelProvider(id: currentProvider?.id ?? UUID(), name: name, iconName: iconName, url: url, authHeaderKey: keyHeader.isEmpty ? nil : keyHeader, privateKey: apiKey))
+                createOrUpdateProvider(
+                    LLMModelProvider(
+                        id: currentProvider?.id ?? UUID(),
+                        name: name,
+                        iconName: iconName,
+                        url: url,
+                        authHeaderKey: keyHeader.isEmpty ? nil : keyHeader,
+                        privateKey: apiKey,
+                        enabled: currentProvider?.enabled ?? true,
+                        customModelsUrl: customModelsUrl.isEmpty ? nil : customModelsUrl,
+                        customChatUrl: customChatUrl.isEmpty ? nil : customChatUrl,
+                        customCompletionUrl: customCompletionUrl.isEmpty ? nil : customCompletionUrl
+                    )
+                )
                 dismiss()
             }
             .buttonStyle(.borderedProminent)

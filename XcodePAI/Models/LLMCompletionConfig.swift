@@ -107,9 +107,9 @@ class LLMCompletionConfig: Identifiable, Codable, ObservableObject {
         }
         switch type {
         case .prefixSuffix:
-            suggestion = PrefixSuffixSuggestion(model: model, provider: provider, inPrompt: inPrompt, hasSuffix: hasSuffix)
+            suggestion = PrefixSuffixSuggestion(model: model, provider: provider, inPrompt: inPrompt, hasSuffix: hasSuffix, headers: headers)
         case .partial:
-            suggestion = PartialSuggestion(model: model, provider: provider, maxTokens: maxTokens)
+            suggestion = PartialSuggestion(model: model, provider: provider, maxTokens: maxTokens, headers: headers)
         }
         return suggestion
     }
