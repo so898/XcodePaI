@@ -34,6 +34,23 @@
       },
       "shouldTranslate" : false
     },
+    "%@ Completions for %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ Completions for %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@ 语言代码补全"
+          }
+        }
+      }
+    },
     "=" : {
       "localizations" : {
         "zh-Hans" : {
@@ -66,7 +83,7 @@
       }
     },
     "About Supported Model Provider..." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -463,6 +480,17 @@
         }
       }
     },
+    "Disable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "禁止"
+          }
+        }
+      }
+    },
     "Disabled" : {
       "localizations" : {
         "zh-Hans" : {
@@ -591,6 +619,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入提供商信息。"
+          }
+        }
+      }
+    },
+    "Exit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出"
           }
         }
       }

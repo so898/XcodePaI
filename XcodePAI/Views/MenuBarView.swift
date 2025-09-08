@@ -154,7 +154,7 @@ extension MenuBarManager: NSMenuDelegate {
             }
             
             if let lang = DisabledLanguageList.shared.activeDocumentLanguage {
-                item = NSMenuItem(title: "\(DisabledLanguageList.shared.isEnabled(lang) ? "Disable" : "Enable") Completions for \(lang.rawValue)", action: #selector(toggleIgnoreLanguageEnabled), keyEquivalent: "")
+                item = NSMenuItem(title: String(format: "%@ Completions for %@".localizedString, (DisabledLanguageList.shared.isEnabled(lang) ? "Disable".localizedString : "Enable".localizedString), (lang.rawValue)), action: #selector(toggleIgnoreLanguageEnabled), keyEquivalent: "")
                 item.isEnabled = true
                 item.target = self
                 menu.addItem(item)
@@ -283,7 +283,7 @@ extension MenuBarManager: NSMenuDelegate {
         menu.addItem(item)
         
         menu.addItem(NSMenuItem.separator())
-                
+        
         menu.addItem(NSMenuItem(title: "Exit".localizedString, action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
     }
 }
@@ -362,7 +362,7 @@ extension MenuBarManager {
         }
         
         NSApp.setActivationPolicy(.regular)
-
+        
         settingsWindowController?.showWindow(nil)
         settingsWindowController?.window?.center()
         settingsWindowController?.window?.makeKeyAndOrderFront(nil)
