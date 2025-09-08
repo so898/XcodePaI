@@ -9,6 +9,20 @@ import Foundation
 import SuggestionPortal
 import SuggestionBasic
 
+enum SuggestionTesterError: Error, LocalizedError {
+    case suggestionPortalInitFailed
+    case noSuggestion
+    
+    public var errorDescription: String? {
+        switch self {
+        case .suggestionPortalInitFailed:
+            return "Suggestion portal not ready"
+        case .noSuggestion:
+            return "No suggestion returned"
+        }
+    }
+}
+
 class SuggestionTester {
     
     private static let originContent = """
@@ -47,17 +61,17 @@ class SuggestionTester {
         """
     
     @MainActor
-    static func run(_ config: LLMCompletionConfig) async -> (String, String, String)? {
+    static func run(_ config: LLMCompletionConfig) async throws -> (String, String, String) {
         guard let suggest = config.getSuggestion() else {
-            return nil
+            throw SuggestionTesterError.suggestionPortalInitFailed
         }
         
-        let result = try? await suggest.requestSuggestion(fileURL: URL(string: "file://test.swift")!, originalContent: originContent, cursorPosition: position, prefixContent: prefixContent, suffixContent: suffixContent)
+        let result = try await suggest.requestSuggestion(fileURL: URL(string: "file://test.swift")!, originalContent: originContent, cursorPosition: position, prefixContent: prefixContent, suffixContent: suffixContent)
         
-        if let suggetsion = result?.first {
+        if let suggetsion = result.first {
             return (prefixContent.substring(to: prefixContent.count - 9), suggetsion.text.substring(to: suggetsion.text.count - 1), suffixContent)
+        } else {
+            throw SuggestionTesterError.noSuggestion
         }
-        
-        return nil
     }
 }

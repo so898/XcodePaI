@@ -20,7 +20,9 @@ class LLMRequest {
     var temperature: Float?
     var topP: Float?
     
-    init(model: String, messages: [LLMMessage], stream: Bool = true, usage: Bool = false, tools: [LLMTool]? = nil, seed: Int? = nil, maxTokens: Int? = nil, temperature: Float? = nil, topP: Float? = nil) {
+    var enableThinking: Bool?
+    
+    init(model: String, messages: [LLMMessage], stream: Bool = true, usage: Bool = false, tools: [LLMTool]? = nil, seed: Int? = nil, maxTokens: Int? = nil, temperature: Float? = nil, topP: Float? = nil, enableThinking: Bool? = nil) {
         self.model = model
         self.messages = messages
         self.stream = stream
@@ -30,6 +32,7 @@ class LLMRequest {
         self.maxTokens = maxTokens
         self.temperature = temperature
         self.topP = topP
+        self.enableThinking = enableThinking
     }
     
     init(dict: [String: Any]) throws {
@@ -71,6 +74,7 @@ class LLMRequest {
         self.maxTokens = dict["max_tokens"] as? Int
         self.temperature = dict["temperature"] as? Float
         self.topP = dict["top_p"] as? Float
+        self.enableThinking = dict["enable_thinking"] as? Bool
     }
     
     func toDictionary() -> [String: Any] {
@@ -82,11 +86,11 @@ class LLMRequest {
         }
         dict["messages"] = messagesArray
         
-        if let streamOptions = streamOptions {
+        if let streamOptions {
             dict["stream_options"] = streamOptions.toDictionary()
         }
         
-        if let tools = tools, !tools.isEmpty {
+        if let tools, !tools.isEmpty {
             var toolsArray = [Any]()
             for tool in tools {
                 toolsArray.append(tool.toDictionary())
@@ -94,20 +98,24 @@ class LLMRequest {
             dict["tools"] = toolsArray
         }
         
-        if let seed = seed {
+        if let seed {
             dict["seed"] = seed
         }
         
-        if let maxTokens = maxTokens {
+        if let maxTokens {
             dict["max_tokens"] = maxTokens
         }
         
-        if let temperature = temperature {
+        if let temperature {
             dict["temperature"] = temperature
         }
         
-        if let topP = topP {
+        if let topP {
             dict["top_p"] = topP
+        }
+        
+        if let enableThinking {
+            dict["enable_thinking"] = enableThinking
         }
         
         return dict

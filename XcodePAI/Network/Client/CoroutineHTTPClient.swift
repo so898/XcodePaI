@@ -18,14 +18,14 @@ enum CoroutineHTTPClientError: Error, LocalizedError {
     case invalidURL
     case encodingError
     case invalidResponse
-    case httpError(statusCode: Int)
+    case httpError(statusCode: Int, content: String?)
     case decodingError
     case unknown(Error)
     
     public var errorDescription: String? {
         switch self {
-        case .httpError(let statusCode):
-            return "HTTP error: Status code \(statusCode)"
+        case .httpError(let statusCode, let content):
+            return "HTTP error: Status code \(statusCode)\(content == nil ? "" : "\nResponse: \(content!)")"
         case .decodingError:
             return "Decoding error"
         case .encodingError:
@@ -102,7 +102,8 @@ class CoroutineHTTPClient {
         
         // Check for successful status codes (200-299)
         guard (200...299).contains(httpResponse.statusCode) else {
-            throw CoroutineHTTPClientError.httpError(statusCode: httpResponse.statusCode)
+            let content: String? = String(data: data, encoding: .utf8)
+            throw CoroutineHTTPClientError.httpError(statusCode: httpResponse.statusCode, content: content)
         }
         
         do {
@@ -153,7 +154,8 @@ class CoroutineHTTPClient {
         
         // Check for successful status codes (200-299)
         guard (200...299).contains(httpResponse.statusCode) else {
-            throw CoroutineHTTPClientError.httpError(statusCode: httpResponse.statusCode)
+            let content: String? = String(data: data, encoding: .utf8)
+            throw CoroutineHTTPClientError.httpError(statusCode: httpResponse.statusCode, content: content)
         }
         
         return data

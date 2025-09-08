@@ -214,6 +214,7 @@ struct CompletionEditView: View {
     @State private var testPopoverPrefixContent = ""
     @State private var testPopoverMiddleContent = ""
     @State private var testPopoverSuffixContent = ""
+    @State private var error: Error?
     
     private var buttonsSection: some View {
         HStack {
@@ -235,13 +236,19 @@ struct CompletionEditView: View {
                 testPopoverPrefixContent = ""
                 testPopoverMiddleContent = ""
                 testPopoverSuffixContent = ""
+                error = nil
                 guard let config = buildConfig() else {
                     return
                 }
                 
                 Task {
                     isRunningTest = true
-                    (testPopoverPrefixContent, testPopoverMiddleContent, testPopoverSuffixContent) = await SuggestionTester.run(config) ?? ("", "Test Fail", "")
+                    do {
+                        (testPopoverPrefixContent, testPopoverMiddleContent, testPopoverSuffixContent) = try await SuggestionTester.run(config)
+                    } catch let error {
+                        self.error = error
+                    }
+                    
                     isRunningTest = false
                     isShowingTestPopover = true
                 }
@@ -255,12 +262,17 @@ struct CompletionEditView: View {
                 isPresented: $isShowingTestPopover, arrowEdge: .bottom
             ) {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(testPopoverPrefixContent)
-                        .foregroundColor(.secondary)
-                    Text(testPopoverMiddleContent)
-                        .foregroundColor(.green)
-                    Text(testPopoverSuffixContent)
-                        .foregroundColor(.secondary)
+                    if let error {
+                        Text(error.localizedDescription)
+                            .foregroundColor(.red)
+                    } else {
+                        Text(testPopoverPrefixContent)
+                            .foregroundColor(.secondary)
+                        Text(testPopoverMiddleContent)
+                            .foregroundColor(.green)
+                        Text(testPopoverSuffixContent)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 .padding()
             }

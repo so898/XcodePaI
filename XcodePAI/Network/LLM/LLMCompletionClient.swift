@@ -23,7 +23,7 @@ class LLMCompletionClient {
     
     struct PrefixCompleteResponse: Codable {
         let choices: [PrefixCompleteResponseChoice]
-        let usage: LLMCompletionResponseUsageValue
+        let usage: LLMCompletionResponseUsageValue?
     }
     
     struct PrefixCompleteResponseChoice: Codable {
@@ -82,7 +82,7 @@ class LLMCompletionClient {
         }
         messages.append(try LLMMessage(role: "assistant", content: prompt, partial: true))
         
-        let request = LLMRequest(model: model.id, messages:messages, stream: false, maxTokens: maxTokens)
+        let request = LLMRequest(model: model.id, messages:messages, stream: false, maxTokens: maxTokens, enableThinking: false)
         
         guard let data = try? JSONSerialization.data(withJSONObject: request.toDictionary()) else {
             throw CoroutineHTTPClientError.encodingError
