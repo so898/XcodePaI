@@ -52,6 +52,7 @@ struct ModelProviderListView: View {
                     Button("Add Model Provider...") {
                         isShowingSheet = true
                     }
+                    .controlSize(.large)
                     .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 16))
                 }
             }
