@@ -34,9 +34,7 @@ struct ChatProxyEditView: View {
     }
     
     var body: some View {
-        ZStack {
-            Color(red: 30/255, green: 30/255, blue: 33/255).edgesIgnoringSafeArea(.all)
-            
+        ZStack {            
             VStack(alignment: .leading, spacing: 20) {
                 headerView
                 

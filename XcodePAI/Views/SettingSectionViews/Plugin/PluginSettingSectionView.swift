@@ -14,8 +14,10 @@ struct PluginSettingSectionView: View {
     @State private var isShowingSheet = false
     
     @State private var showImporter = false
+    @State private var selectedUrl: URL?
     @State private var selectedBundle: Bundle?
     @State private var selectedPluginInfo: PluginInfo?
+    @State private var shownPluginInfo: PluginInfo?
     
     init() {
         self.pluginInfos = PluginManager.shared.getAllPluginInfos()
@@ -61,6 +63,7 @@ struct PluginSettingSectionView: View {
         ) { result in
             switch result {
             case .success(let urls):
+                selectedUrl = urls.first
                 if let (bundle, info) = PluginManager.loadPlugin(urls.first) {
                     selectedBundle = bundle
                     selectedPluginInfo = info
@@ -72,12 +75,17 @@ struct PluginSettingSectionView: View {
         }
         .sheet(isPresented: $isShowingSheet) {
             if let selectedPluginInfo {
-                PluginDetailView(plugin: selectedPluginInfo, bundle: selectedBundle, isNew: true, savePlugin: { bundle in
-                    PluginManager.shared.loadPlugin(from: bundle)
-                }) { id in
-                    PluginManager.shared.removePlugin(for: id)
-                }
+                PluginDetailView(plugin: selectedPluginInfo, bundle: selectedBundle, savePlugin: { bundle in
+                    if let selectedUrl {
+                        PluginManager.shared.addPlugin(from: selectedUrl)
+                    }
+                })
             }
+        }
+        .sheet(item: $shownPluginInfo) { info in
+            PluginDetailView(plugin: info, removePlugin:  { id in
+                PluginManager.shared.removePlugin(for: id)
+            })
         }
     }
 }

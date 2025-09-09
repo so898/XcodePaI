@@ -39,7 +39,10 @@ struct SettingsView: View {
             List(selection: $selection) {
                 ForEach(tabs) { tab in
                     HStack {
-                        Image(systemName: tab.imageName)
+                        ZStack {
+                            Image(systemName: tab.imageName)
+                                .font(.system(size: 16))
+                        }.frame(width: 24, height: 24, alignment: .center)
                         Text(tab.title)
                     }
                     .tag(tab.id)

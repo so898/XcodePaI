@@ -1,151 +1,140 @@
 //
-//  PluginSettingSectionView.swift
+//  PluginDetailView.swift
 //  XcodePAI
 //
 //  Created by Bill Cheng on 2025/9/9.
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
 
-class PluginSettingManager: ObservableObject {
-    @Published var pluginInfos: [PluginInfo] = []
+struct PluginDetailView: View {
+    @State var plugin: PluginInfo
+    let bundle: Bundle?
+    let isNew: Bool
     
-    init() {
-        update()
+    var savePlugin: ((Bundle) -> Void)?
+    
+    var removePlugin: ((String) -> Void)?
+    
+    // Close Sheet
+    @Environment(\.dismiss) var dismiss
+    
+    init(plugin: PluginInfo, bundle: Bundle? = nil, savePlugin: ((Bundle) -> Void)? = nil, removePlugin: ((String) -> Void)? = nil) {
+        self.plugin = plugin
+        self.bundle = bundle
+        self.isNew = bundle != nil
+        self.savePlugin = savePlugin
+        self.removePlugin = removePlugin
     }
-    
-    public func update() {
-        self.pluginInfos = PluginManager.shared.getAllPluginInfos()
-    }
-}
-
-// MARK: - Model List View
-struct PluginSettingSectionView: View {
-    @StateObject private var manager: PluginSettingManager = PluginSettingManager()
-    @State private var isShowingSheet = false
-    
-    @State private var showImporter = false
-    @State private var selectedUrl: URL?
-    @State private var selectedBundle: Bundle?
-    @State private var selectedPluginInfo: PluginInfo?
-    @State private var selectedViewPluginInfo: PluginInfo?
     
     var body: some View {
-        ScrollView {
-            VStack {
-                Form {
-                    PluginInfoSection()
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
-                    
-                    Section {
-                        ForEach(manager.pluginInfos) { info in
-                            PluginInfoRow(info: info, click: { info in
-                                selectedViewPluginInfo = info
-                            })
-                        }
-                    }
-                }
-                .formStyle(.grouped)
-                .scrollContentBackground(.hidden)
+        ZStack {
+            VStack(alignment: .leading, spacing: 20) {
+                headerView
                 
-                HStack {
+                formSection
+                
+                Spacer()
+                
+                buttonsSection
+            }
+            .padding()
+        }
+    }
+    
+    // MARK: - subviews
+    
+    private var headerView: some View {
+        HStack(spacing: 15) {
+            ZStack {
+                Color.black
+                Image(systemName: "batteryblock.stack.fill").font(.system(size: 24)).foregroundColor(.white)
+            }
+            .cornerRadius(10)
+            .frame(width: 64, height: 64)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(plugin.name)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Text(plugin.description)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+        }
+        .padding(8)
+        .background(Color.black.opacity(0.25))
+        .cornerRadius(12)
+    }
+    
+    private var formSection: some View {
+        VStack(spacing: 8) {
+            VStack(spacing: 0) {
+                FormFieldRow(label: "ID".localizedString, content: {
                     Spacer()
-                    Button("Add plugin...") {
-                        showImporter = true
-                    }
-                    .controlSize(.large)
-                    .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 16))
-                }
-            }
-            .padding(.init(top: 0, leading: 16, bottom: 24, trailing: 16))
-        }
-        .navigationTitle("Plugin")
-        .fileImporter(
-            isPresented: $showImporter,
-            allowedContentTypes: [.pluginBundle, UTType(filenameExtension: PluginManager.pluginExtension) ?? .data],
-            allowsMultipleSelection: false
-        ) { result in
-            switch result {
-            case .success(let urls):
-                selectedUrl = urls.first
-                if let (bundle, info) = PluginManager.loadPlugin(urls.first) {
-                    selectedBundle = bundle
-                    selectedPluginInfo = info
-                    isShowingSheet = true
-                }
-            case .failure(let error):
-                print("Error: \(error.localizedDescription)")
-            }
-        }
-        .sheet(isPresented: $isShowingSheet) {
-            if let selectedPluginInfo {
-                PluginDetailView(plugin: selectedPluginInfo, bundle: selectedBundle, savePlugin: { bundle in
-                    if let selectedUrl {
-                        PluginManager.shared.addPlugin(from: selectedUrl)
-                        manager.update()
-                    }
+                    Text(plugin.id)
+                        .textSelection(.enabled)
+                })
+                FormFieldRow(label: "Version".localizedString, content: {
+                    Spacer()
+                    Text(plugin.version)
+                })
+                FormFieldRow(label: "URL".localizedString, content: {
+                    Spacer()
+                    Text(plugin.link)
+                        .textSelection(.enabled)
                 })
             }
-        }
-        .sheet(item: $selectedViewPluginInfo) { plugin in
-            let _ = print("D: \(plugin.name)")
-            PluginDetailView(plugin: plugin, bundle: nil, savePlugin: { bundle in
-            }) { id in
-                PluginManager.shared.removePlugin(for: id)
-                manager.update()
+            .background(Color.black.opacity(0.25))
+            .cornerRadius(12)
+            
+            VStack(spacing: 0) {
+                FormFieldRow(label: "Support Chat".localizedString, content: {
+                    Spacer()
+                    Text(plugin.supportChat ? "True" : "False")
+                })
+                FormFieldRow(label: "Support Code Suggestion".localizedString, content: {
+                    Spacer()
+                    Text(plugin.supportCodeSuggestion ? "True" : "False")
+                })
             }
+            .background(Color.black.opacity(0.25))
+            .cornerRadius(12)
         }
     }
-}
-
-struct PluginInfoSection: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 16) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(LinearGradient(colors: [Color(hex: "333333"), .black], startPoint: .topLeading, endPoint: .bottomTrailing))
-                    Image(systemName: "batteryblock.stack.fill").font(.system(size: 24)).foregroundColor(.white)
-                }
-                .frame(width: 54, height: 54)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Plugin").font(.headline)
-                    Text("By adding plugins to enhance ChatProxy and code sugestion capabilities, and by modifying parameters to provide more information, the results become more accurate.").font(.subheadline).foregroundColor(.secondary).fixedSize(horizontal: false, vertical: true)
-                    Link("About plugin...", destination: URL(string: "https://modelcontextprotocol.io/")!).font(.subheadline).padding(.top, 4)
-                }
-            }
-        }
-        .cornerRadius(12)
-        .padding(.horizontal)
-    }
-}
-
-struct PluginInfoRow: View {
-    @ObservedObject var info: PluginInfo
-    var click: (PluginInfo) -> Void
     
-    var body: some View {
-        HStack(spacing: 12) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 24 * 0.2, style: .continuous)
-                    .fill(Color.blue.opacity(0.7))
-                Image(systemName: "batteryblock.fill")
-                    .resizable()
-                    .renderingMode(.template)
-                    .padding(4)
+    private var buttonsSection: some View {
+        HStack {
+            if !isNew {
+                Button(role: .destructive) {
+                    removePlugin?(plugin.id)
+                    dismiss()
+                } label: {
+                    Text("Delete Plugin")
+                        .frame(maxWidth: .infinity)
+                }
+                .tint(Color.red.opacity(0.7))
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .frame(maxWidth: 200)
             }
-            .frame(width: 24, height: 24)
-            Text(info.name)
+            
             Spacer()
-            Text(info.description)
-                .foregroundColor(.secondary)
-        }
-        .padding(.vertical, 4)
-        .padding(.horizontal, 8)
-        .onTapGesture {
-            click(info)
+            
+            Button("Cancel") {
+                dismiss()
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+            
+            if isNew, let bundle {
+                Button("Register") {
+                    savePlugin?(bundle)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+            }
         }
     }
 }
