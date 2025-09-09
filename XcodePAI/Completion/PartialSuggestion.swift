@@ -42,15 +42,15 @@ extension PartialSuggestion: SuggestionPortalProtocol {
             return ""
         }()
         
-        let instruction: String? = {
-//            if let suggestionContext {
-//                codeSuggestionPartialChatCompletionContextMark
-//            } else {
-            if let suffixContent {
-                return "\(PromptTemplate.codeSuggestionPartialChatCompletionCodeMark)\n\(suffixContent)"
+        let instruction: String? = await {
+            var ret = ""
+            if let suggestionContext = await PluginManager.shared.getCodeSuggestionPlugin()?.generateCodeSuggestionsContext(forFile: fileURL, code: originalContent, prefix: prefixContent, suffix: suffixContent), !suggestionContext.isEmpty {
+                ret += "\(PromptTemplate.codeSuggestionPartialChatCompletionContextMark)\n\(suggestionContext)"
             }
-            return nil
-//            }
+            if let suffixContent {
+                ret += "\(PromptTemplate.codeSuggestionPartialChatCompletionCodeMark)\n\(suffixContent)"
+            }
+            return ret.isEmpty ? nil : ret
         }()
         
         let completionContent = try await LLMCompletionClient.doPartialCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", system: PromptTemplate.codeSuggestionPartialChatCompletionSystemPrompt.replacingOccurrences(of: "{{LANGUAGE}}", with: language), instruction: instruction, maxTokens: maxTokens, headers: headers)

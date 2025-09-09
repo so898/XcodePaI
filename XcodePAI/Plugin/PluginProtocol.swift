@@ -19,29 +19,41 @@ import Foundation
 /// class MyPlugin: NSObject, BasePluginProtocol {
 ///     static let identifier = "com.example.myplugin"
 ///     static let name = "My Plugin"
-///     static let description = "A simple plugin"
-///     static let version = "1.0.0"
+///     static let pluginDescription = "A simple plugin"
+///     static let pluginVersion = "1.0.0"
+///     static let url = "https://example.com/myplugin"
 ///
 ///     required override init() {
 ///         super.init()
 ///         // Initialization code here
+///     }
+///
+///     func update(projectUrl: URL?, workspaceUrl: URL?) {
+///         // Update plugin logic here
+///         print("Updated plugin with project url: \(projectUrl) and workspace url: \(workspaceUrl)")
 ///     }
 /// }
 /// ```
 ///
 /// - SeeAlso: `ChatPluginProtocol`
 ///
-@objc protocol BasePluginProtocol {
+@objc(BasePluginProtocol) public protocol BasePluginProtocol: NSObjectProtocol {
     /// The Identifier of the plugin
     static var identifier: String { get }
     /// The display name of the plugin, which will be shown in plugin list
     static var name: String { get }
     /// The display description of the plugin, which will be shown in plugin list
-    static var description: String { get }
+    static var pluginDescription: String { get }
     /// The version of the plugin
-    static var version: String { get }
+    static var pluginVersion: String { get }
+    /// The link of the plugin
+    static var link: String { get }
     
+    /// Initialize the plugin
     init()
+    
+    /// Update the plugin with the project url and workspace url
+    func update(projectUrl: URL?, workspaceUrl: URL?)
 }
 
 /// Protocol for plugins that modify chat prompts
@@ -79,7 +91,7 @@ import Foundation
 ///
 /// - SeeAlso: `BasePluginProtocol`
 ///
-@objc protocol ChatPluginProtocol {
+@objc(ChatPluginProtocol) public protocol ChatPluginProtocol: NSObjectProtocol {
     
     /// Update system prompt of the chat completions request
     /// Parameters
@@ -118,7 +130,7 @@ import Foundation
 /// Example usage:
 /// ```swift
 /// class MyCodeSuggestionPlugin: NSObject, CodeSuggestionProtocol {
-///     func generateCodeSuggestionsContext(forFile file: String, code: String, prefix: String?, suffix: String?) -> String? {
+///     func generateCodeSuggestionsContext(forFile file: String, code: String, prefix: String?, suffix: String?) async -> String? {
 ///         // Generate context based on file and code
 ///         return "Additional context for \(file)\nCurrent code snippet: \(prefix ?? "")[cursor]\(suffix ?? "")"
 ///     }
@@ -129,7 +141,7 @@ import Foundation
 ///
 /// - SeeAlso: `BasePluginProtocol`
 ///
-@objc protocol CodeSuggestionProtocol {
+@objc(CodeSuggestionProtocol) public protocol CodeSuggestionProtocol: NSObjectProtocol  {
     
     /// Generate code suggestions context based on the current file and code context
     /// The context will be used as the comment at the top of the code source in prefix completions request
@@ -141,5 +153,5 @@ import Foundation
     /// - suffix: The suffix text after the cursor (optional)
     /// Returns
     /// - The generated content for code suggestions or nil if no suggestions are available
-    func generateCodeSuggestionsContext(forFile file: String, code: String, prefix: String?, suffic: String?) -> String?
+    func generateCodeSuggestionsContext(forFile file: URL, code: String, prefix: String?, suffix: String?) async -> String?
 }

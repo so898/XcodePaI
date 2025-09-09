@@ -29,11 +29,25 @@ extension PrefixSuffixSuggestion: SuggestionPortalProtocol {
         
         print("Code suggestion Request for: \(fileURL)")
         
+        
+        let content: String? = await {
+            if let prefixContent {
+                var ret = ""
+                if let suggestionContext = await PluginManager.shared.getCodeSuggestionPlugin()?.generateCodeSuggestionsContext(forFile: fileURL, code: originalContent, prefix: prefixContent, suffix: suffixContent), !suggestionContext.isEmpty {
+                    ret += "/**\n\(suggestionContext)\n*/\n\n"
+                }
+                ret += prefixContent
+                return ret
+            }
+            return nil
+        }()
+        
+        
         let completionContent: String? = try await {
             if inPrompt {
-                try await LLMCompletionClient.doPromptSuffixCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil, headers: headers)
+                try await LLMCompletionClient.doPromptSuffixCompletionRequest(model, provider: provider, prompt: content ?? "", suffix: hasSuffix ? suffixContent : nil, headers: headers)
             } else {
-                try await LLMCompletionClient.doPromptCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil, headers: headers)
+                try await LLMCompletionClient.doPromptCompletionRequest(model, provider: provider, prompt: content ?? "", suffix: hasSuffix ? suffixContent : nil, headers: headers)
             }
         }()
                 

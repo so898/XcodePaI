@@ -27,6 +27,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             NSApp.setActivationPolicy(.accessory)
         }
         
+        // Plugin
+        _ = PluginManager.shared
+        
+        // MCP Runner
         _ = MCPRunner.shared
         
         // Menu

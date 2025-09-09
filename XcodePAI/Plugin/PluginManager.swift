@@ -9,11 +9,15 @@ import Foundation
 
 class PluginManager {
     static let shared = PluginManager()
-    static let pluginExtension: String = "xpplugin"
+    static let pluginExtension: String = "plugin"
     
     private var plugins: [BasePluginProtocol] = []
+    private var selectedPlugin: BasePluginProtocol?
     
-    private init() {}
+    private init() {
+        loadPlugins()
+        updateSelectePlugin(id: Configer.selectedPluginId)
+    }
     
     // Load plugins
     func loadPlugins() {
@@ -42,6 +46,36 @@ class PluginManager {
         }
     }
     
+    func updateSelectePlugin(id: String?) {
+        guard let id else {
+            selectedPlugin = nil
+            return
+        }
+        
+        for plugin in plugins {
+            if type(of: plugin).identifier == id {
+                selectedPlugin = plugin
+                break
+            }
+        }
+    }
+    
+    func getChatPlugin() -> ChatPluginProtocol? {
+        guard let selectedPlugin = selectedPlugin as? ChatPluginProtocol else {
+            return nil
+        }
+        
+        return selectedPlugin
+    }
+    
+    func getCodeSuggestionPlugin() -> CodeSuggestionProtocol? {
+        guard let selectedPlugin = selectedPlugin as? CodeSuggestionProtocol else {
+            return nil
+        }
+        
+        return selectedPlugin
+    }
+    
     public static func loadPlugin(_ url: URL?) -> (Bundle, PluginInfo)? {
         guard let url = url, let bundle = Bundle(url: url) else { return nil }
         
@@ -58,6 +92,22 @@ class PluginManager {
         return nil
     }
     
+    func addPlugin(from url: URL) {
+        if let (bundle, pluginInfo) = Self.loadPlugin(url) {
+            let fileManager = FileManager.default
+            let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            let folderName = Bundle.main.object(forInfoDictionaryKey: "APPLICATION_SUPPORT_FOLDER") as! String
+            let pluginsURL = appSupportURL.appendingPathComponent("\(folderName)/Plugins")
+            do {
+                try fileManager.copyItem(at: url, to: pluginsURL.appending(component: pluginInfo.id).appendingPathExtension(Self.pluginExtension))
+            } catch {
+                print("Error adding plugin: \(error)")
+            }
+            loadPlugin(from: bundle)
+            print("Added plugin: \(pluginInfo.name)")
+        }
+    }
+    
     func removePlugin(for identifier: String) {
         guard let plugin = plugin(for: identifier) else { return }
         plugins.removeAll { $0 === plugin }
@@ -66,7 +116,7 @@ class PluginManager {
         let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let folderName = Bundle.main.object(forInfoDictionaryKey: "APPLICATION_SUPPORT_FOLDER") as! String
         let pluginsURL = appSupportURL.appendingPathComponent("\(folderName)/Plugins")
-        let pluginURL = pluginsURL.appendingPathComponent("\(type(of: plugin).name).\(Self.pluginExtension)")
+        let pluginURL = pluginsURL.appendingPathComponent("\(identifier).\(Self.pluginExtension)")
         
         do {
             try fileManager.removeItem(at: pluginURL)
@@ -76,7 +126,7 @@ class PluginManager {
         }
     }
     
-    func loadPlugin(from bundle: Bundle) {
+    private func loadPlugin(from bundle: Bundle) {
         guard bundle.load() else {
             print("Failed to load bundle: \(bundle.bundleURL.lastPathComponent)")
             return
@@ -107,6 +157,7 @@ class PluginInfo: ObservableObject, Identifiable {
     let name: String
     let description: String
     let version: String
+    let link: String
     
     let supportChat: Bool
     let supportCodeSuggestion: Bool
@@ -114,8 +165,9 @@ class PluginInfo: ObservableObject, Identifiable {
     init(_ plugin: BasePluginProtocol) {
         id = type(of: plugin).identifier
         name = type(of: plugin).name
-        description = type(of: plugin).description
-        version = type(of: plugin).version
+        description = type(of: plugin).pluginDescription
+        version = type(of: plugin).pluginVersion
+        link = type(of: plugin).link
         
         supportChat = plugin is ChatPluginProtocol
         supportCodeSuggestion = plugin is CodeSuggestionProtocol

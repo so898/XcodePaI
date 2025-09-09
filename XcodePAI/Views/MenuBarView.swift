@@ -166,6 +166,32 @@ extension MenuBarManager: NSMenuDelegate {
             }
         }
         
+        if !PluginManager.shared.getAllPlugins().isEmpty {
+            menu.addItem(NSMenuItem.separator())
+            
+            item = NSMenuItem(title: "Plugin".localizedString, action: nil, keyEquivalent: "")
+            item.isEnabled = true
+            menu.addItem(item)
+            
+            let subMenu = NSMenu()
+            
+            var idx = 0
+            for pluginInfo in PluginManager.shared.getAllPluginInfos() {
+                let item = NSMenuItem(title: pluginInfo.name, action: #selector(updateSelectedPluginWith(modelItem:)), keyEquivalent: "")
+                item.isEnabled = true
+                item.target = self
+                item.tag = idx
+                if Configer.selectedPluginId == pluginInfo.id {
+                    item.state = .on
+                } else {
+                    item.state = .off
+                }
+                subMenu.addItem(item)
+                idx += 1
+            }
+            item.submenu = subMenu
+        }
+        
         if Configer.showXcodeInstpectorDebug, Utils.checkAccessibilityPermission() {
             
             menu.addItem(NSMenuItem.separator())
@@ -332,6 +358,16 @@ extension MenuBarManager {
         } else {
             DisabledLanguageList.shared.enable(lang)
         }
+    }
+    
+    @MainActor @objc private func updateSelectedPluginWith(modelItem: NSMenuItem) {
+        let info = PluginManager.shared.getAllPluginInfos()[modelItem.tag]
+        if Configer.selectedPluginId == info.id {
+            Configer.selectedPluginId = nil
+        } else {
+            Configer.selectedPluginId = info.id
+        }
+        PluginManager.shared.updateSelectePlugin(id: Configer.selectedPluginId)
     }
     
     @objc public func openSettingsView() {

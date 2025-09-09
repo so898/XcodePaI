@@ -210,6 +210,10 @@ extension ChatProxyBridge {
     }
     
     private func processSystemPrompt(_ originSystemPrompt: String) -> String {
+        if let chatPlugin = PluginManager.shared.getChatPlugin(), let content = chatPlugin.processSystemPrompt(originSystemPrompt) {
+            return content
+        }
+        
         var systemPrompt = PromptTemplate.systemPrompt
         
         if originSystemPrompt.contains("##SEARCH:") {
@@ -236,8 +240,12 @@ extension ChatProxyBridge {
         return systemPrompt
     }
     
-    private func processAssistantMessageContent(_ content: String) -> String {
+    private func processAssistantMessageContent(_ content: String, isLastUserMessage: Bool = false) -> String {
         var returnContent = content
+        
+        if let chatPlugin = PluginManager.shared.getChatPlugin(), let content = chatPlugin.processAssistantPrompt(returnContent, isLast: isLastUserMessage) {
+            returnContent = content
+        }
         
         // Remove think part in assistant message
         // Process simple because think could only be at the start of content
@@ -279,6 +287,10 @@ extension ChatProxyBridge {
     }
         
     private func processUserMessageContent(_ content: String, isLastUserMessage: Bool = false) -> String {
+        var returnContent = content
+        if let chatPlugin = PluginManager.shared.getChatPlugin(), let content = chatPlugin.processUserPrompt(returnContent, isLast: isLastUserMessage) {
+            returnContent = content
+        }
         let forceLanguage = Configer.forceLanguage
         if isLastUserMessage, forceLanguage != .English {
             // Language
@@ -300,12 +312,12 @@ extension ChatProxyBridge {
             }()
             
             if !languageContent.isEmpty {
-                return content + "\n" + languageContent
+                return returnContent + "\n" + languageContent
             }
             
-            return content
+            return returnContent
         }
-        return content
+        return returnContent
     }
 }
 

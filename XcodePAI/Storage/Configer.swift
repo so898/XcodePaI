@@ -73,6 +73,20 @@ class Configer {
         }
     }
     
+    static private let selectedPluginIdStorageKey = "selectedPluginId"
+    static var selectedPluginId: String? {
+        set {
+            guard let newValue else {
+                Self.remove(Self.selectedPluginIdStorageKey)
+                return
+            }
+            Self.setValue(Self.selectedPluginIdStorageKey, value: newValue)
+        }
+        get {
+            Self.value(Self.selectedPluginIdStorageKey, defaultValue: nil)
+        }
+    }
+    
     static private let forceLanguageStorageKey = "forceLanguage"
     static var forceLanguage: Configer.Language {
         set {
@@ -102,5 +116,9 @@ extension Configer {
     
     private static func value<T>(_ key: String, defaultValue: T? = nil) -> T? {
         return UserDefaults.standard.value(forKey: key) as? T ?? defaultValue
+    }
+    
+    private static func remove(_ key : String) {
+        UserDefaults.standard.removeObject(forKey: key)
     }
 }

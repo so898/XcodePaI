@@ -866,6 +866,17 @@
         }
       }
     },
+    "Link" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "链接"
+          }
+        }
+      }
+    },
     "LLM Model Provider" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1057,6 +1068,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "实时代码补全"
+          }
+        }
+      }
+    },
+    "Register" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "注册"
           }
         }
       }
@@ -1262,6 +1283,28 @@
         }
       }
     },
+    "Support Chat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对话插件"
+          }
+        }
+      }
+    },
+    "Support Code Suggestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "代码补全插件"
+          }
+        }
+      }
+    },
     "System Default" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1308,6 +1351,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "测试成功"
+          }
+        }
+      }
+    },
+    "Testing..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "测试中…"
           }
         }
       }
