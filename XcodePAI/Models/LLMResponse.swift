@@ -35,7 +35,7 @@ enum LLMResponseError: Error, LocalizedError {
 
 class LLMResponse {
     let id: String
-    let model: String
+    let model: String?
     let object: String
     let created: Int
     let systemFingerprint: String?
@@ -44,7 +44,7 @@ class LLMResponse {
     
     let usage: LLMResponseUsage?
     
-    init(id: String, model: String, object: String, created: Int = Date.currentTimeStamp(), systemFingerprint: String? = nil, choices: [LLMResponseChoice] = [], usage: LLMResponseUsage? = nil) {
+    init(id: String, model: String? = nil, object: String, created: Int = Date.currentTimeStamp(), systemFingerprint: String? = nil, choices: [LLMResponseChoice] = [], usage: LLMResponseUsage? = nil) {
         self.id = id
         self.model = model
         self.object = object
@@ -61,11 +61,7 @@ class LLMResponse {
             throw LLMResponseError.invalidId
         }
         
-        if let model = dict["model"] as? String {
-            self.model = model
-        } else {
-            throw LLMResponseError.invalidModel
-        }
+        self.model = dict["model"] as? String
         
         if let object = dict["object"] as? String {
             self.object = object
@@ -99,8 +95,13 @@ class LLMResponse {
     }
     
     func toDictionary() -> [String: Any] {
-        var dict: [String: Any] = ["id": id, "model": model, "object": object, "created": created]
-        if let systemFingerprint = systemFingerprint {
+        var dict: [String: Any] = ["id": id, "object": object, "created": created]
+
+        if let model {
+            dict["model"] = model
+        }
+
+        if let systemFingerprint {
             dict["system_fingerprint"] = systemFingerprint
         }
         
@@ -110,7 +111,7 @@ class LLMResponse {
         }
         dict["choices"] = choicesArray
         
-        if let usage = usage {
+        if let usage {
             dict["usage"] = usage.toDictionary()
         }
         return dict
@@ -159,7 +160,7 @@ class LLMResponseChoice {
         } else {
             dict["delta"] = message.toDictionary()
         }
-        if let finishReason = finishReason {
+        if let finishReason {
             dict["finish_reason"] = finishReason
         }
         return dict
@@ -302,17 +303,17 @@ class LLMResponseChoiceMessage {
         switch type {
         case .empty: break
         case .content:
-            if let content = content {
+            if let content {
                 dict["content"] = content
             }
-            if let reasoningContent = reasoningContent {
+            if let reasoningContent {
                 dict["reasoning_content"] = reasoningContent
             }
-            if let toolCallId = toolCallId {
+            if let toolCallId {
                 dict["tool_call_id"] = toolCallId
             }
         case .toolCall:
-            if let toolCalls = toolCalls {
+            if let toolCalls {
                 var toolCallsArray = [Any]()
                 for toolCall in toolCalls {
                     toolCallsArray.append(toolCall.toDictionary())
@@ -343,13 +344,13 @@ class LLMResponseUsage {
     
     func toDictionary() -> [String: Any] {
         var dict = [String: Any]()
-        if let completionTokens = completionTokens {
+        if let completionTokens {
             dict["completion_tokens"] = completionTokens
         }
-        if let promptTokens = promptTokens {
+        if let promptTokens {
             dict["prompt_tokens"] = promptTokens
         }
-        if let totalTokens = totalTokens {
+        if let totalTokens {
             dict["total_tokens"] = totalTokens
         }
         return dict
