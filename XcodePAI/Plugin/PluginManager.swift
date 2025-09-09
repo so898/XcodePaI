@@ -68,8 +68,8 @@ class PluginManager {
         return selectedPlugin
     }
     
-    func getCodeSuggestionPlugin() -> CodeSuggestionProtocol? {
-        guard let selectedPlugin = selectedPlugin as? CodeSuggestionProtocol else {
+    func getCodeSuggestionPlugin() -> CodeSuggestionPLuginProtocol? {
+        guard let selectedPlugin = selectedPlugin as? CodeSuggestionPLuginProtocol else {
             return nil
         }
         
@@ -170,6 +170,6 @@ class PluginInfo: ObservableObject, Identifiable {
         link = type(of: plugin).link
         
         supportChat = plugin is ChatPluginProtocol
-        supportCodeSuggestion = plugin is CodeSuggestionProtocol
+        supportCodeSuggestion = plugin is CodeSuggestionPLuginProtocol
     }
 }

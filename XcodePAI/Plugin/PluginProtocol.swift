@@ -141,7 +141,7 @@ import Foundation
 ///
 /// - SeeAlso: `BasePluginProtocol`
 ///
-@objc(CodeSuggestionProtocol) public protocol CodeSuggestionProtocol: NSObjectProtocol  {
+@objc(CodeSuggestionPLuginProtocol) public protocol CodeSuggestionPLuginProtocol: NSObjectProtocol  {
     
     /// Generate code suggestions context based on the current file and code context
     /// The context will be used as the comment at the top of the code source in prefix completions request
