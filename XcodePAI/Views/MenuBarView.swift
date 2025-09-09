@@ -131,7 +131,7 @@ extension MenuBarManager: NSMenuDelegate {
             var subMenu = NSMenu()
             
             if !StorageManager.shared.completionConfigs.isEmpty {
-                item = NSMenuItem(title: "Model".localizedString, action: nil, keyEquivalent: "")
+                item = NSMenuItem(title: "Config".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = true
                 menu.addItem(item)
                 
@@ -304,7 +304,7 @@ extension MenuBarManager: NSMenuDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
-        item = NSMenuItem(title: "Config...".localizedString, action: #selector(openSettingsView), keyEquivalent: ",")
+        item = NSMenuItem(title: "Settings…".localizedString, action: #selector(openSettingsView), keyEquivalent: ",")
         item.target = self
         menu.addItem(item)
         

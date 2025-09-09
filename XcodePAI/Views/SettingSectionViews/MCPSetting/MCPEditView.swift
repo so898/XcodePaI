@@ -86,7 +86,7 @@ struct MCPEditView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .secondary))
                                 .scaleEffect(1.5)
                             
-                            Text("Checking MCP...")
+                            Text("Checking MCP…")
                                 .foregroundColor(.primary)
                                 .font(.headline)
                         }

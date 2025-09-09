@@ -71,7 +71,7 @@ struct MCPDetailView: View {
     }
     
     private func fetchTools() {
-        LoadingState.shared.show(text: "Checking MCP...")
+        LoadingState.shared.show(text: "Checking MCP…".localizedString)
         mcp.checkService { success, tools in
             isReloadSuccess = success
             

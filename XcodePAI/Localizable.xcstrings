@@ -72,17 +72,19 @@
         }
       }
     },
-    "About MCP..." : {
+    "About MCP…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关于 MCP..."
+            "value" : "关于 MCP…"
           }
         }
       }
     },
-    "About plugin..." : {
+    "About plugin…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -92,13 +94,13 @@
         }
       }
     },
-    "About Supported Model Provider..." : {
+    "About Supported Model Provider…" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关于支持的模型提供商..."
+            "value" : "关于支持的模型提供商…"
           }
         }
       }
@@ -182,22 +184,24 @@
         }
       }
     },
-    "Add config..." : {
+    "Add config…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加配置..."
+            "value" : "添加配置…"
           }
         }
       }
     },
-    "Add custom config..." : {
+    "Add custom config…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加自定义配置..."
+            "value" : "添加自定义配置…"
           }
         }
       }
@@ -222,32 +226,35 @@
         }
       }
     },
-    "Add MCP service..." : {
+    "Add MCP service…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加 MCP 服务..."
+            "value" : "添加 MCP 服务…"
           }
         }
       }
     },
-    "Add Model Provider..." : {
+    "Add Model Provider…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加模型提供商..."
+            "value" : "添加模型提供商…"
           }
         }
       }
     },
-    "Add plugin..." : {
+    "Add plugin…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "添加插件..."
+            "value" : "添加插件…"
           }
         }
       }
@@ -356,12 +363,13 @@
         }
       }
     },
-    "Checking MCP..." : {
+    "Checking MCP…" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在检查 MCP..."
+            "value" : "正在检查 MCP…"
           }
         }
       }
@@ -408,13 +416,13 @@
         }
       }
     },
-    "Config..." : {
+    "Config" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置…"
+            "value" : "配置"
           }
         }
       }
@@ -1224,6 +1232,17 @@
         }
       }
     },
+    "Settings…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置…"
+          }
+        }
+      }
+    },
     "Show In Statusbar Menu" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1356,7 +1375,7 @@
         }
       }
     },
-    "Testing..." : {
+    "Testing…" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {

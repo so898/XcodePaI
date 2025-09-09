@@ -49,7 +49,7 @@ struct MCPListView: View {
                 
                 HStack {
                     Spacer()
-                    Button("Add MCP service...") {
+                    Button("Add MCP service…") {
                         isShowingSheet = true
                     }
                     .controlSize(.large)
@@ -100,7 +100,7 @@ struct MCPInfoSection: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("MCP").font(.headline)
                     Text("Supercharge your Xcode experience with your choice of MCP services. Third-party MCPs will have access to your project files and code.").font(.subheadline).foregroundColor(.secondary).fixedSize(horizontal: false, vertical: true)
-                    Link("About MCP...", destination: URL(string: "https://modelcontextprotocol.io/")!).font(.subheadline).padding(.top, 4)
+                    Link("About MCP…", destination: URL(string: "https://modelcontextprotocol.io/")!).font(.subheadline).padding(.top, 4)
                 }
             }
         }

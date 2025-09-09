@@ -92,7 +92,7 @@ struct ModelProviderDetailView: View {
     }
     
     private func fetchModels() {
-        LoadingState.shared.show(text: "Fetch Models...")
+        LoadingState.shared.show(text: "Fetch Models…")
         modelManager.loadModels(provider) { success in
             isReloadSuccess = success
             isShowingSuccessAlert = true
@@ -118,7 +118,7 @@ struct ModelProviderDetailView: View {
             
             TableColumn("Action") { model in
                 Button {
-                    LoadingState.shared.show(text: "Testing...")
+                    LoadingState.shared.show(text: "Testing…")
                     LLMModelClient.testModel(model, provider: provider) { ret in
                         LoadingState.shared.hide()
                         testResult = ret

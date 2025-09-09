@@ -116,7 +116,7 @@ struct CompletionSettingSectionView: View {
             
             HStack {
                 Spacer()
-                Button("Add config...") {
+                Button("Add config…") {
                     editConfig = nil
                     isShowingSheet = true
                 }

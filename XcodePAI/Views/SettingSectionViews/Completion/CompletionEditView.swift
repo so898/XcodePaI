@@ -268,6 +268,7 @@ struct CompletionEditView: View {
                             .foregroundColor(.secondary)
                         Text(testPopoverMiddleContent)
                             .foregroundColor(.green)
+                            .bold()
                         Text(testPopoverSuffixContent)
                             .foregroundColor(.secondary)
                     }

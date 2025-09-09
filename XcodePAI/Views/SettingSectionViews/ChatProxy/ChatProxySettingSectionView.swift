@@ -107,7 +107,7 @@ struct ChatProxySettingSectionView: View {
             
             HStack {
                 Spacer()
-                Button("Add custom config...") {
+                Button("Add custom config…") {
                     editConfig = nil
                     isShowingSheet = true
                 }

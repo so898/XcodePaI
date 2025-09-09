@@ -49,7 +49,7 @@ struct ModelProviderListView: View {
                 
                 HStack {
                     Spacer()
-                    Button("Add Model Provider...") {
+                    Button("Add Model Provider…") {
                         isShowingSheet = true
                     }
                     .controlSize(.large)

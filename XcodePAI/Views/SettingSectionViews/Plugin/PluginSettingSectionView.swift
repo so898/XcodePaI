@@ -46,7 +46,7 @@ struct PluginSettingSectionView: View {
                 
                 HStack {
                     Spacer()
-                    Button("Add plugin...") {
+                    Button("Add plugin…") {
                         showImporter = true
                     }
                     .controlSize(.large)
@@ -103,7 +103,7 @@ struct PluginInfoSection: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Plugin").font(.headline)
                     Text("By adding plugins to enhance ChatProxy and code sugestion capabilities, and by modifying parameters to provide more information, the results become more accurate.").font(.subheadline).foregroundColor(.secondary).fixedSize(horizontal: false, vertical: true)
-                    Link("About plugin...", destination: URL(string: "https://modelcontextprotocol.io/")!).font(.subheadline).padding(.top, 4)
+                    Link("About plugin…", destination: URL(string: "https://modelcontextprotocol.io/")!).font(.subheadline).padding(.top, 4)
                 }
             }
         }

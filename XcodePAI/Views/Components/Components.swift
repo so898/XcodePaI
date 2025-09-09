@@ -104,7 +104,7 @@ struct GetButtonStyle: ButtonStyle {
             .padding(.vertical, 6)
             .padding(.horizontal, 16)
             .background(Color.gray.opacity(0.4))
-            .foregroundColor(.white)
+            .foregroundColor(.primary)
             .cornerRadius(12)
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
     }
