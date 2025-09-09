@@ -181,7 +181,7 @@ public struct AsyncCodeBlock: View {
                         .lineSpacing(lineSpacing) // This only has effect if a line wraps
                     if lines.count > 1 {
                         HStack(spacing: iconSpacing) {
-                            Image("CopilotLogo")
+                            Image(systemName: "sparkles")
                                 .resizable()
                                 .renderingMode(.template)
                                 .scaledToFit()
