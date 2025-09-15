@@ -35,8 +35,7 @@ struct PluginSettingSectionView: View {
                         ForEach(pluginInfos) { info in
                             PluginInfoRow(info: info)
                                 .onTapGesture {
-                                    selectedPluginInfo = info
-                                    isShowingSheet = true
+                                    shownPluginInfo = info
                                 }
                         }
                     }
@@ -58,7 +57,7 @@ struct PluginSettingSectionView: View {
         .navigationTitle("Plugin")
         .fileImporter(
             isPresented: $showImporter,
-            allowedContentTypes: [UTType(filenameExtension: PluginManager.pluginExtension) ?? .data],
+            allowedContentTypes: [.pluginBundle, UTType(filenameExtension: PluginManager.pluginExtension) ?? .data],
             allowsMultipleSelection: false
         ) { result in
             switch result {
@@ -77,13 +76,16 @@ struct PluginSettingSectionView: View {
             if let selectedPluginInfo {
                 PluginDetailView(plugin: selectedPluginInfo, bundle: selectedBundle, savePlugin: { bundle in
                     if let selectedUrl {
+                        pluginInfos.append(selectedPluginInfo)
                         PluginManager.shared.addPlugin(from: selectedUrl)
+                        isShowingSheet = false
                     }
                 })
             }
         }
         .sheet(item: $shownPluginInfo) { info in
             PluginDetailView(plugin: info, removePlugin:  { id in
+                pluginInfos.removeAll { plugin in plugin.id == id}
                 PluginManager.shared.removePlugin(for: id)
             })
         }
