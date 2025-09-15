@@ -4,6 +4,8 @@
 <dict>
 	<key>BUNDLE_IDENTIFIER_BASE</key>
 	<string>$(BUNDLE_IDENTIFIER_BASE)</string>
+	<key>EXTENSION_BUNDLE_NAME</key>
+	<string>$(EXTENSION_BUNDLE_NAME)</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
@@ -18,7 +20,11 @@
 	</dict>
 	<key>TEAM_ID_PREFIX</key>
 	<string>$(TeamIdentifierPrefix)</string>
-	<key>EXTENSION_BUNDLE_NAME</key>
+	<key>CFBundleName</key>
 	<string>$(EXTENSION_BUNDLE_NAME)</string>
+	<key>CFBundleDisplayName</key>
+	<string>$(EXTENSION_BUNDLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 </dict>
 </plist>
