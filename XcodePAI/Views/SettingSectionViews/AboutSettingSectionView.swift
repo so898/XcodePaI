@@ -36,7 +36,7 @@ struct AboutSettingSectionView: View {
                 GridRow(alignment: .center) {
                     Text("Check Update")
                     Button("Check") {
-                        
+                        NSWorkspace.shared.open(URL(string: "https://github.com/so898/XcodePaI/releases/latest")!)
                     }
                 }
             }
