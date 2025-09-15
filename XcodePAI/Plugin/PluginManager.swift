@@ -14,9 +14,15 @@ class PluginManager {
     private var plugins: [BasePluginProtocol] = []
     private var selectedPlugin: BasePluginProtocol?
     
+    private var currentWorkspaceUrl: URL?
+    private var currentRootProjectUrl: URL?
+    
     private init() {
         loadPlugins()
         updateSelectePlugin(id: Configer.selectedPluginId)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(updateWorkspaceURL(_:)), name:.workspaceURLChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateProjectRootURL(_:)), name:.projectRootURLChanged, object: nil)
     }
     
     // Load plugins
@@ -149,6 +155,30 @@ class PluginManager {
     
     func plugin(for identifier: String) -> BasePluginProtocol? {
         return plugins.first { type(of: $0).identifier == identifier }
+    }
+}
+
+extension PluginManager {
+    @objc private func updateWorkspaceURL(_ notificaton: Notification) {
+        guard let url = notificaton.object as? URL else {
+            currentWorkspaceUrl = nil
+            return
+        }
+        currentWorkspaceUrl = url
+        updatePluginURLInfo()
+    }
+    
+    @objc private func updateProjectRootURL(_ notificaton: Notification) {
+        guard let url = notificaton.object as? URL else {
+            currentRootProjectUrl = nil
+            return
+        }
+        currentRootProjectUrl = url
+        updatePluginURLInfo()
+    }
+    
+    private func updatePluginURLInfo() {
+        selectedPlugin?.update(projectUrl: currentRootProjectUrl, workspaceUrl: currentWorkspaceUrl)
     }
 }
 

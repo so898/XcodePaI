@@ -355,11 +355,15 @@ public final class XcodeInspector: ObservableObject {
             Task { @XcodeInspectorActor in
                 self?.activeWorkspaceURL = url
                 self?.storeLatestNonRootWorkspaceURL(url)
+                NotificationCenter.default.post(name: .workspaceURLChanged, object: url)
             }
         }.store(in: &activeXcodeCancellable)
 
         xcode.$projectRootURL.sink { [weak self] url in
-            Task { @XcodeInspectorActor in self?.activeProjectRootURL = url }
+            Task {
+                @XcodeInspectorActor in self?.activeProjectRootURL = url
+                NotificationCenter.default.post(name: .projectRootURLChanged, object: url)
+            }
         }.store(in: &activeXcodeCancellable)
 
         xcode.$focusedWindow.sink { [weak self] window in
@@ -418,4 +422,9 @@ public final class XcodeInspector: ObservableObject {
         }
         // If newWorkspaceURL is nil or its path is "/", latestNonRootWorkspaceURL remains unchanged.
     }
+}
+
+public extension Notification.Name {
+    static let projectRootURLChanged = Notification.Name("projectRootURLChanged")
+    static let workspaceURLChanged = Notification.Name("workspaceURLChanged")
 }
