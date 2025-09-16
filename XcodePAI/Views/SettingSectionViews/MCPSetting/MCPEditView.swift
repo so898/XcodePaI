@@ -119,7 +119,7 @@ struct MCPEditView: View {
                 Text(currentMCP?.name ?? "Add a MCP service".localizedString)
                     .font(.headline)
                     .fontWeight(.bold)
-                Text(currentMCP != nil ? "Remote MCP" : "Enter the information for the MCP.")
+                Text(currentMCP != nil ? "Remote MCP".localizedString : "Enter the information for the MCP.".localizedString)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -179,7 +179,7 @@ struct MCPEditView: View {
                     } label: {
                         Image(systemName: "plus")
                                 .frame(width: 20, height: 20)
-                        Text("Add Header")
+                        Text("Add Header".localizedString)
                     }
                     Spacer()
                 }
@@ -200,7 +200,7 @@ struct MCPEditView: View {
                     }
                     dismiss()
                 } label: {
-                    Text("Delete MCP")
+                    Text("Delete MCP".localizedString)
                         .frame(maxWidth: .infinity)
                 }
                 .tint(Color.red.opacity(0.7))
@@ -211,14 +211,14 @@ struct MCPEditView: View {
             
             Spacer()
             
-            Button("Cancel") {
+            Button("Cancel".localizedString) {
                 dismiss()
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
             
             
-            Button("Save") {
+            Button("Save".localizedString) {
                 showCreateMCPLoading = true
                 
                 var headers = [String: String]()

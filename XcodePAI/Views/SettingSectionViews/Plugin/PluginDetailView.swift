@@ -111,7 +111,7 @@ struct PluginDetailView: View {
                     removePlugin?(plugin.id)
                     dismiss()
                 } label: {
-                    Text("Delete Plugin")
+                    Text("Delete Plugin".localizedString)
                         .frame(maxWidth: .infinity)
                 }
                 .tint(Color.red.opacity(0.7))
@@ -122,14 +122,14 @@ struct PluginDetailView: View {
             
             Spacer()
             
-            Button("Cancel") {
+            Button("Cancel".localizedString) {
                 dismiss()
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
             
             if isNew, let bundle {
-                Button("Register") {
+                Button("Register".localizedString) {
                     savePlugin?(bundle)
                 }
                 .buttonStyle(.borderedProminent)

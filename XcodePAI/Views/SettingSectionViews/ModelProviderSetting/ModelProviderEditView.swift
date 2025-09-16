@@ -100,7 +100,7 @@ struct ModelProviderEditView: View {
                 Text(currentProvider?.name ?? "Add a Model Provider".localizedString)
                     .font(.headline)
                     .fontWeight(.bold)
-                Text(currentProvider != nil ? "Internet hosted model provider" : "Enter the information for the provider.")
+                Text(currentProvider != nil ? "Internet hosted model provider".localizedString : "Enter the information for the provider.".localizedString)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -196,7 +196,7 @@ struct ModelProviderEditView: View {
                     }
                     dismiss()
                 } label: {
-                    Text("Delete Provider")
+                    Text("Delete Provider".localizedString)
                         .frame(maxWidth: .infinity)
                 }
                 .tint(Color.red.opacity(0.7))
@@ -207,14 +207,14 @@ struct ModelProviderEditView: View {
             
             Spacer()
 
-            Button("Cancel") {
+            Button("Cancel".localizedString) {
                 dismiss()
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
 
 
-            Button("Save") {
+            Button("Save".localizedString) {
                 // Do the check
                 
                 createOrUpdateProvider(

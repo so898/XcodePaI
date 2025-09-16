@@ -17,14 +17,14 @@ struct ModelAddView: View {
     
     var body: some View {
         VStack(spacing: 8) {
-            Text("Input New Model Name").bold()
-            TextField("Model name", text: $name)
+            Text("Input New Model Name".localizedString).bold()
+            TextField("Model name".localizedString, text: $name)
             HStack(spacing: 8) {
                 Spacer()
                 Button {
                     dismiss()
                 } label: {
-                    Text("Cancel")
+                    Text("Cancel".localizedString)
                 }
                 Button {
                     if name.isEmpty {
@@ -34,7 +34,7 @@ struct ModelAddView: View {
                     modelNameBlock(name)
                     dismiss()
                 } label: {
-                    Text("Add")
+                    Text("Add".localizedString)
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(name.isEmpty)
@@ -42,7 +42,7 @@ struct ModelAddView: View {
         }
         .frame(maxWidth: 300)
         .padding()
-        .alert("Model name can not be empty.", isPresented: $showAlert) {
+        .alert("Model name can not be empty.".localizedString, isPresented: $showAlert) {
         }
     }
 }

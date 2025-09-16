@@ -142,6 +142,7 @@
       }
     },
     "Add" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -207,6 +208,7 @@
       }
     },
     "Add Header" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -217,6 +219,7 @@
       }
     },
     "Add MCP" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -313,6 +316,7 @@
       }
     },
     "Cancel" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -479,6 +483,7 @@
       }
     },
     "Delete Config" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -489,6 +494,7 @@
       }
     },
     "Delete MCP" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -499,6 +505,7 @@
       }
     },
     "Delete Plugin" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -509,6 +516,7 @@
       }
     },
     "Delete Provider" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -580,6 +588,7 @@
       }
     },
     "Edit config" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -642,6 +651,7 @@
       }
     },
     "Enter the information for the config." : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -652,6 +662,7 @@
       }
     },
     "Enter the information for the MCP." : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -662,6 +673,7 @@
       }
     },
     "Enter the information for the provider." : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -833,6 +845,7 @@
       }
     },
     "Input New Model Name" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -843,6 +856,7 @@
       }
     },
     "Internet hosted model provider" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -948,6 +962,7 @@
       }
     },
     "Model name" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -958,6 +973,7 @@
       }
     },
     "Model name can not be empty." : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1030,6 +1046,7 @@
       }
     },
     "Partial Request" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1050,6 +1067,7 @@
       }
     },
     "Prefix Request" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1152,6 +1170,7 @@
       }
     },
     "Remote MCP" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1203,6 +1222,7 @@
       }
     },
     "Save" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1346,6 +1366,7 @@
       }
     },
     "Test Config" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {

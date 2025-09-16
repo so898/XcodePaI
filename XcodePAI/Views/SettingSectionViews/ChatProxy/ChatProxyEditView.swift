@@ -63,7 +63,7 @@ struct ChatProxyEditView: View {
                 Text(currentConfig?.name ?? "Add a custom config".localizedString)
                     .font(.headline)
                     .fontWeight(.bold)
-                Text(currentConfig != nil ? "Edit config" : "Enter the information for the config.")
+                Text(currentConfig != nil ? "Edit config".localizedString : "Enter the information for the config.".localizedString)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -149,7 +149,7 @@ struct ChatProxyEditView: View {
                     } label: {
                         Image(systemName: "plus")
                             .frame(width: 20, height: 20)
-                        Text("Add MCP")
+                        Text("Add MCP".localizedString)
                     }
                     Spacer()
                 }
@@ -170,7 +170,7 @@ struct ChatProxyEditView: View {
                     }
                     dismiss()
                 } label: {
-                    Text("Delete Config")
+                    Text("Delete Config".localizedString)
                         .frame(maxWidth: .infinity)
                 }
                 .tint(Color.red.opacity(0.7))
@@ -181,14 +181,14 @@ struct ChatProxyEditView: View {
             
             Spacer()
             
-            Button("Cancel") {
+            Button("Cancel".localizedString) {
                 dismiss()
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
             
             
-            Button("Save") {
+            Button("Save".localizedString) {
                 
                 let modelValues = model.components(separatedBy: "+")
                 guard modelValues.count == 2 else {

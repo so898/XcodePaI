@@ -84,7 +84,7 @@ struct CompletionEditView: View {
                 Text(currentConfig?.name ?? "Add a custom config".localizedString)
                     .font(.headline)
                     .fontWeight(.bold)
-                Text(currentConfig != nil ? "Edit config" : "Enter the information for the config.")
+                Text(currentConfig != nil ? "Edit config".localizedString : "Enter the information for the config.".localizedString)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -134,8 +134,8 @@ struct CompletionEditView: View {
             .cornerRadius(12)
             
             Picker("", selection: $type) {
-                Text("Prefix Request").tag(LLMCompletionConfigType.prefixSuffix)
-                Text("Partial Request").tag(LLMCompletionConfigType.partial)
+                Text("Prefix Request".localizedString).tag(LLMCompletionConfigType.prefixSuffix)
+                Text("Partial Request".localizedString).tag(LLMCompletionConfigType.partial)
             }.pickerStyle(SegmentedPickerStyle())
                 .padding()
             
@@ -195,7 +195,7 @@ struct CompletionEditView: View {
                     } label: {
                         Image(systemName: "plus")
                             .frame(width: 20, height: 20)
-                        Text("Add Header")
+                        Text("Add Header".localizedString)
                     }
                     Spacer()
                 }
@@ -223,7 +223,7 @@ struct CompletionEditView: View {
                     }
                     dismiss()
                 } label: {
-                    Text("Delete Config")
+                    Text("Delete Config".localizedString)
                 }
                 .tint(Color.red.opacity(0.7))
                 .buttonStyle(.borderedProminent)
@@ -251,7 +251,7 @@ struct CompletionEditView: View {
                     isShowingTestPopover = true
                 }
             } label: {
-                Text("Test Config")
+                Text("Test Config".localizedString)
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
@@ -278,14 +278,14 @@ struct CompletionEditView: View {
             
             Spacer()
             
-            Button("Cancel") {
+            Button("Cancel".localizedString) {
                 dismiss()
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
             
             
-            Button("Save") {
+            Button("Save".localizedString) {
                 guard let config = buildConfig() else {
                     return
                 }
