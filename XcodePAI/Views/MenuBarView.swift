@@ -321,6 +321,7 @@ extension MenuBarManager {
         if let config = StorageManager.shared.defaultConfig() {
             let model = StorageManager.shared.models[modelItem.tag]
             config.modelName = model.id
+            config.modelProvider = model.provider
             StorageManager.shared.updateDefaultConfig(config)
         }
     }
