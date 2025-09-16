@@ -10,7 +10,7 @@ import ApplicationServices
 
 struct Utils {
     static func checkAccessibilityPermission() -> Bool {
-        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: false]
         return AXIsProcessTrustedWithOptions(options as CFDictionary)
     }
 }
