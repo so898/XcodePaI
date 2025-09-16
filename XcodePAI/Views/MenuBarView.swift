@@ -76,7 +76,7 @@ extension MenuBarManager: NSMenuDelegate {
                 item.isEnabled = true
                 item.target = self
                 item.tag = idx
-                if model.id == defaultConfig.modelName {
+                if model.id == defaultConfig.modelName, model.provider == defaultConfig.modelProvider {
                     item.state = .on
                 } else {
                     item.state = .off
