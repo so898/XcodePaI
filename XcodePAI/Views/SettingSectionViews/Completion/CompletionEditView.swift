@@ -111,7 +111,7 @@ struct CompletionEditView: View {
                 FormFieldRow(label: "Model".localizedString, content: {
                     Spacer()
                     Picker("", selection: $model) {
-                        let groupedModels = Dictionary(grouping: StorageManager.shared.models, by: \.provider)
+                        let groupedModels = Dictionary(grouping: StorageManager.shared.availableModels(), by: \.provider)
                         
                         ForEach(groupedModels.keys.sorted(), id: \.self) { provider in
                             Section(header: VStack(alignment: .leading) {

@@ -90,7 +90,7 @@ struct ChatProxyEditView: View {
                 FormFieldRow(label: "Model".localizedString, content: {
                     Spacer()
                     Picker("", selection: $model) {
-                        let groupedModels = Dictionary(grouping: StorageManager.shared.models, by: \.provider)
+                        let groupedModels = Dictionary(grouping: StorageManager.shared.availableModels(), by: \.provider)
                         
                         ForEach(groupedModels.keys.sorted(), id: \.self) { provider in
                             Section(header: VStack(alignment: .leading) {
@@ -117,7 +117,7 @@ struct ChatProxyEditView: View {
                 ForEach(mcps.indices, id: \.self) { index in
                     HStack {
                         Picker("", selection: $mcps[index]) {
-                            ForEach(StorageManager.shared.mcps) { mcpService in
+                            ForEach(StorageManager.shared.availableMCPs()) { mcpService in
                                 Text(mcpService.name)
                                     .tag(mcpService.name)
                                     .padding(.vertical, 4)

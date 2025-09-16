@@ -61,7 +61,7 @@ extension MenuBarManager: NSMenuDelegate {
             var subMenu = NSMenu()
             var lastProviderName: String?
             var idx = 0
-            for model in StorageManager.shared.models {
+            for model in StorageManager.shared.availableModels() {
                 if lastProviderName != model.provider {
                     if lastProviderName != nil {
                         subMenu.addItem(NSMenuItem.separator())
@@ -86,14 +86,14 @@ extension MenuBarManager: NSMenuDelegate {
             }
             item.submenu = subMenu
             
-            if !StorageManager.shared.mcps.isEmpty {
+            if !StorageManager.shared.availableMCPs().isEmpty {
                 item = NSMenuItem(title: "MCP".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = true
                 menu.addItem(item)
                 
                 subMenu = NSMenu()
                 idx = 0
-                for mcp in StorageManager.shared.mcps {
+                for mcp in StorageManager.shared.availableMCPs() {
                     let item = NSMenuItem(title: mcp.name, action: #selector(updateDefaultWith(mcpItem:)), keyEquivalent: "")
                     item.isEnabled = true
                     item.target = self
@@ -319,7 +319,7 @@ extension MenuBarManager {
     
     @objc private func updateDefaultWith(modelItem: NSMenuItem) {
         if let config = StorageManager.shared.defaultConfig() {
-            let model = StorageManager.shared.models[modelItem.tag]
+            let model = StorageManager.shared.availableModels()[modelItem.tag]
             config.modelName = model.id
             config.modelProvider = model.provider
             StorageManager.shared.updateDefaultConfig(config)
@@ -328,7 +328,7 @@ extension MenuBarManager {
     
     @objc private func updateDefaultWith(mcpItem: NSMenuItem) {
         if let config = StorageManager.shared.defaultConfig() {
-            let mcp = StorageManager.shared.mcps[mcpItem.tag]
+            let mcp = StorageManager.shared.availableMCPs()[mcpItem.tag]
             if config.mcps.contains(mcp.name) {
                 config.mcps.removeAll { name in
                     name == mcp.name

@@ -61,7 +61,7 @@ class MCPRunner {
     // MARK: - Private Helpers
     private func processMCPToolArgument(mcpName: String, toolName: String, arguments: String?) throws -> (LLMMCP, LLMMCPTool, [String: Value]?) {
         // Find MCP
-        guard let mcp = StorageManager.shared.mcps.first(where: { $0.name == mcpName }) else {
+        guard let mcp = StorageManager.shared.availableMCPs().first(where: { $0.name == mcpName }) else {
             throw MCPError.mcpNotFound
         }
         

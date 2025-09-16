@@ -93,7 +93,7 @@ class LLMCompletionConfig: Identifiable, Codable, ObservableObject {
     
     func getModel() -> LLMModel? {
         for model in StorageManager.shared.models {
-            if model.id == modelName, model.provider == modelProvider {
+            if model.enabled, model.id == modelName, model.provider == modelProvider {
                 return model
             }
         }

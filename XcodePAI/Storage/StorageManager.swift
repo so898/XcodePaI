@@ -85,6 +85,19 @@ extension StorageManager {
         }
         LocalStorage.shared.renameStorage(oldKey: Constraint.modelStorageKeyPrefix + from, newKey: Constraint.modelStorageKeyPrefix + to)
     }
+    
+    func availableModels() -> [LLMModel] {
+        var ret = [LLMModel]()
+        for model in models {
+            let provider = modelProviders.first { provider in
+                provider.name == model.provider
+            }
+            if model.enabled, let provider, provider.enabled {
+                ret.append(model)
+            }
+        }
+        return ret
+    }
 }
 
 // MARK: MCP
@@ -94,6 +107,16 @@ extension StorageManager {
         LocalStorage.shared.save(mcps, forKey: Constraint.mcpStorageKey)
             .sink { _ in }
             .store(in: &cancellables)
+    }
+    
+    func availableMCPs() -> [LLMMCP] {
+        var ret = [LLMMCP]()
+        for mcp in mcps {
+            if mcp.enabled {
+                ret.append(mcp)
+            }
+        }
+        return ret
     }
 }
 

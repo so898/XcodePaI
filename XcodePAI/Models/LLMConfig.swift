@@ -56,7 +56,7 @@ class LLMConfig: Identifiable, Codable, ObservableObject {
     
     func getModelProvider() -> LLMModelProvider? {
         for provider in StorageManager.shared.modelProviders {
-            if provider.name == modelProvider {
+            if provider.enabled, provider.name == modelProvider {
                 return provider
             }
         }
@@ -65,7 +65,7 @@ class LLMConfig: Identifiable, Codable, ObservableObject {
     
     func getModel() -> LLMModel? {
         for model in StorageManager.shared.models {
-            if model.id == modelName, model.provider == modelProvider {
+            if model.enabled, model.id == modelName, model.provider == modelProvider {
                 return model
             }
         }
