@@ -46,23 +46,52 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             await StorageManager.shared.load()
             
             DispatchQueue.main.async {[weak self] in
+                guard let `self` = self else {
+                    return
+                }
                 if Configer.openConfigurationWhenStartUp {
                     MenuBarManager.shared.openSettingsView()
                 }
                 
                 if Utils.checkAccessibilityPermission() {
-                    _ = XcodeInspector.shared
-                    self?.service.start()
-                    AXIsProcessTrustedWithOptions([
-                        kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true,
-                    ] as CFDictionary)
-                    
-                    for model in StorageManager.shared.completionConfigs {
-                        if Configer.completionSelectConfigId == model.id {
-                            SuggestionPortal.shared.current = model.getSuggestion()
+                    // Has accessibility permission, start server
+                    checkAndStartServer()
+                } else {
+                    // No permission, start timer to check permission
+                    timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {[weak self] _ in
+                        guard let `self` = self else {
+                            return
+                        }
+                        Task {[weak self] in
+                            await self?.checkAndStartServer()
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    private var timer: Timer?
+    private var serviceStarted = false
+    
+    @MainActor private func checkAndStartServer() {
+        guard Utils.checkAccessibilityPermission(), !serviceStarted else {
+            return
+        }
+        timer?.invalidate()
+        timer = nil
+        
+        serviceStarted = true
+        
+        _ = XcodeInspector.shared
+        service.start()
+        AXIsProcessTrustedWithOptions([
+            kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true,
+        ] as CFDictionary)
+        
+        for model in StorageManager.shared.completionConfigs {
+            if Configer.completionSelectConfigId == model.id {
+                SuggestionPortal.shared.current = model.getSuggestion()
             }
         }
     }
