@@ -31,7 +31,6 @@ class TCPServer {
         parameters.allowLocalEndpointReuse = true
         parameters.allowFastOpen = true
         
-        // 使用正确的端口初始化方式
         guard let listener = try? NWListener(using: parameters, on: NWEndpoint.Port(rawValue: port)!) else {
             fatalError("Failed to create listener on port \(port)")
         }
@@ -73,7 +72,6 @@ class TCPServer {
         print("Server started on port \(port)")
     }
     
-    // 添加停止方法
     func stop() {
         listener.cancel()
     }

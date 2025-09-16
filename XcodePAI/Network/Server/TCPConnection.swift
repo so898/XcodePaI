@@ -46,7 +46,6 @@ class TCPConnection {
             case .ready:
                 print("Connection ready")
                 self.delegate?.connectionConnected(self)
-                // 连接准备好后立即开始读取数据
                 self.receiveData()
             case .failed(let error):
                 print("Connection failed: \(error)")
