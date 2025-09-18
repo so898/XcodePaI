@@ -99,6 +99,10 @@ class LLMClient {
             }
             
             self.delegate.client(self, receiveError: error)
+            Task {[weak self] in
+                await client.close()
+                self?.eventSource = nil
+            }
         }
         self.eventSource = client
     }
