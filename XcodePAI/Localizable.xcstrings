@@ -1263,12 +1263,32 @@
         }
       }
     },
+    "Show In Statusbar Icon" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在状态栏图标上展示"
+          }
+        }
+      }
+    },
     "Show In Statusbar Menu" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "在状态栏菜单中显示"
+          }
+        }
+      }
+    },
+    "Show loading when requesting" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求时展示载入动画"
           }
         }
       }

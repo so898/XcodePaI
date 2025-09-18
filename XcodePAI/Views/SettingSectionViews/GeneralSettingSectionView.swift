@@ -12,6 +12,7 @@ struct GeneralSettingSectionView: View {
     @State private var openConfigurationOnStartUp = Configer.openConfigurationWhenStartUp
     @State private var forceLanguage: Configer.Language = Configer.forceLanguage
     @State private var showXcodeInstpectorDebug = Configer.showXcodeInstpectorDebug
+    @State private var showLoadingWhenRequest = Configer.showLoadingWhenRequest
     
     @StateObject private var languageManager = LanguageManager.shared
     
@@ -71,6 +72,15 @@ struct GeneralSettingSectionView: View {
                         .toggleStyle(.checkbox)
                         .onChange(of: showXcodeInstpectorDebug) { _, newValue in
                             Configer.showXcodeInstpectorDebug = newValue
+                        }
+                }
+                
+                GridRow {
+                    Text("Show loading when requesting")
+                    Toggle("Show In Statusbar Icon", isOn: $showLoadingWhenRequest)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: showLoadingWhenRequest) { _, newValue in
+                            Configer.showLoadingWhenRequest = newValue
                         }
                 }
             }

@@ -78,6 +78,7 @@ class ChatProxyBridge {
     }
     
     func receiveRequest(_ request: LLMRequest) {
+        MenuBarManager.shared.startLoading()
         guard let config = StorageManager.shared.getConfig(request.model), let modelProvider = config.getModelProvider() else {
             delegate.bridge(self, connected: false)
             return
@@ -638,6 +639,8 @@ extension ChatProxyBridge: LLMClientDelegate {
         
         llmClient?.stop()
         llmClient = nil
+        
+        MenuBarManager.shared.stopLoading()
     }
     
 }

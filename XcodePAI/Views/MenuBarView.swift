@@ -18,12 +18,15 @@ class MenuBarManager: NSObject, ObservableObject {
     private var menuItem: NSStatusItem?
     private var settingsWindowController: NSWindowController?
     
+    @Published var isLoading = false
+    var loadingCount = 0
+    
     // Menubar icon setup
     func setup() {
         menuItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
         if let statusBarButton = menuItem?.button {
-            let hostingView = NSHostingView(rootView: StatusBarIconView())
+            let hostingView = NSHostingView(rootView: StatusBarIconView().environmentObject(self))
             hostingView.frame = NSRect(x: 0, y: 0, width: 32, height: 22)
             
             statusBarButton.addSubview(hostingView)
@@ -33,6 +36,31 @@ class MenuBarManager: NSObject, ObservableObject {
         let menu = NSMenu()
         menu.delegate = self
         menuItem?.menu = menu
+    }
+    
+    func startLoading() {
+        DispatchQueue.main.async {[weak self] in
+            guard let `self` = self else { return }
+            if !Configer.showLoadingWhenRequest {
+                isLoading = false
+                loadingCount = 0
+                return
+            }
+            loadingCount += 1
+            isLoading = true
+        }
+        
+    }
+    
+    func stopLoading() {
+        DispatchQueue.main.async {[weak self] in
+            guard let `self` = self else { return }
+            loadingCount -= 1
+            if loadingCount <= 0 {
+                loadingCount = 0
+                isLoading = false
+            }
+        }
     }
     
 }
@@ -415,13 +443,33 @@ extension MenuBarManager: NSWindowDelegate {
 
 // icon
 struct StatusBarIconView: View {
+    @EnvironmentObject var manager: MenuBarManager
+    @State private var isAnimating = false
+        
     var body: some View {
         HStack {
-            Image(systemName: "hammer.fill")
-                .renderingMode(.template)
-                .resizable()
-                .scaledToFit()
-                .padding(.init(top: 2, leading: 2, bottom: 2, trailing: 2))
+            if manager.isLoading {
+                Circle()
+                    .trim(from: 0.0, to: 0.8)
+                    .stroke(style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .foregroundColor(.primary)
+                    .frame(width: 16, height: 16)
+                    .rotationEffect(Angle(degrees: isAnimating ? 360 : 0))
+                    .onAppear {
+                        withAnimation(Animation.linear(duration: 1).repeatForever(autoreverses: false)) {
+                            isAnimating = true
+                        }
+                    }
+                    .onDisappear {
+                        isAnimating = false
+                    }
+            } else {
+                Image(systemName: "hammer.fill")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .padding(.init(top: 2, leading: 2, bottom: 2, trailing: 2))
+            }
         }
         .frame(width: 22, height: 22)
     }

@@ -106,6 +106,16 @@ class Configer {
             return Self.value(Self.showXcodeInstpectorDebugStorageKey, defaultValue: false)!
         }
     }
+    
+    static private let showLoadingWhenRequestStorageKey = "showLoadingWhenRequest"
+    static var showLoadingWhenRequest: Bool {
+        set {
+            Self.setValue(Self.showLoadingWhenRequestStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(Self.showLoadingWhenRequestStorageKey, defaultValue: true)!
+        }
+    }
 }
 
 // MARK: Private Functions

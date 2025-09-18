@@ -20,7 +20,10 @@ struct PartialSuggestion {
 
 extension PartialSuggestion: SuggestionPortalProtocol {
     func requestSuggestion(fileURL: URL, originalContent: String, cursorPosition: CursorPosition, prefixContent: String?, suffixContent: String?) async throws -> [CodeSuggestion] {
-        
+        MenuBarManager.shared.startLoading()
+        defer {
+            MenuBarManager.shared.stopLoading()
+        }
 //        guard let model, let provider else {
 //            return []
 //        }
