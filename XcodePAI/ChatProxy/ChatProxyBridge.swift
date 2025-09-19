@@ -632,6 +632,8 @@ extension ChatProxyBridge: LLMClientDelegate {
             llmClient?.stop()
             llmClient = nil
             
+            MenuBarManager.shared.stopLoading()
+            
             return
         }
         
