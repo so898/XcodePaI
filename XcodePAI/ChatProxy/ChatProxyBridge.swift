@@ -293,21 +293,21 @@ extension ChatProxyBridge {
             returnContent = content
         }
         let forceLanguage = Configer.forceLanguage
-        if isLastUserMessage, forceLanguage != .English {
+        if isLastUserMessage, forceLanguage != .english {
             // Language
             let languageContent: String = {
                 switch forceLanguage {
-                case .English:
+                case .english:
                     return ""
-                case .Chinese:
+                case .chinese:
                     return PromptTemplate.FLChinese
-                case .France:
+                case .french:
                     return PromptTemplate.FLFrance
-                case .Russian:
+                case .russian:
                     return PromptTemplate.FLRussian
-                case .Japanese:
+                case .japanese:
                     return PromptTemplate.FLJapanese
-                case .Korean:
+                case .korean:
                     return PromptTemplate.FLKorean
                 }
             }()

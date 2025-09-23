@@ -11,7 +11,7 @@ struct GeneralSettingSectionView: View {
     @State private var contentLayout = 0 // 0 for Vertical, 1 for Horizontal
     @State private var openConfigurationOnStartUp = Configer.openConfigurationWhenStartUp
     @State private var forceLanguage: Configer.Language = Configer.forceLanguage
-    @State private var showXcodeInstpectorDebug = Configer.showXcodeInstpectorDebug
+    @State private var showXcodeInspectorDebug = Configer.showXcodeInspectorDebug
     @State private var showLoadingWhenRequest = Configer.showLoadingWhenRequest
     
     @StateObject private var languageManager = LanguageManager.shared
@@ -68,10 +68,10 @@ struct GeneralSettingSectionView: View {
                 
                 GridRow {
                     Text("Xcode Inspector Debug")
-                    Toggle("Show In Statusbar Menu", isOn: $showXcodeInstpectorDebug)
+                    Toggle("Show In Statusbar Menu", isOn: $showXcodeInspectorDebug)
                         .toggleStyle(.checkbox)
-                        .onChange(of: showXcodeInstpectorDebug) { _, newValue in
-                            Configer.showXcodeInstpectorDebug = newValue
+                        .onChange(of: showXcodeInspectorDebug) { _, newValue in
+                            Configer.showXcodeInspectorDebug = newValue
                         }
                 }
                 

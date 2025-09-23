@@ -12,58 +12,66 @@ class Configer {
     public enum Language: String, CaseIterable, Identifiable {
         var id: String { self.rawValue }
         
-        case English = "English"
-        case Chinese = "Chinese"
-        case France = "France"
-        case Russian = "Russian"
-        case Japanese = "Japanese"
-        case Korean = "Korean"
+        case english = "English"
+        case chinese = "Chinese"
+        case french = "French"
+        case russian = "Russian"
+        case japanese = "Japanese"
+        case korean = "Korean"
     }
     
-    static private let openConfigurationWhenStartUpKey = "OpenConfigurationWhenStartUp"
+    // MARK: - Keys
+    private static let openConfigurationWhenStartUpKey = "OpenConfigurationWhenStartUp"
+    private static let chatProxyPortStorageKey = "ChatProxyPort"
+    private static let chatProxyThinkStyleStorageKey = "ChatProxyThinkStyle"
+    private static let chatProxyToolUseInRequestStorageKey = "chatProxyToolUseInRequest"
+    private static let completionSelectConfigIdStorageKey = "completionSelectConfigId"
+    private static let selectedPluginIdStorageKey = "selectedPluginId"
+    private static let forceLanguageStorageKey = "forceLanguage"
+    private static let showXcodeInspectorDebugStorageKey = "showXcodeInspectorDebug"
+    private static let showLoadingWhenRequestStorageKey = "showLoadingWhenRequest"
+    
+    // MARK: - Properties
     static var openConfigurationWhenStartUp: Bool {
         set {
-            Self.setValue(Self.openConfigurationWhenStartUpKey, value: newValue)
+            Self.setValue(openConfigurationWhenStartUpKey, value: newValue)
         }
         get {
-            return Self.value(Self.openConfigurationWhenStartUpKey, defaultValue: true)!
+            return Self.value(openConfigurationWhenStartUpKey, defaultValue: true) ?? true
         }
     }
     
-    static private let chatProxyPortStorageKey = "ChatProxyPort"
     static var chatProxyPort: UInt16 {
         set {
-            Self.setValue(Self.chatProxyPortStorageKey, value: newValue)
+            Self.setValue(chatProxyPortStorageKey, value: newValue)
         }
         get {
-            return Self.value(Self.chatProxyPortStorageKey, defaultValue: UInt16(50222))!
+            return Self.value(chatProxyPortStorageKey, defaultValue: UInt16(50222)) ?? 50222
         }
     }
     
-    static private let chatProxyThinkStyleStorageKey = "ChatProxyThinkStyle"
     static var chatProxyThinkStyle: ThinkParser {
         set {
-            Self.setValue(Self.chatProxyThinkStyleStorageKey, value: newValue.rawValue)
+            Self.setValue(chatProxyThinkStyleStorageKey, value: newValue.rawValue)
         }
         get {
-            return .init(rawValue: Self.value(Self.chatProxyThinkStyleStorageKey, defaultValue: 0)!) ?? .inContentWithCodeSnippet
+            let rawValue: Int = Self.value(chatProxyThinkStyleStorageKey, defaultValue: 0) ?? 0
+            return ThinkParser(rawValue: rawValue) ?? .inContentWithCodeSnippet
         }
     }
     
-    static private let chatProxyToolUseInRequestStorageKey = "chatProxyToolUseInRequest"
     static var chatProxyToolUseInRequest: Bool {
         set {
-            Self.setValue(Self.chatProxyToolUseInRequestStorageKey, value: newValue)
+            Self.setValue(chatProxyToolUseInRequestStorageKey, value: newValue)
         }
         get {
-            return Self.value(Self.chatProxyToolUseInRequestStorageKey, defaultValue: true)!
+            return Self.value(chatProxyToolUseInRequestStorageKey, defaultValue: true) ?? true
         }
     }
     
-    static private let completionSelectConfigIdStorageKey = "completionSelectConfigId"
     static var completionSelectConfigId: UUID {
         set {
-            Self.setValue(Self.completionSelectConfigIdStorageKey, value: newValue.uuidString)
+            Self.setValue(completionSelectConfigIdStorageKey, value: newValue.uuidString)
         }
         get {
             if let string = Self.value(Self.completionSelectConfigIdStorageKey, defaultValue: ""), !string.isEmpty, let uuid = UUID(uuidString: string) {
@@ -73,47 +81,44 @@ class Configer {
         }
     }
     
-    static private let selectedPluginIdStorageKey = "selectedPluginId"
     static var selectedPluginId: String? {
         set {
-            guard let newValue else {
-                Self.remove(Self.selectedPluginIdStorageKey)
+            guard let newValue = newValue else {
+                Self.remove(selectedPluginIdStorageKey)
                 return
             }
-            Self.setValue(Self.selectedPluginIdStorageKey, value: newValue)
+            Self.setValue(selectedPluginIdStorageKey, value: newValue)
         }
         get {
-            Self.value(Self.selectedPluginIdStorageKey, defaultValue: nil)
+            return Self.value(selectedPluginIdStorageKey, defaultValue: nil)
         }
     }
     
-    static private let forceLanguageStorageKey = "forceLanguage"
     static var forceLanguage: Configer.Language {
         set {
-            Self.setValue(Self.forceLanguageStorageKey, value: newValue.rawValue)
+            Self.setValue(forceLanguageStorageKey, value: newValue.rawValue)
         }
         get {
-            return Configer.Language(rawValue: Self.value(Self.forceLanguageStorageKey, defaultValue: Configer.Language.English.rawValue)!) ?? .English
+            let rawValue: String = Self.value(forceLanguageStorageKey, defaultValue: Language.english.rawValue) ?? Language.english.rawValue
+            return Configer.Language(rawValue: rawValue) ?? .english
         }
     }
     
-    static private let showXcodeInstpectorDebugStorageKey = "showXcodeInstpectorDebug"
-    static var showXcodeInstpectorDebug: Bool {
+    static var showXcodeInspectorDebug: Bool {
         set {
-            Self.setValue(Self.showXcodeInstpectorDebugStorageKey, value: newValue)
+            Self.setValue(showXcodeInspectorDebugStorageKey, value: newValue)
         }
         get {
-            return Self.value(Self.showXcodeInstpectorDebugStorageKey, defaultValue: false)!
+            return Self.value(showXcodeInspectorDebugStorageKey, defaultValue: false) ?? false
         }
     }
     
-    static private let showLoadingWhenRequestStorageKey = "showLoadingWhenRequest"
     static var showLoadingWhenRequest: Bool {
         set {
-            Self.setValue(Self.showLoadingWhenRequestStorageKey, value: newValue)
+            Self.setValue(showLoadingWhenRequestStorageKey, value: newValue)
         }
         get {
-            return Self.value(Self.showLoadingWhenRequestStorageKey, defaultValue: true)!
+            return Self.value(showLoadingWhenRequestStorageKey, defaultValue: true) ?? true
         }
     }
 }
@@ -128,7 +133,7 @@ extension Configer {
         return UserDefaults.standard.value(forKey: key) as? T ?? defaultValue
     }
     
-    private static func remove(_ key : String) {
+    private static func remove(_ key: String) {
         UserDefaults.standard.removeObject(forKey: key)
     }
 }

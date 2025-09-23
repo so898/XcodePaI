@@ -220,7 +220,7 @@ extension MenuBarManager: NSMenuDelegate {
             item.submenu = subMenu
         }
         
-        if Configer.showXcodeInstpectorDebug, Utils.checkAccessibilityPermission() {
+        if Configer.showXcodeInspectorDebug, Utils.checkAccessibilityPermission() {
             
             menu.addItem(NSMenuItem.separator())
             
