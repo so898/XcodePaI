@@ -6,7 +6,7 @@ public final class FileLoggingLocation {
         FilePath(stringLiteral: NSHomeDirectory())
             .appending("Library")
             .appending("Logs")
-            .appending("GitHubCopilot")
+            .appending("XcodePaI")
     }()
     
     public static let mcpRuntimeLogsPath = path.appending("MCPRuntimeLogs")

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Logger
 
 public enum HTTPMethod: String {
     case get = "GET"
@@ -68,9 +69,9 @@ class CoroutineHTTPClient {
         request.httpMethod = method.rawValue
         request.httpBody = body
         
-//        if let body, let str = String(data: body, encoding: .utf8) {
-//            print("\(str)")
-//        }
+        //        if let body, let str = String(data: body, encoding: .utf8) {
+        //            print("\(str)")
+        //        }
         
         // Add headers
         headers?.forEach { key, value in
@@ -92,9 +93,9 @@ class CoroutineHTTPClient {
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
-//        if let str = String(data: data, encoding: .utf8) {
-//            print("\(str)")
-//        }
+        //        if let str = String(data: data, encoding: .utf8) {
+        //            print("\(str)")
+        //        }
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw CoroutineHTTPClientError.invalidResponse
@@ -103,6 +104,7 @@ class CoroutineHTTPClient {
         // Check for successful status codes (200-299)
         guard (200...299).contains(httpResponse.statusCode) else {
             let content: String? = String(data: data, encoding: .utf8)
+            Logger.service.error("Coroutine Reqeust: \(method.rawValue) \(url.absoluteString)\nReturn: \(httpResponse.statusCode)\nContent: \(content ?? "")")
             throw CoroutineHTTPClientError.httpError(statusCode: httpResponse.statusCode, content: content)
         }
         

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Logger
 
 class HTTPClient {
     
@@ -34,6 +35,13 @@ class HTTPClient {
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode),
                   let data = data else {
+                let content: String? = {
+                    if let data {
+                        return String(data: data, encoding: .utf8)
+                    }
+                    return nil
+                }()
+                Logger.service.error("Client Reqeust: GET \(url.absoluteString)\nReturn: \((response as? HTTPURLResponse)?.statusCode ?? -1)\nContent: \(content ?? "")")
                 completion(.failure(NSError(domain: "NetworkError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response or no data"])))
                 return
             }
@@ -67,6 +75,13 @@ class HTTPClient {
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode),
                   let data = data else {
+                let content: String? = {
+                    if let data {
+                        return String(data: data, encoding: .utf8)
+                    }
+                    return nil
+                }()
+                Logger.service.error("Client Reqeust: POST \(url.absoluteString)\nReturn: \((response as? HTTPURLResponse)?.statusCode ?? -1)\nContent: \(content ?? "")")
                 completion(.failure(NSError(domain: "NetworkError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response or no data"])))
                 return
             }

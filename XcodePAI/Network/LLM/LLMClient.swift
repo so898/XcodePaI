@@ -8,6 +8,7 @@
 import Foundation
 import EventSource
 import Combine
+import Logger
 
 protocol LLMClientDelegate {
     func clientConnected(_ client: LLMClient)
@@ -94,7 +95,10 @@ class LLMClient {
         client.onError = { [weak self] error in
             guard let `self` = self else { return }
             
-            if error == nil {
+            if let error {
+                Logger.service.error("LLMCLient Reqeust: POST \(url.absoluteString)\nError: \(error.localizedDescription)")
+            } else {
+                // No error means request completed
                 self.sendFullMessage()
             }
             
@@ -106,7 +110,7 @@ class LLMClient {
         }
         self.eventSource = client
     }
-
+    
     func stop() {
         Task {
             if let client = eventSource {
@@ -197,7 +201,7 @@ extension LLMClient {
         guard let data = chunk.data(using: .utf8), let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let response = try? LLMResponse(dict: dict) else {
             return
         }
-          
+        
         var chunkReason: String?
         var chunkContent: String?
         var chunkTools: [LLMMessageToolCall]?
