@@ -618,6 +618,7 @@ extension ChatProxyBridge: LLMClientDelegate {
     
     func client(_ client: LLMClient, receiveError error: Error?) {
         if !isConnected {
+            MenuBarManager.shared.stopLoading()
             delegate.bridge(self, connected: false)
             return
         }
@@ -633,7 +634,6 @@ extension ChatProxyBridge: LLMClientDelegate {
             llmClient = nil
             
             MenuBarManager.shared.stopLoading()
-            
             return
         }
         
