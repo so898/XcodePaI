@@ -778,8 +778,9 @@ class ResponseToolProcesser {
                     // Found tool use end mark means tool use action complete
                     let components = maybeToolCallInContent.components(separatedBy: ToolUseEndMark)
                     
-                    let toolUse = LLMMCPToolUse(content: components[0])
-                    getMCPToolUseCall?(toolUse)
+                    if let toolUse = try? LLMMCPToolUse(content: components[0]) {
+                        getMCPToolUseCall?(toolUse)
+                    }
                     
                     content = components[1]
                     maybeToolCallInContent = ""

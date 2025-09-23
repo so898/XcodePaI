@@ -7,6 +7,23 @@
 
 import Foundation
 
+enum LLMMCPToolUseError: Error, LocalizedError {
+    case invalidToolNameFormat
+    case invalidArgumentFormat
+    case unsupportedContent
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidToolNameFormat:
+            return "Misformat <name> tag in MCP request"
+        case .invalidArgumentFormat:
+            return "Misformat <arguments> or <argument> tag in MCP request"
+        case .unsupportedContent:
+            return "Not supported tag in MCP request"
+        }
+    }
+}
+
 class LLMMCPToolUse: NSObject {
     let content: String?
     
@@ -19,12 +36,13 @@ class LLMMCPToolUse: NSObject {
     var tid: String?
     var type: String?
     
-    init(content: String) {
+    init(content: String) throws {
         self.content = content
         
-        var processContent = content.replacingOccurrences(of: "\n", with: "")
-        processContent = processContent.replacingOccurrences(of: ToolUseStartMark, with: "")
-        processContent = processContent.replacingOccurrences(of: ToolUseEndMark, with: "")
+        var processContent = content
+            .replacingOccurrences(of: "\n", with: "")
+            .replacingOccurrences(of: ToolUseStartMark, with: "")
+            .replacingOccurrences(of: ToolUseEndMark, with: "")
         
         toolName = ""
         
@@ -34,7 +52,7 @@ class LLMMCPToolUse: NSObject {
                 if components.count == 2 {
                     toolName = String(components[0])
                 } else {
-                    fatalError("MCP tool use name parser fail")
+                    throw LLMMCPToolUseError.invalidToolNameFormat
                 }
                 processContent = components[1]
             } else if processContent.count >= 10, processContent.substring(to: 11) == "<argument>" {
@@ -42,7 +60,7 @@ class LLMMCPToolUse: NSObject {
                 if components.count == 2 {
                     arguments = String(components[0])
                 } else {
-                    fatalError("MCP tool use name parser fail")
+                    throw LLMMCPToolUseError.invalidArgumentFormat
                 }
                 processContent = components[1]
             } else if processContent.count >= 11, processContent.substring(to: 11) == "<arguments>" {
@@ -50,14 +68,13 @@ class LLMMCPToolUse: NSObject {
                 if components.count == 2 {
                     arguments = String(components[0])
                 } else {
-                    fatalError("MCP tool use name parser fail")
+                    throw LLMMCPToolUseError.invalidArgumentFormat
                 }
                 processContent = components[1]
             } else {
-                fatalError("Unsupported tool use value")
+                throw LLMMCPToolUseError.unsupportedContent
             }
         }
-        
     }
 
     init(toolName: String, arguments: String?, tid: String? = nil, type: String? = nil) {
@@ -68,7 +85,7 @@ class LLMMCPToolUse: NSObject {
         self.type = type
     }
     
-    // For reqeust message
+    // For request message
     func messageToolCall() -> LLMMessageToolCall {
         return LLMMessageToolCall(
             id: tid ?? "",
