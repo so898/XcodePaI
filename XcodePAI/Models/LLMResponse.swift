@@ -8,23 +8,11 @@
 import Foundation
 
 enum LLMResponseError: Error, LocalizedError {
-    case invalidId
-    case invalidModel
-    case invalidObject
-    case invalidCreated
     case invalidChoices
     case invalidChoice
     
     var errorDescription: String? {
         switch self {
-        case .invalidId:
-            return "LLM response id could not be properly parsed."
-        case .invalidModel:
-            return "LLM response model could not be properly parsed."
-        case .invalidObject:
-            return "LLM response object could not be properly parsed."
-        case .invalidCreated:
-            return "LLM response created could not be properly parsed."
         case .invalidChoices:
             return "LLM response choices could not be properly parsed."
         case .invalidChoice:
@@ -34,10 +22,10 @@ enum LLMResponseError: Error, LocalizedError {
 }
 
 class LLMResponse {
-    let id: String
+    let id: String?
     let model: String?
-    let object: String
-    let created: Int
+    let object: String?
+    let created: Int?
     let systemFingerprint: String?
     
     let choices: [LLMResponseChoice]
@@ -55,26 +43,10 @@ class LLMResponse {
     }
     
     init(dict: [String: Any]) throws {
-        if let id = dict["id"] as? String {
-            self.id = id
-        } else {
-            throw LLMResponseError.invalidId
-        }
-        
+        self.id = dict["id"] as? String
         self.model = dict["model"] as? String
-        
-        if let object = dict["object"] as? String {
-            self.object = object
-        } else {
-            throw LLMResponseError.invalidObject
-        }
-        
-        if let created = dict["created"] as? Int {
-            self.created = created
-        } else {
-            throw LLMResponseError.invalidCreated
-        }
-        
+        self.object = dict["object"] as? String
+        self.created = dict["created"] as? Int
         self.systemFingerprint = dict["system_fingerprint"] as? String
         
         if let choices = dict["choices"] as? [[String: Any]] {
@@ -95,10 +67,21 @@ class LLMResponse {
     }
     
     func toDictionary() -> [String: Any] {
-        var dict: [String: Any] = ["id": id, "object": object, "created": created]
+        var dict = [String: Any]()
+        if let id {
+            dict["id"] = id
+        }
+        
+        if let object {
+            dict["object"] = object
+        }
 
         if let model {
             dict["model"] = model
+        }
+        
+        if let created {
+            dict["created"] = created
         }
 
         if let systemFingerprint {
