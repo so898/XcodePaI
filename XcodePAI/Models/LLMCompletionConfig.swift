@@ -25,6 +25,7 @@ class LLMCompletionConfig: Identifiable, Codable, ObservableObject {
     // For PrefixSuffic
     var inPrompt: Bool
     var hasSuffix: Bool
+    var useChatCompletion: Bool?
     
     // For Partial
     var maxTokens: Int?
@@ -39,11 +40,12 @@ class LLMCompletionConfig: Identifiable, Codable, ObservableObject {
         case type
         case inPrompt
         case hasSuffix
+        case useChatCompletion
         case maxTokens
         case headers
     }
     
-    init(id: UUID = UUID(), name: String, modelProvider: String, modelName: String, type: LLMCompletionConfigType, inPrompt: Bool = false, hasSuffix: Bool = false, maxTokens: Int? = nil, headers: [String: String]? = nil) {
+    init(id: UUID = UUID(), name: String, modelProvider: String, modelName: String, type: LLMCompletionConfigType, inPrompt: Bool = false, hasSuffix: Bool = false, useChatCompletion: Bool = false, maxTokens: Int? = nil, headers: [String: String]? = nil) {
         self.id = id
         self.name = name
         self.modelProvider = modelProvider
@@ -51,6 +53,7 @@ class LLMCompletionConfig: Identifiable, Codable, ObservableObject {
         self.type = type
         self.inPrompt = inPrompt
         self.hasSuffix = hasSuffix
+        self.useChatCompletion = useChatCompletion
         self.maxTokens = maxTokens
         self.headers = headers
     }
@@ -65,6 +68,7 @@ class LLMCompletionConfig: Identifiable, Codable, ObservableObject {
         type = LLMCompletionConfigType(rawValue: try container.decode(Int.self, forKey: .type)) ?? .prefixSuffix
         inPrompt = try container.decode(Bool.self, forKey: .inPrompt)
         hasSuffix = try container.decode(Bool.self, forKey: .hasSuffix)
+        useChatCompletion = try container.decodeIfPresent(Bool.self, forKey: .useChatCompletion)
         maxTokens = try container.decodeIfPresent(Int.self, forKey: .maxTokens)
         headers = try container.decodeIfPresent([String: String].self, forKey: .headers)
     }
@@ -78,6 +82,7 @@ class LLMCompletionConfig: Identifiable, Codable, ObservableObject {
         try container.encode(type.rawValue, forKey: .type)
         try container.encode(inPrompt, forKey: .inPrompt)
         try container.encode(hasSuffix, forKey: .hasSuffix)
+        try container.encodeIfPresent(useChatCompletion, forKey: .useChatCompletion)
         try container.encodeIfPresent(maxTokens, forKey: .maxTokens)
         try container.encodeIfPresent(headers, forKey: .headers)
     }
@@ -107,7 +112,7 @@ class LLMCompletionConfig: Identifiable, Codable, ObservableObject {
         }
         switch type {
         case .prefixSuffix:
-            suggestion = PrefixSuffixSuggestion(model: model, provider: provider, inPrompt: inPrompt, hasSuffix: hasSuffix, headers: headers)
+            suggestion = PrefixSuffixSuggestion(model: model, provider: provider, inPrompt: inPrompt, hasSuffix: hasSuffix, useChatCompletion: useChatCompletion ?? false, headers: headers)
         case .partial:
             suggestion = PartialSuggestion(model: model, provider: provider, maxTokens: maxTokens, headers: headers)
         }

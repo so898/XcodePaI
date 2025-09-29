@@ -16,6 +16,7 @@ struct PrefixSuffixSuggestion {
     
     let inPrompt: Bool
     let hasSuffix: Bool
+    let useChatCompletion: Bool
     
     var headers: [String: String]?
 }
@@ -33,25 +34,54 @@ extension PrefixSuffixSuggestion: SuggestionPortalProtocol {
         
         print("Code suggestion Request for: \(fileURL)")
         
-        
-        let content: String? = await {
-            if let prefixContent {
-                var ret = ""
-                if let suggestionContext = await PluginManager.shared.getCodeSuggestionPlugin()?.generateCodeSuggestionsContext(forFile: fileURL, code: originalContent, prefix: prefixContent, suffix: suffixContent), !suggestionContext.isEmpty {
-                    ret += "/**\n\(suggestionContext)\n*/\n\n"
-                }
-                ret += prefixContent
-                return ret
-            }
-            return nil
-        }()
-        
-        
         let completionContent: String? = try await {
+            if useChatCompletion {
+                // Do chat completion request
+                let language: String = {
+                    switch languageIdentifierFromFileURL(fileURL) {
+                    case .builtIn(let languageId):
+                        if !languageId.rawValue.isEmpty {
+                            return languageId.rawValue + " "
+                        }
+                        break
+                    case .plaintext:
+                        break
+                    case .other(_):
+                        break
+                    }
+                    return ""
+                }()
+                
+                let context: String? = await {
+                    if let suggestionContext = await PluginManager.shared.getCodeSuggestionPlugin()?.generateCodeSuggestionsContext(forFile: fileURL, code: originalContent, prefix: prefixContent, suffix: suffixContent), !suggestionContext.isEmpty {
+                        return suggestionContext
+                    }
+                    return nil
+                }()
+                
+                if let responseContent = try await LLMCompletionClient.doPromptChatCompletionRequest(model, provider: provider, context: context, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil, system: PromptTemplate.codeSuggestionFIMChatCompletionSystemPrompt.replacingOccurrences(of: "{{LANGUAGE}}", with: language), headers: headers), let firstCodeBlock = Utils.extractMarkdownCodeBlocks(from: responseContent).first {
+                    return firstCodeBlock
+                }
+                
+                return nil
+            }
+            
+            let content: String? = await {
+                if let prefixContent {
+                    var ret = ""
+                    if let suggestionContext = await PluginManager.shared.getCodeSuggestionPlugin()?.generateCodeSuggestionsContext(forFile: fileURL, code: originalContent, prefix: prefixContent, suffix: suffixContent), !suggestionContext.isEmpty {
+                        ret += "/**\n\(suggestionContext)\n*/\n\n"
+                    }
+                    ret += prefixContent
+                    return ret
+                }
+                return nil
+            }()
+            
             if inPrompt {
-                try await LLMCompletionClient.doPromptSuffixCompletionRequest(model, provider: provider, prompt: content ?? "", suffix: hasSuffix ? suffixContent : nil, headers: headers)
+                return try await LLMCompletionClient.doPromptSuffixCompletionRequest(model, provider: provider, prompt: content ?? "", suffix: hasSuffix ? suffixContent : nil, headers: headers)
             } else {
-                try await LLMCompletionClient.doPromptCompletionRequest(model, provider: provider, prompt: content ?? "", suffix: hasSuffix ? suffixContent : nil, headers: headers)
+                return try await LLMCompletionClient.doPromptCompletionRequest(model, provider: provider, prompt: content ?? "", suffix: hasSuffix ? suffixContent : nil, headers: headers)
             }
         }()
                 

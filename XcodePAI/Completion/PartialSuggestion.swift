@@ -62,8 +62,8 @@ extension PartialSuggestion: SuggestionPortalProtocol {
             return []
         }
         
-        if completionContent.hasSuffix("```") {
-            completionContent = completionContent.substring(to: completionContent.count - 3)
+        if let firstCodeBlock = Utils.extractMarkdownCodeBlocks(from: completionContent).first {
+            completionContent = firstCodeBlock
         }
         
         completionContent += "\n"

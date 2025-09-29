@@ -21,6 +21,7 @@ struct CompletionEditView: View {
     
     @State var inPrompt: Bool = false
     @State var hasSuffix: Bool = false
+    @State var useChatCompletion: Bool = false
     @State var maxTokens: String = ""
     
     @State private var headers = [KVObject]()
@@ -37,6 +38,7 @@ struct CompletionEditView: View {
             _type = State(initialValue: config.type)
             _inPrompt = State(initialValue: config.inPrompt)
             _hasSuffix = State(initialValue: config.hasSuffix)
+            _useChatCompletion = State(initialValue: config.useChatCompletion ?? false)
             if let maxTokens = config.maxTokens {
                 _maxTokens = State(initialValue: "\(maxTokens)")
             }
@@ -153,6 +155,14 @@ struct CompletionEditView: View {
                         Spacer()
                         VStack(alignment: .leading, spacing: 8) {
                             Toggle("", isOn: $hasSuffix)
+                                .toggleStyle(.checkbox)
+                            
+                        }
+                    })
+                    FormFieldRow(label: "Use Chat".localizedString, content: {
+                        Spacer()
+                        VStack(alignment: .leading, spacing: 8) {
+                            Toggle("", isOn: $useChatCompletion)
                                 .toggleStyle(.checkbox)
                             
                         }
@@ -313,7 +323,7 @@ struct CompletionEditView: View {
             headers[header.key] = header.value
         }
         
-        let newConfig = LLMCompletionConfig(id: currentConfig?.id ?? UUID(), name: name, modelProvider: modelProvider, modelName: modelName, type: type, inPrompt: inPrompt, hasSuffix: hasSuffix, maxTokens: Int(maxTokens), headers: headers)
+        let newConfig = LLMCompletionConfig(id: currentConfig?.id ?? UUID(), name: name, modelProvider: modelProvider, modelName: modelName, type: type, inPrompt: inPrompt, hasSuffix: hasSuffix, useChatCompletion: useChatCompletion, maxTokens: Int(maxTokens), headers: headers)
         
         return newConfig
     }
