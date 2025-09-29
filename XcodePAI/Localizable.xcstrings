@@ -1457,6 +1457,17 @@
         }
       }
     },
+    "Use Chat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用 Chat 接口"
+          }
+        }
+      }
+    },
     "Use custom model for code suggestion/completion, and effortlessly access them in the Xcode Editor window." : {
       "localizations" : {
         "zh-Hans" : {
