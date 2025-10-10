@@ -1,6 +1,8 @@
 # <img align="center" height="70" src="./Docs/Images/AppIcon.png"/> XcodePaI
 
-[XcodePaI](https://github.com/so898/XcodePaI) is an AI pair programmer
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/so898/XcodePaI)
+
+[XcodePaI](https://github.com/so898/XcodePaI)(/ɛksˈkoʊd pæl/) is an AI pair programmer
 tool that enchance your Xcode AI function which helps you write code faster and smarter. XcodePaI is an Xcode extension that provides local proxy to enchange Xcode 26 coding assistant and inline coding suggestions as you type.
 
 ## ChatProxy
