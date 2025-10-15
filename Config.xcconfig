@@ -8,8 +8,8 @@
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
-APP_VERSION = 1.0.1
-APP_BUILD = 52
+APP_VERSION = 1.0.2
+APP_BUILD = 66
 HOST_APP_NAME = XcodePaI
 BUNDLE_IDENTIFIER_BASE = com.R3Studio.XcodePAI
 APPLICATION_SUPPORT_FOLDER = com.R3Studio.XcodePAI
