@@ -13,6 +13,7 @@ protocol ChatProxyBridgeDelegate {
     func bridgeWriteEndChunk(_ bridge: ChatProxyBridge)
 }
 
+// Think
 enum ThinkState {
     case notStarted
     case inProgress
@@ -29,6 +30,7 @@ let ThinkInContentWithCodeSnippetStartMark = "```think\n\n"
 let ThinkInContentWithEOTEndMark = "\n\n~~EOT~~\n\n"
 let ThinkInContentWithCodeSnippetEndMark = "\n\n~~EOT~~\n\n```\n\n"
 
+// Tools
 enum ToolRequestCheckProcess {
     case none
     case mightFound
@@ -43,6 +45,16 @@ let ToolUseR1EndMark = "<｜tool▁calls▁end｜>"
 
 let ToolUseInContentStartMark = "\n\n```tool_use\n\n"
 let ToolUseInContentEndMark = "\n\n~~EOTU~~\n\n```\n\n"
+
+// Xcode Search
+let XcodePromptSearchMark = "##SEARCH:"
+let XcodePromptSearchResultMark = "Your search results are provided below:"
+
+struct SourceCodeInContent {
+    let fileType: String?
+    let fileName: String?
+    let content: String
+}
 
 class ChatProxyBridge {
     
@@ -102,6 +114,9 @@ class ChatProxyBridge {
         llmClient = LLMClient(modelProvider, delegate: self)
         llmClient?.request(newRequest)
     }
+    
+    // Process message temp values
+    private var lastSearchKeys = [String]()
 }
 
 // MARK: Request
@@ -217,7 +232,7 @@ extension ChatProxyBridge {
         
         var systemPrompt = PromptTemplate.systemPrompt
         
-        if originSystemPrompt.contains("##SEARCH:") {
+        if originSystemPrompt.contains(XcodePromptSearchMark) {
             systemPrompt = systemPrompt.replacingOccurrences(of: "{{XCODE_SEARCH_TOOL}}", with: PromptTemplate.systemPromptXcodeSearchTool)
         } else {
             systemPrompt = systemPrompt.replacingOccurrences(of: "{{XCODE_SEARCH_TOOL}}", with: "")
@@ -243,6 +258,21 @@ extension ChatProxyBridge {
     
     private func processAssistantMessageContent(_ content: String, isLastUserMessage: Bool = false) -> String {
         var returnContent = content
+        
+        lastSearchKeys.removeAll()
+        
+        // Get search key in assistant message
+        if content.contains(XcodePromptSearchMark) {
+            let lines = content.components(separatedBy: "\n")
+            
+            for var line in lines {
+                if line.hasPrefix(XcodePromptSearchMark) {
+                    line = line.replacingOccurrences(of: "\(XcodePromptSearchMark) ", with: "")
+                    line = line.replacingOccurrences(of: XcodePromptSearchMark, with: "")
+                    lastSearchKeys.append(line)
+                }
+            }
+        }
         
         if let chatPlugin = PluginManager.shared.getChatPlugin(), let content = chatPlugin.processAssistantPrompt(returnContent, isLast: isLastUserMessage) {
             returnContent = content
@@ -289,9 +319,21 @@ extension ChatProxyBridge {
         
     private func processUserMessageContent(_ content: String, isLastUserMessage: Bool = false) -> String {
         var returnContent = content
+        
+        // Plugin
         if let chatPlugin = PluginManager.shared.getChatPlugin(), let content = chatPlugin.processUserPrompt(returnContent, isLast: isLastUserMessage) {
             returnContent = content
         }
+        
+        // Cut search result source code
+        if Configer.chatProxyCutSourceInSearchRequest,
+           lastSearchKeys.count != 0,
+           returnContent.contains(XcodePromptSearchResultMark),
+           let sourceCodes = findSourceCodeIn(returnContent), !sourceCodes.isEmpty {
+            returnContent = cutAndReplaceSourceIn(returnContent, with: sourceCodes)
+        }
+        
+        // Force return in language, only for last message
         let forceLanguage = Configer.forceLanguage
         if isLastUserMessage, forceLanguage != .english {
             // Language
@@ -318,6 +360,75 @@ extension ChatProxyBridge {
             
             return returnContent
         }
+        return returnContent
+    }
+    
+    private func findSourceCodeIn(_ content: String) -> [SourceCodeInContent]? {
+        let parts = content.split(separator: XcodePromptSearchResultMark, maxSplits: 1)
+        if parts.count > 1 {
+            let sourceCodePart = parts[1]
+            
+            var sourceCodes = [SourceCodeInContent]()
+            
+            var codeMarkdownStart = false
+            var fileType: String?
+            var fileName: String?
+            var code = ""
+            
+            let lines = sourceCodePart.components(separatedBy: "\n")
+            for line in lines {
+                if line.hasPrefix("```") {
+                    if !codeMarkdownStart {
+                        // Start of the soruce code
+                        if line.count > 3 {
+                            let content = line.replacingOccurrences(of: "```", with: "")
+                            if content.contains(":") {
+                                let contents = content.components(separatedBy: ":")
+                                if contents.count == 2 {
+                                    fileType = contents[0]
+                                    fileName = contents[1]
+                                }
+                            } else {
+                                fileType = content
+                            }
+                        }
+                        
+                        codeMarkdownStart = true
+                    } else {
+                        if !code.isEmpty {
+                            sourceCodes.append(SourceCodeInContent(fileType: fileType, fileName: fileName, content: content))
+                        }
+                        fileType = nil
+                        fileName = nil
+                        code = ""
+                        codeMarkdownStart = false
+                    }
+                } else if codeMarkdownStart {
+                    code.append("\n\(line)")
+                }
+            }
+            
+            return sourceCodes.isEmpty ? nil : sourceCodes
+        }
+        
+        return nil
+    }
+    
+    private func cutAndReplaceSourceIn(_ content: String, with sourceCodes: [SourceCodeInContent]) -> String {
+        var returnContent = content
+        let filterKeys: [FilterKeyword] = {
+            var ret = [FilterKeyword]()
+            for key in lastSearchKeys {
+                ret.append(FilterKeyword(keyword: key, useRegex: true))
+            }
+            return ret
+        }()
+        for sourceCode in sourceCodes {
+            if !sourceCode.content.isEmpty, let fileType = sourceCode.fileType, let cuttedSource = SourceCutter.cut(source: sourceCode.content, fileType: fileType, filterKeys: filterKeys), !cuttedSource.isEmpty {
+                returnContent = returnContent.replacingOccurrences(of: sourceCode.content, with: cuttedSource)
+            }
+        }
+                
         return returnContent
     }
 }

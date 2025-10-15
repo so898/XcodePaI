@@ -12,6 +12,7 @@ struct ChatProxySettingSectionView: View {
     @State private var portNumber = "\(Configer.chatProxyPort)"
     @State private var thinkStyle: Int = Configer.chatProxyThinkStyle.rawValue
     @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
+    @State private var cutSourceInSearchRequest = Configer.chatProxyCutSourceInSearchRequest
     
     @StateObject private var configManager = LLMConfigManager()
     
@@ -83,6 +84,14 @@ struct ChatProxySettingSectionView: View {
                     }
                 }
                 
+                GridRow {
+                    Text("Cut source code in Xcode search result")
+                    Toggle("Enable", isOn: $cutSourceInSearchRequest)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: cutSourceInSearchRequest) { _, newValue in
+                            Configer.chatProxyCutSourceInSearchRequest = newValue
+                        }
+                }
             }
             .gridColumnAlignment(.trailing)
             .padding(30)

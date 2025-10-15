@@ -472,6 +472,16 @@
         }
       }
     },
+    "Cut source code in Xcode search result" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "裁剪 Xcode 搜索出的源码内容"
+          }
+        }
+      }
+    },
     "Delete" : {
       "localizations" : {
         "zh-Hans" : {
