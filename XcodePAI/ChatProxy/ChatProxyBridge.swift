@@ -396,7 +396,7 @@ extension ChatProxyBridge {
                         codeMarkdownStart = true
                     } else {
                         if !code.isEmpty {
-                            sourceCodes.append(SourceCodeInContent(fileType: fileType, fileName: fileName, content: content))
+                            sourceCodes.append(SourceCodeInContent(fileType: fileType, fileName: fileName, content: code))
                         }
                         fileType = nil
                         fileName = nil
