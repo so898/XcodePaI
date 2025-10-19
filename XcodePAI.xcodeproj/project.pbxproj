@@ -68,6 +68,11 @@
 		795A74472E6F4DDE00F4BA1E /* PluginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74462E6F4DDA00F4BA1E /* PluginManager.swift */; };
 		795A744A2E6F53A300F4BA1E /* PluginSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74492E6F539C00F4BA1E /* PluginSettingSectionView.swift */; };
 		795A744C2E6F5A4000F4BA1E /* PluginDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A744B2E6F5A3600F4BA1E /* PluginDetailView.swift */; };
+		799F5F702EA521AC00868D0E /* TokenUsageRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */; };
+		799F5F732EA521E500868D0E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 799F5F722EA521E500868D0E /* SQLite */; };
+		799F5F752EA524E300868D0E /* RecordStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F742EA524DF00868D0E /* RecordStorage.swift */; };
+		799F5F772EA5252D00868D0E /* RecrodTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F762EA5252900868D0E /* RecrodTracker.swift */; };
+		799F5F792EA52CE600868D0E /* ToeknUsageAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F782EA52CDE00868D0E /* ToeknUsageAnalytics.swift */; };
 		79BB48442E9E9EB5002F2255 /* ObjcAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48432E9E9EB0002F2255 /* ObjcAnalysis.swift */; };
 		79BB48462E9E9EC5002F2255 /* SourceAnalysisShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48452E9E9EC2002F2255 /* SourceAnalysisShared.swift */; };
 		79BB48482E9E9F00002F2255 /* SwiftAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48472E9E9EFD002F2255 /* SwiftAnalysis.swift */; };
@@ -195,6 +200,10 @@
 		795A74492E6F539C00F4BA1E /* PluginSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginSettingSectionView.swift; sourceTree = "<group>"; };
 		795A744B2E6F5A3600F4BA1E /* PluginDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginDetailView.swift; sourceTree = "<group>"; };
 		7983E1CD2E6DFB800067CFA6 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsageRecord.swift; sourceTree = "<group>"; };
+		799F5F742EA524DF00868D0E /* RecordStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordStorage.swift; sourceTree = "<group>"; };
+		799F5F762EA5252900868D0E /* RecrodTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecrodTracker.swift; sourceTree = "<group>"; };
+		799F5F782EA52CDE00868D0E /* ToeknUsageAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToeknUsageAnalytics.swift; sourceTree = "<group>"; };
 		79BB48432E9E9EB0002F2255 /* ObjcAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjcAnalysis.swift; sourceTree = "<group>"; };
 		79BB48452E9E9EC2002F2255 /* SourceAnalysisShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceAnalysisShared.swift; sourceTree = "<group>"; };
 		79BB48472E9E9EFD002F2255 /* SwiftAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftAnalysis.swift; sourceTree = "<group>"; };
@@ -234,6 +243,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				799F5F732EA521E500868D0E /* SQLite in Frameworks */,
 				79079A032E4E191D004D9D1A /* MCP in Frameworks */,
 				793260322E68AC070017E87F /* MainAppService in Frameworks */,
 			);
@@ -315,6 +325,7 @@
 				7907999F2E471FEA004D9D1A /* ChatProxy */,
 				79CFC6AC2E69FA6E00367E78 /* Completion */,
 				795A74432E6F4AAF00F4BA1E /* Plugin */,
+				799F5F6E2EA5218E00868D0E /* Record */,
 				790799A12E471FEA004D9D1A /* Assets.xcassets */,
 				790799A32E471FEA004D9D1A /* XcodePAI.entitlements */,
 				795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */,
@@ -477,6 +488,17 @@
 			path = Plugin;
 			sourceTree = "<group>";
 		};
+		799F5F6E2EA5218E00868D0E /* Record */ = {
+			isa = PBXGroup;
+			children = (
+				799F5F762EA5252900868D0E /* RecrodTracker.swift */,
+				799F5F742EA524DF00868D0E /* RecordStorage.swift */,
+				799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */,
+				799F5F782EA52CDE00868D0E /* ToeknUsageAnalytics.swift */,
+			);
+			path = Record;
+			sourceTree = "<group>";
+		};
 		79BB48422E9E9E86002F2255 /* SourceAnalysis */ = {
 			isa = PBXGroup;
 			children = (
@@ -565,6 +587,7 @@
 			packageProductDependencies = (
 				79079A022E4E191D004D9D1A /* MCP */,
 				793260312E68AC070017E87F /* MainAppService */,
+				799F5F722EA521E500868D0E /* SQLite */,
 			);
 			productName = XcodePAI;
 			productReference = 790799862E4507BA004D9D1A /* XcodePaI Dev.app */;
@@ -621,6 +644,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				79079A012E4E191D004D9D1A /* XCRemoteSwiftPackageReference "swift-sdk" */,
+				799F5F712EA521E500868D0E /* XCRemoteSwiftPackageReference "SQLite.swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 790799872E4507BA004D9D1A /* Products */;
@@ -663,6 +687,7 @@
 				79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */,
 				790799C42E48D914004D9D1A /* LLMResponse.swift in Sources */,
 				79CFC6B42E6B3EE900367E78 /* LLMCompletionClient.swift in Sources */,
+				799F5F792EA52CE600868D0E /* ToeknUsageAnalytics.swift in Sources */,
 				790799C22E48BC74004D9D1A /* LLMRequest.swift in Sources */,
 				790799A62E471FEA004D9D1A /* ChatProxy.swift in Sources */,
 				79CFC7002E6DD93B00367E78 /* AboutSettingSectionView.swift in Sources */,
@@ -673,6 +698,7 @@
 				79079A182E4FBDAB004D9D1A /* MCPManager.swift in Sources */,
 				790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */,
 				79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */,
+				799F5F772EA5252D00868D0E /* RecrodTracker.swift in Sources */,
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
 				79F28F342E5E187100F71A28 /* Configer.swift in Sources */,
 				79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */,
@@ -707,6 +733,7 @@
 				79CFC6B02E6A0CE300367E78 /* PartialSuggestion.swift in Sources */,
 				79CFC6E02E6C8CEA00367E78 /* Utils.swift in Sources */,
 				795A744C2E6F5A4000F4BA1E /* PluginDetailView.swift in Sources */,
+				799F5F752EA524E300868D0E /* RecordStorage.swift in Sources */,
 				790799B62E487F83004D9D1A /* HTTPConnection.swift in Sources */,
 				790799B22E4873B7004D9D1A /* TCPServer.swift in Sources */,
 				79079A072E4F9449004D9D1A /* LLMMCPTool.swift in Sources */,
@@ -715,6 +742,7 @@
 				79CFC6B82E6B53BA00367E78 /* PrefixSuffixSuggestion.swift in Sources */,
 				79CFC6E22E6D546800367E78 /* CompletionEditView.swift in Sources */,
 				79CFC6DE2E6C8C1B00367E78 /* CompletionSettingSectionView.swift in Sources */,
+				799F5F702EA521AC00868D0E /* TokenUsageRecord.swift in Sources */,
 				790799FC2E4CF14F004D9D1A /* LoadingView.swift in Sources */,
 				79BB484A2E9E9F12002F2255 /* SourceCutter.swift in Sources */,
 				79CFC6E42E6D548900367E78 /* LLMCompletionConfig.swift in Sources */,
@@ -1066,6 +1094,14 @@
 				minimumVersion = 0.10.1;
 			};
 		};
+		799F5F712EA521E500868D0E /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.4;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1077,6 +1113,11 @@
 		793260312E68AC070017E87F /* MainAppService */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MainAppService;
+		};
+		799F5F722EA521E500868D0E /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 799F5F712EA521E500868D0E /* XCRemoteSwiftPackageReference "SQLite.swift" */;
+			productName = SQLite;
 		};
 		79F743352E674EA000C35D1B /* EditExtensionService */ = {
 			isa = XCSwiftPackageProductDependency;
