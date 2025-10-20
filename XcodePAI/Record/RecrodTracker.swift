@@ -30,32 +30,36 @@ class RecordTracker {
         inputTokens: Int,
         outputTokens: Int,
         apiEndpoint: String,
-        userId: String? = nil,
+        isCompletion: Bool = false,
         metadata: [String: Any]? = nil
-    ) {
+    ) -> Int64? {
         do {
             let record = TokenUsageRecord(
                 provider: modelProvider,
                 modelName: modelName,
                 inputTokens: inputTokens,
                 outputTokens: outputTokens,
+                isCompletion: isCompletion,
                 metadata: metadata
             )
             
-            try storage.saveRecord(record)
+            return try storage.saveRecord(record)
         } catch {
             print("Failed to record token usage: \(error)")
         }
+        return nil
     }
     
-    func recordTokenUsages(_ records: [TokenUsageRecord]) {
+    func recordTokenUsages(_ records: [TokenUsageRecord]) -> [Int64] {
+        var ids = [Int64]()
         do {
             for record in records {
-                try storage.saveRecord(record)
+                ids.append(try storage.saveRecord(record))
             }
         } catch {
             print("Failed to record token usages: \(error)")
         }
+        return ids
     }
     
     func getSummary(for period: DateInterval) -> TokenUsageSummary {

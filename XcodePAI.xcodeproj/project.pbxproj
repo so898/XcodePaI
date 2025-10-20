@@ -72,7 +72,7 @@
 		799F5F732EA521E500868D0E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 799F5F722EA521E500868D0E /* SQLite */; };
 		799F5F752EA524E300868D0E /* RecordStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F742EA524DF00868D0E /* RecordStorage.swift */; };
 		799F5F772EA5252D00868D0E /* RecrodTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F762EA5252900868D0E /* RecrodTracker.swift */; };
-		799F5F792EA52CE600868D0E /* ToeknUsageAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F782EA52CDE00868D0E /* ToeknUsageAnalytics.swift */; };
+		799F5F792EA52CE600868D0E /* TokenUsageAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F782EA52CDE00868D0E /* TokenUsageAnalytics.swift */; };
 		79BB48442E9E9EB5002F2255 /* ObjcAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48432E9E9EB0002F2255 /* ObjcAnalysis.swift */; };
 		79BB48462E9E9EC5002F2255 /* SourceAnalysisShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48452E9E9EC2002F2255 /* SourceAnalysisShared.swift */; };
 		79BB48482E9E9F00002F2255 /* SwiftAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48472E9E9EFD002F2255 /* SwiftAnalysis.swift */; };
@@ -203,7 +203,7 @@
 		799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsageRecord.swift; sourceTree = "<group>"; };
 		799F5F742EA524DF00868D0E /* RecordStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordStorage.swift; sourceTree = "<group>"; };
 		799F5F762EA5252900868D0E /* RecrodTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecrodTracker.swift; sourceTree = "<group>"; };
-		799F5F782EA52CDE00868D0E /* ToeknUsageAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToeknUsageAnalytics.swift; sourceTree = "<group>"; };
+		799F5F782EA52CDE00868D0E /* TokenUsageAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsageAnalytics.swift; sourceTree = "<group>"; };
 		79BB48432E9E9EB0002F2255 /* ObjcAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjcAnalysis.swift; sourceTree = "<group>"; };
 		79BB48452E9E9EC2002F2255 /* SourceAnalysisShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceAnalysisShared.swift; sourceTree = "<group>"; };
 		79BB48472E9E9EFD002F2255 /* SwiftAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftAnalysis.swift; sourceTree = "<group>"; };
@@ -494,7 +494,7 @@
 				799F5F762EA5252900868D0E /* RecrodTracker.swift */,
 				799F5F742EA524DF00868D0E /* RecordStorage.swift */,
 				799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */,
-				799F5F782EA52CDE00868D0E /* ToeknUsageAnalytics.swift */,
+				799F5F782EA52CDE00868D0E /* TokenUsageAnalytics.swift */,
 			);
 			path = Record;
 			sourceTree = "<group>";
@@ -687,7 +687,7 @@
 				79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */,
 				790799C42E48D914004D9D1A /* LLMResponse.swift in Sources */,
 				79CFC6B42E6B3EE900367E78 /* LLMCompletionClient.swift in Sources */,
-				799F5F792EA52CE600868D0E /* ToeknUsageAnalytics.swift in Sources */,
+				799F5F792EA52CE600868D0E /* TokenUsageAnalytics.swift in Sources */,
 				790799C22E48BC74004D9D1A /* LLMRequest.swift in Sources */,
 				790799A62E471FEA004D9D1A /* ChatProxy.swift in Sources */,
 				79CFC7002E6DD93B00367E78 /* AboutSettingSectionView.swift in Sources */,

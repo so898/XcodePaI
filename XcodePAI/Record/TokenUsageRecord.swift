@@ -17,6 +17,8 @@ struct TokenUsageRecord {
     let inputTokens: Int
     let outputTokens: Int
     let totalTokens: Int
+    let isCompletion: Bool
+    let completionAccepted: Bool
     let metadata: String? // JSON to storage prompt text
     
     init(
@@ -26,6 +28,8 @@ struct TokenUsageRecord {
         modelName: String,
         inputTokens: Int,
         outputTokens: Int,
+        isCompletion: Bool = false,
+        completionAccepted: Bool = false,
         metadata: [String: Any]? = nil
     ) {
         self.id = id
@@ -35,6 +39,8 @@ struct TokenUsageRecord {
         self.inputTokens = inputTokens
         self.outputTokens = outputTokens
         self.totalTokens = inputTokens + outputTokens
+        self.isCompletion = isCompletion
+        self.completionAccepted = completionAccepted
         
         if let metadata = metadata,
            let jsonData = try? JSONSerialization.data(withJSONObject: metadata),
@@ -57,6 +63,8 @@ struct TokenUsageRecord {
             self.inputTokens = try row.get(table.inputTokens)
             self.outputTokens = try row.get(table.outputTokens)
             self.totalTokens = try row.get(table.totalTokens)
+            self.isCompletion = try row.get(table.isCompletion)
+            self.completionAccepted = try row.get(table.completionAccepted)
             self.metadata = try? row.get(table.metadata)
         } catch {
             return nil
@@ -85,6 +93,8 @@ struct TokenUsageTable {
     let inputTokens = Expression<Int>("input_tokens")
     let outputTokens = Expression<Int>("output_tokens")
     let totalTokens = Expression<Int>("total_tokens")
+    let isCompletion = Expression<Bool>("is_completion")
+    let completionAccepted = Expression<Bool>("completionAccepted")
     let metadata = Expression<String?>("metadata")
     
     func createTable(db: Connection) throws {
@@ -96,6 +106,8 @@ struct TokenUsageTable {
             t.column(inputTokens)
             t.column(outputTokens)
             t.column(totalTokens)
+            t.column(isCompletion)
+            t.column(completionAccepted)
             t.column(metadata)
         })
         

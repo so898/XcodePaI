@@ -27,7 +27,7 @@ class RecordStorage {
         try tokenTable.createTable(db: db)
     }
     
-    func saveRecord(_ record: TokenUsageRecord) throws {
+    func saveRecord(_ record: TokenUsageRecord) throws -> Int64{
         let insert = tokenTable.table.insert(
             tokenTable.timestamp <- record.timestamp,
             tokenTable.provider <- record.provider,
@@ -35,10 +35,25 @@ class RecordStorage {
             tokenTable.inputTokens <- record.inputTokens,
             tokenTable.outputTokens <- record.outputTokens,
             tokenTable.totalTokens <- record.totalTokens,
+            tokenTable.isCompletion <- record.isCompletion,
+            tokenTable.completionAccepted <- record.completionAccepted,
             tokenTable.metadata <- record.metadata
         )
         
-        try db.run(insert)
+        return try db.run(insert)
+    }
+    
+    func updateRecordCompletionAccept(_ id: Int64, accpet: Bool = true) {
+        do {
+            let recordRow = tokenTable.table.filter(tokenTable.id == id)
+            try db.run(
+                recordRow.update(
+                    tokenTable.completionAccepted <- accpet
+                )
+            )
+        } catch let err {
+            print(err)
+        }
     }
     
     func loadRecords(
@@ -46,6 +61,7 @@ class RecordStorage {
         to endDate: Date? = nil,
         provider: String? = nil,
         modelName: String? = nil,
+        isCompletion: Bool? = nil,
         limit: Int? = nil
     ) -> [TokenUsageRecord] {
         var query = tokenTable.table
@@ -64,6 +80,10 @@ class RecordStorage {
         
         if let modelName = modelName {
             query = query.filter(tokenTable.modelName == modelName)
+        }
+        
+        if let isCompletion = isCompletion {
+            query = query.filter(tokenTable.isCompletion == isCompletion)
         }
         
         // Order result
@@ -88,7 +108,7 @@ class RecordStorage {
         to endDate: Date? = nil,
         provider: String? = nil,
         modelName: String? = nil,
-        userId: String? = nil
+        isCompletion: Bool? = nil
     ) -> (inputTokens: Int, outputTokens: Int, totalTokens: Int, count: Int) {
         var query = tokenTable.table
         
@@ -104,6 +124,10 @@ class RecordStorage {
         }
         if let modelName = modelName {
             query = query.filter(tokenTable.modelName == modelName)
+        }
+        
+        if let isCompletion = isCompletion {
+            query = query.filter(tokenTable.isCompletion == isCompletion)
         }
         
         do {

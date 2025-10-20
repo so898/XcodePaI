@@ -1,5 +1,5 @@
 //
-//  ToeknUsageAnalytics.swift
+//  TokenUsageAnalytics.swift
 //  XcodePAI
 //
 //  Created by Bill Cheng on 2025/10/19.
