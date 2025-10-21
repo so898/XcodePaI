@@ -41,6 +41,9 @@ class LLMClient {
     private let provider: LLMModelProvider
     private let delegate: LLMClientDelegate
     
+    private var request: LLMRequest?
+    private var tokenUsage: LLMResponseUsage?
+    
     private var eventSource: EventSource?
     var cancellable: Cancellable?
     
@@ -52,6 +55,8 @@ class LLMClient {
     private var requestTools = [LLMMessageToolCall]()
     
     func request(_ request: LLMRequest) {
+        self.request = request
+        
         guard let data = try? JSONSerialization.data(withJSONObject: request.toDictionary()) else {
             return
         }
@@ -131,6 +136,23 @@ class LLMClient {
                                                                   isReasonComplete: true,
                                                                   content: content,
                                                                   tools: tools))
+        
+        
+        if let request, let tokenUsage {
+            let requestString = {
+                if let data = try? JSONSerialization.data(withJSONObject: request.toDictionary()) {
+                    return String(data: data, encoding: .utf8) ?? ""
+                }
+                return ""
+            }()
+            let toolString = {
+                if let tools, let data = try? JSONSerialization.data(withJSONObject: tools.map({$0.toDictionary()})) {
+                    return String(data: data, encoding: .utf8) ?? ""
+                }
+                return ""
+            }()
+            RecordTracker.shared.recordTokenUsage(modelProvider: provider.name, modelName: request.model, inputTokens: tokenUsage.promptTokens ?? 0, outputTokens: tokenUsage.completionTokens ?? 0, metadata: ["request": requestString, "resp_content": (content ?? ""), "resp_reason": (reason ?? ""), "tool": toolString])
+        }
     }
     
     private func processToolWithMessage(_ message: LLMResponseChoiceMessage) -> [LLMMessageToolCall]? {
@@ -271,5 +293,9 @@ extension LLMClient {
                                                                content: chunkContent,
                                                                tools: chunkTools,
                                                                finishReason: chunkFinishReason))
+        
+        if let tokenUsage = response.usage {
+            self.tokenUsage = tokenUsage
+        }
     }
 }

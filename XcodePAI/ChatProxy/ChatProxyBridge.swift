@@ -161,6 +161,8 @@ extension ChatProxyBridge {
             newRequest.tools = tools
         }
         
+        newRequest.streamOptions = LLMStreamOption(includeUsage: true)
+        
         return newRequest
     }
     
