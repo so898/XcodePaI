@@ -18,6 +18,12 @@ class RecordStorage {
         let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let folderName = Bundle.main.object(forInfoDictionaryKey: "APPLICATION_SUPPORT_FOLDER") as! String
         let recordURL = appSupportURL.appendingPathComponent("\(folderName)/Records")
+        
+        // Make directory if not exist
+        if !fileManager.fileExists(atPath: recordURL.path) {
+            try fileManager.createDirectory(at: recordURL, withIntermediateDirectories: true, attributes: nil)
+        }
+        
         let dbPath = recordURL.appendingPathComponent("Usage_Record.db")
         
         // Create DB connection
