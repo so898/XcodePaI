@@ -22,14 +22,16 @@ class RecordTracker {
     private init() throws {
         self.storage = try RecordStorage()
         self.analytics = TokenUsageAnalytics(storage: storage)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveRecordCompletionAcceptNoti(_:)), name: .init("RecordCompletionAcceptNotiName"), object: nil)
     }
     
+    @discardableResult
     func recordTokenUsage(
         modelProvider: String,
         modelName: String,
         inputTokens: Int,
         outputTokens: Int,
-        apiEndpoint: String,
         isCompletion: Bool = false,
         metadata: [String: Any]? = nil
     ) -> Int64? {
@@ -50,6 +52,7 @@ class RecordTracker {
         return nil
     }
     
+    @discardableResult
     func recordTokenUsages(_ records: [TokenUsageRecord]) -> [Int64] {
         var ids = [Int64]()
         do {
@@ -60,6 +63,15 @@ class RecordTracker {
             print("Failed to record token usages: \(error)")
         }
         return ids
+    }
+    
+    @objc func receiveRecordCompletionAcceptNoti(_ noti: Notification) {
+        guard let id = noti.userInfo?["id"] as? Int64 else { return }
+        updateRecordCompletionAccept(id, accpet: true)
+    }
+    
+    func updateRecordCompletionAccept(_ id: Int64, accpet: Bool = true) {
+        storage.updateRecordCompletionAccept(id, accpet: accpet)
     }
     
     func getSummary(for period: DateInterval) -> TokenUsageSummary {
