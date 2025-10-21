@@ -162,7 +162,14 @@ public final class GitHubCopilotService:
 
     @GitHubCopilotSuggestionActor
     public func notifyAccepted(_ completion: CodeSuggestion, acceptedLength: Int? = nil) async {
-        
+        // Receive code completion accept
+        if completion.id.hasPrefix("code_completion_") {
+            let idStr = completion.id.replacingOccurrences(of: "code_completion_", with: "")
+            if let id = Int64(idStr) {
+                NotificationCenter.default.post(name: .init("RecordCompletionAcceptNotiName"), object: self, userInfo: ["id": id])
+            }
+        }
+        // Ignore code completion with no record id
     }
 
     @GitHubCopilotSuggestionActor

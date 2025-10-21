@@ -56,7 +56,7 @@ extension PartialSuggestion: SuggestionPortalProtocol {
             return ret.isEmpty ? nil : ret
         }()
         
-        let completionContent = try await LLMCompletionClient.doPartialCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", system: PromptTemplate.codeSuggestionPartialChatCompletionSystemPrompt.replacingOccurrences(of: "{{LANGUAGE}}", with: language), instruction: instruction, maxTokens: maxTokens, headers: headers)
+        let (id, completionContent) = try await LLMCompletionClient.doPartialCompletionRequest(model, provider: provider, prompt: prefixContent ?? "", system: PromptTemplate.codeSuggestionPartialChatCompletionSystemPrompt.replacingOccurrences(of: "{{LANGUAGE}}", with: language), instruction: instruction, maxTokens: maxTokens, headers: headers)
         
         guard var completionContent, !completionContent.isEmpty else {
             return []
@@ -82,8 +82,15 @@ extension PartialSuggestion: SuggestionPortalProtocol {
             return String(repeating: " ", count: cursorPosition.character)
         }()
         
+        let codeSuggestionId: String = {
+            if let id {
+                return "code_completion_\(id)"
+            }
+            return UUID().uuidString
+        }()
+        
         let suggestion = CodeSuggestion(
-            id: UUID().uuidString,
+            id: codeSuggestionId,
             text: prefix + completionContent,
             position: cursorPosition,
             range: range
