@@ -37,6 +37,17 @@
     "%@" : {
       "shouldTranslate" : false
     },
+    "%@\n%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@\n%2$lld"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
     "%@ Completions for %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -54,9 +65,6 @@
         }
       }
     },
-    "%lld" : {
-      "shouldTranslate" : false
-    },
     "%lld%%" : {
       "shouldTranslate" : false
     },
@@ -72,7 +80,7 @@
       "shouldTranslate" : false
     },
     "About" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -369,7 +377,7 @@
       }
     },
     "Chat Proxy" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -485,7 +493,7 @@
       }
     },
     "Completions" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -848,7 +856,7 @@
       }
     },
     "General" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1091,7 +1099,7 @@
       }
     },
     "Model Provider" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1660,7 +1668,7 @@
       }
     },
     "Token Usage" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
