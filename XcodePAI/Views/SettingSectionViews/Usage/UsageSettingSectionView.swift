@@ -252,9 +252,11 @@ struct CompletionRateLineChart: View {
                             .gesture(
                                 DragGesture(minimumDistance: 0)
                                     .onChanged { value in
-                                        let xPosition = value.location.x - geometry[proxy.plotAreaFrame].origin.x
-                                        if let date: Date = proxy.value(atX: xPosition) {
-                                            selectedDate = date
+                                        if let plotFrame = proxy.plotFrame {
+                                            let xPosition = value.location.x - geometry[plotFrame].origin.x
+                                            if let date: Date = proxy.value(atX: xPosition) {
+                                                selectedDate = date
+                                            }
                                         }
                                     }
                                     .onEnded { _ in
@@ -299,15 +301,10 @@ struct TokenUsageBarChart: View {
     let records: [TokenUsageRecord]
     @Binding var hoveredBarData: BarChartData?
     
-    // Filter code completion request
-    private var nonCompletionRecords: [TokenUsageRecord] {
-        records.filter { !$0.isCompletion }
-    }
-    
     // Seperate via provider and model name
     private var groupedData: [BarChartData] {
-        let groupedByProviderAndModel = Dictionary(grouping: nonCompletionRecords) { record in
-            "\(record.provider)-\(record.modelName)"
+        let groupedByProviderAndModel = Dictionary(grouping: records) { record in
+            "\(record.provider)%%\(record.modelName)"
         }
         
         return groupedByProviderAndModel.map { key, records in
@@ -315,7 +312,7 @@ struct TokenUsageBarChart: View {
             let totalOutputTokens = records.reduce(0) { $0 + $1.outputTokens }
             let totalTokens = records.reduce(0) { $0 + $1.totalTokens }
             
-            let components = key.split(separator: "-")
+            let components = key.split(separator: "%%")
             let provider = String(components[0])
             let modelName = String(components[1])
             
@@ -350,7 +347,8 @@ struct TokenUsageBarChart: View {
                     )
                     .foregroundStyle(by: .value("Model", data.modelName))
                     .annotation(position: .top) {
-                        Text("\(data.totalTokens)")
+                        Text("\(data.modelName)\n\(data.totalTokens)")
+                            .multilineTextAlignment(.center)
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
@@ -376,14 +374,16 @@ struct TokenUsageBarChart: View {
                             .gesture(
                                 DragGesture(minimumDistance: 0)
                                     .onChanged { value in
-                                        let xPosition = value.location.x - geometry[proxy.plotAreaFrame].origin.x
-                                        let yPosition = value.location.y - geometry[proxy.plotAreaFrame].origin.y
-                                        
-                                        if let provider: String = proxy.value(atX: xPosition),
-                                           let totalTokens: Int = proxy.value(atY: yPosition) {
-
-                                            if let data = groupedData.first(where: { $0.provider == provider }) {
-                                                hoveredBarData = data
+                                        if let plotFrame = proxy.plotFrame {
+                                            let xPosition = value.location.x - geometry[plotFrame].origin.x
+                                            let yPosition = value.location.y - geometry[plotFrame].origin.y
+                                            
+                                            if let provider: String = proxy.value(atX: xPosition),
+                                               let totalTokens: Int = proxy.value(atY: yPosition) {
+                                                
+                                                if let data = groupedData.first(where: { $0.provider == provider }) {
+                                                    hoveredBarData = data
+                                                }
                                             }
                                         }
                                     }
