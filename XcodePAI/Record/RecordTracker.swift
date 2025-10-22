@@ -1,5 +1,5 @@
 //
-//  RecrodTracker.swift
+//  RecordTracker.swift
 //  XcodePAI
 //
 //  Created by Bill Cheng on 2025/10/19.
@@ -83,8 +83,9 @@ class RecordTracker {
     }
     
     func getThisWeekRecords() -> [TokenUsageRecord] {
-        let calendar = Calendar.current
-        let week = calendar.dateInterval(of: .weekday, for: Date())!
+        var calendar = Calendar.current
+        calendar.firstWeekday = 2 // Monday as the first day of the week
+        let week = calendar.dateInterval(of: .weekOfYear, for: Date())!
         return getRecords(for: week)
     }
     

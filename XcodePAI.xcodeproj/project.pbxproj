@@ -71,7 +71,7 @@
 		799F5F702EA521AC00868D0E /* TokenUsageRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */; };
 		799F5F732EA521E500868D0E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 799F5F722EA521E500868D0E /* SQLite */; };
 		799F5F752EA524E300868D0E /* RecordStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F742EA524DF00868D0E /* RecordStorage.swift */; };
-		799F5F772EA5252D00868D0E /* RecrodTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F762EA5252900868D0E /* RecrodTracker.swift */; };
+		799F5F772EA5252D00868D0E /* RecordTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F762EA5252900868D0E /* RecordTracker.swift */; };
 		799F5F7E2EA9217500868D0E /* UsageSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F7D2EA9216900868D0E /* UsageSettingSectionView.swift */; };
 		79BB48442E9E9EB5002F2255 /* ObjcAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48432E9E9EB0002F2255 /* ObjcAnalysis.swift */; };
 		79BB48462E9E9EC5002F2255 /* SourceAnalysisShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48452E9E9EC2002F2255 /* SourceAnalysisShared.swift */; };
@@ -202,7 +202,7 @@
 		7983E1CD2E6DFB800067CFA6 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsageRecord.swift; sourceTree = "<group>"; };
 		799F5F742EA524DF00868D0E /* RecordStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordStorage.swift; sourceTree = "<group>"; };
-		799F5F762EA5252900868D0E /* RecrodTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecrodTracker.swift; sourceTree = "<group>"; };
+		799F5F762EA5252900868D0E /* RecordTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTracker.swift; sourceTree = "<group>"; };
 		799F5F7D2EA9216900868D0E /* UsageSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageSettingSectionView.swift; sourceTree = "<group>"; };
 		79BB48432E9E9EB0002F2255 /* ObjcAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjcAnalysis.swift; sourceTree = "<group>"; };
 		79BB48452E9E9EC2002F2255 /* SourceAnalysisShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceAnalysisShared.swift; sourceTree = "<group>"; };
@@ -492,7 +492,7 @@
 		799F5F6E2EA5218E00868D0E /* Record */ = {
 			isa = PBXGroup;
 			children = (
-				799F5F762EA5252900868D0E /* RecrodTracker.swift */,
+				799F5F762EA5252900868D0E /* RecordTracker.swift */,
 				799F5F742EA524DF00868D0E /* RecordStorage.swift */,
 				799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */,
 			);
@@ -705,7 +705,7 @@
 				79079A182E4FBDAB004D9D1A /* MCPManager.swift in Sources */,
 				790799E32E4A36D1004D9D1A /* GeneralSettingSectionView.swift in Sources */,
 				79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */,
-				799F5F772EA5252D00868D0E /* RecrodTracker.swift in Sources */,
+				799F5F772EA5252D00868D0E /* RecordTracker.swift in Sources */,
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
 				79F28F342E5E187100F71A28 /* Configer.swift in Sources */,
 				79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */,
