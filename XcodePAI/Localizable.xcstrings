@@ -37,17 +37,6 @@
     "%@" : {
       "shouldTranslate" : false
     },
-    "%@\n%lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@\n%2$lld"
-          }
-        }
-      },
-      "shouldTranslate" : false
-    },
     "%@ Completions for %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -64,6 +53,9 @@
           }
         }
       }
+    },
+    "%lld" : {
+      "shouldTranslate" : false
     },
     "%lld%%" : {
       "shouldTranslate" : false

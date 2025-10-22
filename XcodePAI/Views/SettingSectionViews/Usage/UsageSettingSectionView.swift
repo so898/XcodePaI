@@ -347,8 +347,7 @@ struct TokenUsageBarChart: View {
                     )
                     .foregroundStyle(by: .value("Model", data.modelName))
                     .annotation(position: .top) {
-                        Text("\(data.modelName)\n\(data.totalTokens)")
-                            .multilineTextAlignment(.center)
+                        Text(data.totalTokens)
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
@@ -380,10 +379,22 @@ struct TokenUsageBarChart: View {
                                             
                                             if let provider: String = proxy.value(atX: xPosition),
                                                let totalTokens: Int = proxy.value(atY: yPosition) {
+                                                                                                
+                                                var datas = groupedData.filter { $0.provider == provider }
                                                 
-                                                if let data = groupedData.first(where: { $0.provider == provider }) {
-                                                    hoveredBarData = data
+                                                if !datas.isEmpty {
+                                                    datas = datas.sorted{ $0.totalTokens > $1.totalTokens}
                                                 }
+                                                
+                                                var maxTokens = 0
+                                                var maxData: BarChartData?
+                                                datas.forEach { data in
+                                                    maxTokens += data.totalTokens
+                                                    if maxData == nil, maxTokens > totalTokens {
+                                                        maxData = data
+                                                    }
+                                                }
+                                                hoveredBarData = maxData
                                             }
                                         }
                                     }
