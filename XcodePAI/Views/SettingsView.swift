@@ -30,7 +30,8 @@ struct SettingsView: View {
             TabItem(id: 3, title: "Chat Proxy".localizedString, imageName: "chart.bar.horizontal.page", view: AnyView(ChatProxySettingSectionView())),
             TabItem(id: 4, title: "Completions".localizedString, imageName: "pencil.and.list.clipboard", view: AnyView(CompletionSettingSectionView())),
             TabItem(id: 5, title: "Plugin".localizedString, imageName: "batteryblock.stack", view: AnyView(PluginSettingSectionView())),
-            TabItem(id: 6, title: "About".localizedString, imageName: "info.circle.fill", view: AnyView(AboutSettingSectionView()))
+            TabItem(id: 6, title: "Usage".localizedString, imageName: "chart.bar.xaxis", view: AnyView(UsageSettingSectionView())),
+            TabItem(id: 7, title: "About".localizedString, imageName: "info.circle.fill", view: AnyView(AboutSettingSectionView()))
         ]
     }
     

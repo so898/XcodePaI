@@ -92,7 +92,7 @@ struct ModelProviderDetailView: View {
     }
     
     private func fetchModels() {
-        LoadingState.shared.show(text: "Fetch Models…")
+        LoadingState.shared.show(text: "Fetch Models…".localizedString)
         modelManager.loadModels(provider) { success in
             isReloadSuccess = success
             isShowingSuccessAlert = true

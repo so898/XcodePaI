@@ -34,7 +34,7 @@ extension PrefixSuffixSuggestion: SuggestionPortalProtocol {
         
         print("Code suggestion Request for: \(fileURL)")
         
-        let completionContent: String? = try await {
+        let (id, completionContent): (Int64?, String?) = try await {
             if useChatCompletion {
                 // Do chat completion request
                 let language: String = {
@@ -59,11 +59,14 @@ extension PrefixSuffixSuggestion: SuggestionPortalProtocol {
                     return nil
                 }()
                 
-                if let responseContent = try await LLMCompletionClient.doPromptChatCompletionRequest(model, provider: provider, context: context, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil, system: PromptTemplate.codeSuggestionFIMChatCompletionSystemPrompt.replacingOccurrences(of: "{{LANGUAGE}}", with: language), headers: headers), let firstCodeBlock = Utils.extractMarkdownCodeBlocks(from: responseContent).first {
-                    return firstCodeBlock
+                let (id, responseContent) = try await LLMCompletionClient.doPromptChatCompletionRequest(model, provider: provider, context: context, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil, system: PromptTemplate.codeSuggestionFIMChatCompletionSystemPrompt.replacingOccurrences(of: "{{LANGUAGE}}", with: language), headers: headers)
+                
+                if let responseContent = responseContent,
+                   let firstCodeBlock = Utils.extractMarkdownCodeBlocks(from: responseContent).first {
+                    return (id, firstCodeBlock)
                 }
                 
-                return nil
+                return (id, responseContent)
             }
             
             let content: String? = await {
@@ -102,8 +105,15 @@ extension PrefixSuffixSuggestion: SuggestionPortalProtocol {
             return String(repeating: " ", count: cursorPosition.character)
         }()
         
+        let codeSuggestionId: String = {
+            if let id {
+                return "code_completion_\(id)"
+            }
+            return UUID().uuidString
+        }()
+        
         let suggestion = CodeSuggestion(
-            id: UUID().uuidString,
+            id: codeSuggestionId,
             text: prefix + completionContent,
             position: cursorPosition,
             range: range

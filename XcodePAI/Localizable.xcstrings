@@ -34,6 +34,9 @@
       },
       "shouldTranslate" : false
     },
+    "%@" : {
+      "shouldTranslate" : false
+    },
     "%@ Completions for %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -51,6 +54,12 @@
         }
       }
     },
+    "%lld" : {
+      "shouldTranslate" : false
+    },
+    "%lld%%" : {
+      "shouldTranslate" : false
+    },
     "=" : {
       "localizations" : {
         "zh-Hans" : {
@@ -63,6 +72,7 @@
       "shouldTranslate" : false
     },
     "About" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -121,12 +131,44 @@
         }
       }
     },
+    "Accept: %lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接受：%lld"
+          }
+        }
+      }
+    },
+    "Acceptance Rate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接受率"
+          }
+        }
+      }
+    },
     "Accessibility Permission" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "辅助功能权限"
+          }
+        }
+      }
+    },
+    "Accpetance Count" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接受数"
           }
         }
       }
@@ -327,6 +369,7 @@
       }
     },
     "Chat Proxy" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -389,12 +432,43 @@
         }
       }
     },
+    "Code Completion Acceptance Rate" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "代码补全接受率"
+          }
+        }
+      }
+    },
     "Code Snippet (Default)" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "代码片段（默认）"
+          }
+        }
+      }
+    },
+    "Completion Token" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输出 Token"
+          }
+        }
+      }
+    },
+    "Completion Token: %lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输出 Token：%lld"
           }
         }
       }
@@ -411,6 +485,7 @@
       }
     },
     "Completions" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -478,6 +553,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "裁剪 Xcode 搜索出的源码内容"
+          }
+        }
+      }
+    },
+    "Date" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日期"
           }
         }
       }
@@ -740,6 +825,17 @@
         }
       }
     },
+    "Fetch Models…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "获取模型…"
+          }
+        }
+      }
+    },
     "French" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -752,6 +848,7 @@
       }
     },
     "General" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -994,6 +1091,7 @@
       }
     },
     "Model Provider" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1020,6 +1118,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "名称"
+          }
+        }
+      }
+    },
+    "No Data" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无数据"
           }
         }
       }
@@ -1087,6 +1195,27 @@
         }
       }
     },
+    "Prompt Token" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入 Token"
+          }
+        }
+      }
+    },
+    "Prompt Token: %lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入 Token: %lld"
+          }
+        }
+      }
+    },
     "Provider" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1094,6 +1223,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "提供商"
+          }
+        }
+      }
+    },
+    "Provider: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提供商：%@"
+          }
+        }
+      }
+    },
+    "Rate" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "比例"
+          }
+        }
+      }
+    },
+    "Rate: %lld%%" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "比例：%lld%%"
           }
         }
       }
@@ -1447,6 +1606,80 @@
         }
       }
     },
+    "This Month" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本月"
+          }
+        }
+      }
+    },
+    "This Week" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本周"
+          }
+        }
+      }
+    },
+    "Time Period" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时间段"
+          }
+        }
+      }
+    },
+    "Today" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天"
+          }
+        }
+      }
+    },
+    "Token Count" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token 数量"
+          }
+        }
+      }
+    },
+    "Token Usage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token 用量"
+          }
+        }
+      }
+    },
+    "Token Usage Index" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token 用量排名"
+          }
+        }
+      }
+    },
     "Tool Use" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1457,12 +1690,65 @@
         }
       }
     },
+    "Total Count" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "总数量"
+          }
+        }
+      }
+    },
+    "Total Token" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "总 Token"
+          }
+        }
+      }
+    },
+    "Total Token: %lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "总 Token 数：%lld"
+          }
+        }
+      }
+    },
+    "Total: %lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "总共： %lld"
+          }
+        }
+      }
+    },
     "True" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "是"
+          }
+        }
+      }
+    },
+    "Usage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用量"
           }
         }
       }
@@ -1484,6 +1770,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用自定义模型进行代码建议/补全，并在 Xcode 编辑器窗口中轻松访问它们。"
+          }
+        }
+      }
+    },
+    "Used Models" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用模型"
           }
         }
       }

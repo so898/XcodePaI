@@ -42,6 +42,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         // IPC
         _ = IPCServer.shared
         
+        // Record Tracker
+        _ = RecordTracker.shared
+        
         Task {[weak self] in
             await StorageManager.shared.load()
             

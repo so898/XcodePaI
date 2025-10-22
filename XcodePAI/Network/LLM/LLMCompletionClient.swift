@@ -34,7 +34,7 @@ class LLMCompletionClient {
     static let fimSuffix = "<|fim_suffix|>"
     static let fimMiddle = "<|fim_middle|>"
     
-    static func doPromptCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, suffix: String? = nil, headers: [String: String]? = nil) async throws -> String? {
+    static func doPromptCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, suffix: String? = nil, headers: [String: String]? = nil) async throws -> (Int64?, String?) {
         let bodyPrompt: String = {
             if let suffix {
                 return fimPrefix + prompt + fimSuffix + suffix + fimMiddle
@@ -51,12 +51,13 @@ class LLMCompletionClient {
         
         let response: PrefixCompleteResponse = try await CoroutineHTTPClient.shared.post(provider.completionsUrl(), body: RequestCompleteBody(model: model.id, prompt: bodyPrompt, suffix: nil), headers: requestHeaders)
         
-        // TODO: Record token usages
+        // Record token usages
+        let id = recordTokenUsage(provider, modelName: model.id, requestDict: ["prompt": prompt, "suffix": (suffix ?? "")], response: response)
         
-        return response.choices.first?.text
+        return (id, response.choices.first?.text)
     }
     
-    static func doPromptSuffixCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, suffix: String? = nil, headers: [String: String]? = nil) async throws -> String? {
+    static func doPromptSuffixCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, suffix: String? = nil, headers: [String: String]? = nil) async throws -> (Int64?, String?) {
         var requestHeaders = provider.requestHeaders()
         if let headers {
             headers.forEach { (key: String, value: String) in
@@ -66,12 +67,13 @@ class LLMCompletionClient {
         
         let response: PrefixCompleteResponse = try await CoroutineHTTPClient.shared.post(provider.completionsUrl(), body: RequestCompleteBody(model: model.id, prompt: prompt, suffix: suffix), headers: requestHeaders)
         
-        // TODO: Record token usages
+        // Record token usages
+        let id = recordTokenUsage(provider, modelName: model.id, requestDict: ["prompt": prompt, "suffix": (suffix ?? "")], response: response)
         
-        return response.choices.first?.text
+        return (id, response.choices.first?.text)
     }
     
-    static func doPromptChatCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, context: String? = nil, prompt: String, suffix: String? = nil, system: String, headers: [String: String]? = nil) async throws -> String? {
+    static func doPromptChatCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, context: String? = nil, prompt: String, suffix: String? = nil, system: String, headers: [String: String]? = nil) async throws -> (Int64?, String?) {
         let bodyPrompt: String = {
             var ret = ""
             if let context {
@@ -112,12 +114,13 @@ class LLMCompletionClient {
         
         let response = try LLMResponse(dict: jsonDict)
         
-        // TODO: Record token usages
+        // Record token usages
+        let id = recordTokenUsage(provider, request: request, response: response)
         
-        return response.choices.first?.message.content
+        return (id, response.choices.first?.message.content)
     }
     
-    static func doPartialCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, system: String? = nil, instruction: String? = nil, maxTokens: Int? = 1024, headers: [String: String]? = nil) async throws -> String? {
+    static func doPartialCompletionRequest(_ model: LLMModel, provider: LLMModelProvider, prompt: String, system: String? = nil, instruction: String? = nil, maxTokens: Int? = 1024, headers: [String: String]? = nil) async throws -> (Int64?, String?) {
         
         var messages = [LLMMessage]()
         if let system {
@@ -149,9 +152,49 @@ class LLMCompletionClient {
         
         let response = try LLMResponse(dict: jsonDict)
         
-        // TODO: Record token usages
+        // Record token usages
+        let id = recordTokenUsage(provider, request: request, response: response)
         
-        return response.choices.first?.message.content
+        return (id, response.choices.first?.message.content)
     }
     
+    static private func recordTokenUsage(_ provider: LLMModelProvider, request: LLMRequest, response: LLMResponse) -> Int64? {
+        let requestString = {
+            if let data = try? JSONSerialization.data(withJSONObject: request.toDictionary()) {
+                return String(data: data, encoding: .utf8) ?? ""
+            }
+            return ""
+        }()
+        
+        var promptTokens = 0
+        var outputTokens = 0
+        if let tokenUsage = response.usage {
+            promptTokens = tokenUsage.promptTokens ?? 0
+            outputTokens = tokenUsage.completionTokens ?? 0
+        }
+        
+        return recordTokenUsage(provider.name, modelName: request.model, promptTokens: promptTokens, outputTokens: outputTokens, requestString: requestString, responseString: response.choices.first?.message.content)
+    }
+    
+    static private func recordTokenUsage(_ provider: LLMModelProvider, modelName: String, requestDict: [String: String], response: PrefixCompleteResponse) -> Int64? {
+        let requestString = {
+            if let data = try? JSONSerialization.data(withJSONObject: requestDict) {
+                return String(data: data, encoding: .utf8) ?? ""
+            }
+            return ""
+        }()
+        
+        var promptTokens = 0
+        var outputTokens = 0
+        if let tokenUsage = response.usage {
+            promptTokens = tokenUsage.prompt_tokens
+            outputTokens = tokenUsage.completion_tokens
+        }
+        
+        return recordTokenUsage(provider.name, modelName: modelName, promptTokens: promptTokens, outputTokens: outputTokens, requestString: requestString, responseString: response.choices.first?.text)
+    }
+    
+    static private func recordTokenUsage(_ providerName: String, modelName: String, promptTokens: Int?, outputTokens: Int?, requestString: String, responseString: String?) -> Int64? {
+        return RecordTracker.shared.recordTokenUsage(modelProvider: providerName, modelName: modelName, inputTokens: promptTokens ?? 0, outputTokens: outputTokens ?? 0, isCompletion: true, metadata: ["request": requestString, "resp_content": (responseString ?? "")])
+    }
 }

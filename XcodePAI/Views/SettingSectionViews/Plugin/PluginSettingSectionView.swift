@@ -54,7 +54,7 @@ struct PluginSettingSectionView: View {
             }
             .padding(.init(top: 0, leading: 16, bottom: 24, trailing: 16))
         }
-        .navigationTitle("Plugin")
+        .navigationTitle("Plugin".localizedString)
         .fileImporter(
             isPresented: $showImporter,
             allowedContentTypes: [.pluginBundle, UTType(filenameExtension: PluginManager.pluginExtension) ?? .data],
