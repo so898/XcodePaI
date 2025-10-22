@@ -41,6 +41,6 @@ struct AboutSettingSectionView: View {
                 }
             }
         }
-        .navigationTitle("About")
+        .navigationTitle("About".localizedString)
     }
 }

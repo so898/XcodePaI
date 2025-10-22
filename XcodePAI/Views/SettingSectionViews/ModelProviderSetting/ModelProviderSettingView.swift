@@ -58,7 +58,7 @@ struct ModelProviderListView: View {
             }
             .padding(.init(top: 0, leading: 16, bottom: 24, trailing: 16))
         }
-        .navigationTitle("Model Provider")
+        .navigationTitle("Model Provider".localizedString)
         .sheet(isPresented: $isShowingSheet) {
             ModelProviderEditView(currentProvider: nil){ provider in
                 providerManager.addModelProvider(provider)

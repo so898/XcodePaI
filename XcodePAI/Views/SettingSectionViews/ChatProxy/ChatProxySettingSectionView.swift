@@ -127,7 +127,7 @@ struct ChatProxySettingSectionView: View {
             Spacer(minLength: 20)
         }
         .background(Color(nsColor: .textBackgroundColor))
-        .navigationTitle("Chat Proxy")
+        .navigationTitle("Chat Proxy".localizedString)
         .sheet(isPresented: $isShowingSheet) {
             ChatProxyEditView(config: nil) { config in
                 configManager.addConfig(config)

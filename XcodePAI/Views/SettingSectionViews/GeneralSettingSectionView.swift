@@ -87,6 +87,6 @@ struct GeneralSettingSectionView: View {
             .gridColumnAlignment(.trailing)
             .padding(30)
         }
-        .navigationTitle("General")
+        .navigationTitle("General".localizedString)
     }
 }

@@ -127,7 +127,7 @@ struct CompletionSettingSectionView: View {
             Spacer(minLength: 20)
         }
         .background(Color(nsColor: .textBackgroundColor))
-        .navigationTitle("Completions")
+        .navigationTitle("Completions".localizedString)
         .sheet(isPresented: $isShowingSheet) {
             CompletionEditView(config: nil) { config in
                 configManager.addConfig(config)

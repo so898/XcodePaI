@@ -58,7 +58,7 @@ struct MCPListView: View {
             }
             .padding(.init(top: 0, leading: 16, bottom: 24, trailing: 16))
         }
-        .navigationTitle("MCP")
+        .navigationTitle("MCP".localizedString)
         .sheet(isPresented: $isShowingSheet) {
             MCPEditView(mcp: nil){ mcp, tools in
                 mcpManager.addMCP(mcp)
