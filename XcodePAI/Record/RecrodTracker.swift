@@ -74,20 +74,26 @@ class RecordTracker {
         storage.updateRecordCompletionAccept(id, accpet: accpet)
     }
     
-    func getSummary(for period: DateInterval) -> TokenUsageSummary {
-        return analytics.generateSummary(for: period)
+    func getRecords(for period: DateInterval) -> [TokenUsageRecord] {
+        return storage.loadRecords(from: period.start, to: period.end)
     }
     
-    func getTodaySummary() -> TokenUsageSummary {
+    func getTodayRecords() -> [TokenUsageRecord] {
         let calendar = Calendar.current
         let today = calendar.dateInterval(of: .day, for: Date())!
-        return getSummary(for: today)
+        return getRecords(for: today)
     }
     
-    func getThisMonthSummary() -> TokenUsageSummary {
+    func getThisWeekRecords() -> [TokenUsageRecord] {
+        let calendar = Calendar.current
+        let week = calendar.dateInterval(of: .weekday, for: Date())!
+        return getRecords(for: week)
+    }
+    
+    func getThisMonthRecords() -> [TokenUsageRecord] {
         let calendar = Calendar.current
         let month = calendar.dateInterval(of: .month, for: Date())!
-        return getSummary(for: month)
+        return getRecords(for: month)
     }
     
     func getModelSummary(modelName: String, for period: DateInterval) -> TokenUsageSummary? {
