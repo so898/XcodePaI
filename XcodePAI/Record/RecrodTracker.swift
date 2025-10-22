@@ -17,11 +17,9 @@ class RecordTracker {
     }()
     
     private let storage: RecordStorage
-    private let analytics: TokenUsageAnalytics
     
     private init() throws {
         self.storage = try RecordStorage()
-        self.analytics = TokenUsageAnalytics(storage: storage)
         
         NotificationCenter.default.addObserver(self, selector: #selector(receiveRecordCompletionAcceptNoti(_:)), name: .init("RecordCompletionAcceptNotiName"), object: nil)
     }
@@ -95,30 +93,6 @@ class RecordTracker {
         let month = calendar.dateInterval(of: .month, for: Date())!
         return getRecords(for: month)
     }
-    
-    func getModelSummary(modelName: String, for period: DateInterval) -> TokenUsageSummary? {
-        let usage = storage.getTotalUsage(from: period.start, to: period.end, modelName: modelName)
-        guard usage.count > 0 else { return nil }
-        
-        return TokenUsageSummary(
-            period: period,
-            totalInputTokens: usage.inputTokens,
-            totalOutputTokens: usage.outputTokens,
-            totalTokens: usage.totalTokens,
-            averageInputTokens: Double(usage.inputTokens) / Double(usage.count),
-            averageOutputTokens: Double(usage.outputTokens) / Double(usage.count),
-            requestCount: usage.count,
-            modelBreakdown: [:]
-        )
-    }
-    
-    func getHourlyUsage(for date: Date) -> [Int: TokenUsageSummary] {
-        return analytics.getHourlyUsage(for: date)
-    }
-    
-//    func getTopUsers(limit: Int = 10, from startDate: Date? = nil, to endDate: Date? = nil) -> [(userId: String, usage: TokenUsageSummary)] {
-//        return analytics.getTopUsers(limit: limit, from: startDate, to: endDate)
-//    }
     
     // Remove old records
     func cleanupOldRecords(keepDays: Int = 90) {
