@@ -73,6 +73,7 @@
 		799F5F752EA524E300868D0E /* RecordStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F742EA524DF00868D0E /* RecordStorage.swift */; };
 		799F5F772EA5252D00868D0E /* RecrodTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F762EA5252900868D0E /* RecrodTracker.swift */; };
 		799F5F792EA52CE600868D0E /* TokenUsageAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F782EA52CDE00868D0E /* TokenUsageAnalytics.swift */; };
+		799F5F7E2EA9217500868D0E /* UsageSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F7D2EA9216900868D0E /* UsageSettingSectionView.swift */; };
 		79BB48442E9E9EB5002F2255 /* ObjcAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48432E9E9EB0002F2255 /* ObjcAnalysis.swift */; };
 		79BB48462E9E9EC5002F2255 /* SourceAnalysisShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48452E9E9EC2002F2255 /* SourceAnalysisShared.swift */; };
 		79BB48482E9E9F00002F2255 /* SwiftAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48472E9E9EFD002F2255 /* SwiftAnalysis.swift */; };
@@ -204,6 +205,7 @@
 		799F5F742EA524DF00868D0E /* RecordStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordStorage.swift; sourceTree = "<group>"; };
 		799F5F762EA5252900868D0E /* RecrodTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecrodTracker.swift; sourceTree = "<group>"; };
 		799F5F782EA52CDE00868D0E /* TokenUsageAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsageAnalytics.swift; sourceTree = "<group>"; };
+		799F5F7D2EA9216900868D0E /* UsageSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageSettingSectionView.swift; sourceTree = "<group>"; };
 		79BB48432E9E9EB0002F2255 /* ObjcAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjcAnalysis.swift; sourceTree = "<group>"; };
 		79BB48452E9E9EC2002F2255 /* SourceAnalysisShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceAnalysisShared.swift; sourceTree = "<group>"; };
 		79BB48472E9E9EFD002F2255 /* SwiftAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftAnalysis.swift; sourceTree = "<group>"; };
@@ -410,6 +412,7 @@
 				79F28F352E5E241D00F71A28 /* ChatProxy */,
 				79CFC6CD2E6C155D00367E78 /* Completion */,
 				795A74482E6F530600F4BA1E /* Plugin */,
+				799F5F7C2EA9215600868D0E /* Usage */,
 				79CFC6FF2E6DD93500367E78 /* AboutSettingSectionView.swift */,
 			);
 			path = SettingSectionViews;
@@ -497,6 +500,14 @@
 				799F5F782EA52CDE00868D0E /* TokenUsageAnalytics.swift */,
 			);
 			path = Record;
+			sourceTree = "<group>";
+		};
+		799F5F7C2EA9215600868D0E /* Usage */ = {
+			isa = PBXGroup;
+			children = (
+				799F5F7D2EA9216900868D0E /* UsageSettingSectionView.swift */,
+			);
+			path = Usage;
 			sourceTree = "<group>";
 		};
 		79BB48422E9E9E86002F2255 /* SourceAnalysis */ = {
@@ -704,6 +715,7 @@
 				79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */,
 				790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */,
 				79CFC6AE2E69FCD400367E78 /* CoroutineHTTPClient.swift in Sources */,
+				799F5F7E2EA9217500868D0E /* UsageSettingSectionView.swift in Sources */,
 				79079A112E4FB78C004D9D1A /* MCPDetailView.swift in Sources */,
 				790799F42E4CD21D004D9D1A /* ModelProviderSettingView.swift in Sources */,
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
