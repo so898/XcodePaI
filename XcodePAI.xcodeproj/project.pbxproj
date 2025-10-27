@@ -1103,7 +1103,7 @@
 			repositoryURL = "https://github.com/modelcontextprotocol/swift-sdk.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.10.1;
+				minimumVersion = 0.10.2;
 			};
 		};
 		799F5F712EA521E500868D0E /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
