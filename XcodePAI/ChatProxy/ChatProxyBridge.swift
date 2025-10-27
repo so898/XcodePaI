@@ -574,10 +574,7 @@ extension ChatProxyBridge: LLMClientDelegate {
     }
     
     func client(_ client: LLMClient, receivePart part: LLMAssistantMessage) {
-        if toolProcesser.processMessage(part) {
-            return
-        }
-
+        
         var response: LLMResponse?
         
         if thinkParser == .inReasoningContent {
@@ -588,7 +585,6 @@ extension ChatProxyBridge: LLMClientDelegate {
                 choices: [
                     LLMResponseChoice(
                         index: 0,
-                        finishReason: part.finishReason,
                         isFullMessage: false,
                         message: LLMResponseChoiceMessage(
                             role: roleReturned ? nil : "assistant",
@@ -619,7 +615,6 @@ extension ChatProxyBridge: LLMClientDelegate {
                         choices: [
                             LLMResponseChoice(
                                 index: 0,
-                                finishReason: part.finishReason,
                                 isFullMessage: false,
                                 message: LLMResponseChoiceMessage(
                                     role: roleReturned ? nil : "assistant",
@@ -637,7 +632,6 @@ extension ChatProxyBridge: LLMClientDelegate {
                         choices: [
                             LLMResponseChoice(
                                 index: 0,
-                                finishReason: part.finishReason,
                                 isFullMessage: false,
                                 message: LLMResponseChoiceMessage(
                                     role: roleReturned ? nil : "assistant",
@@ -650,7 +644,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                     // No reason in this state
                     break
                 }
-            } else if var content = part.content {
+            } else if let content = part.content {
                 if thinkState == .inProgress {
                     thinkState = .completed
                     let endThinkMark: String = {
@@ -670,7 +664,6 @@ extension ChatProxyBridge: LLMClientDelegate {
                         choices: [
                             LLMResponseChoice(
                                 index: 0,
-                                finishReason: part.finishReason,
                                 isFullMessage: false,
                                 message: LLMResponseChoiceMessage(
                                     role: roleReturned ? nil : "assistant",
@@ -687,7 +680,6 @@ extension ChatProxyBridge: LLMClientDelegate {
                         choices: [
                             LLMResponseChoice(
                                 index: 0,
-                                finishReason: part.finishReason,
                                 isFullMessage: false,
                                 message: LLMResponseChoiceMessage(
                                     role: roleReturned ? nil : "assistant",
@@ -699,14 +691,24 @@ extension ChatProxyBridge: LLMClientDelegate {
                 }
             }
         }
-        
-        if part.finishReason != nil, mcpToolUses.count > 0 {
-            // Wait for MCP tool call complete
-            print("Wait for MCP tool call complete")
-            return
-        }
 
         writeResponse(response)
+        
+        if !toolProcesser.processMessage(part), let finishReason = part.finishReason {
+            // Write finish reason
+            writeResponse(LLMResponse(
+                id: id,
+                model: "XcodePaI",
+                object: "chat.completion.chunk",
+                choices: [
+                    LLMResponseChoice(
+                        index: 0,
+                        finishReason: finishReason,
+                        isFullMessage: false
+                    )
+                ]
+            ))
+        }
     }
     
     func client(_ client: LLMClient, receiveMessage message: LLMAssistantMessage) {
@@ -766,12 +768,11 @@ class ResponseToolProcesser {
     var getMCPToolUseCall: ((LLMMCPToolUse) -> Void)?
     
     func processMessage(_ message: LLMAssistantMessage) -> Bool {
-        if let finishReason = message.finishReason, finishReason == "tool_calls" {
-            processToolCalls()
-            return true
-        }
         if let tools = message.tools, tools.count > 0 {
             messageToolCalls.append(contentsOf: tools)
+        }
+        if let finishReason = message.finishReason, finishReason == "tool_calls" {
+            processToolCalls()
             return true
         }
         

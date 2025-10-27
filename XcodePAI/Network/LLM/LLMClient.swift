@@ -242,18 +242,17 @@ extension LLMClient {
                 
                 if let thisChunkContent = chunkContent {
                     chunkContent = toolCallExtractor.processChunk(thisChunkContent)
+                    let finalizeContent = toolCallExtractor.finalize()
+                    
+                    var toolCalls = finalizeContent.toolCalls
+                    if !toolCalls.isEmpty {
+                        if let chunkTools {
+                            toolCalls.append(contentsOf: chunkTools)
+                        }
+                        chunkTools = toolCalls
+                    }
                 }
-                let finalizeContent = toolCallExtractor.finalize()
-                if var thisChunkContent = chunkContent {
-                    thisChunkContent += finalizeContent.remainingContent
-                    chunkContent =  thisChunkContent
-                }
-                
-                var toolCalls = finalizeContent.toolCalls
-                if let chunkTools {
-                    toolCalls.append(contentsOf: chunkTools)
-                }
-                tools = toolCalls
+                tools = chunkTools
                 
                 // Close client when full message received
                 self.stop()
@@ -311,6 +310,8 @@ extension LLMClient {
             if var thisChunkContent = chunkContent {
                 thisChunkContent += finalizeContent.remainingContent
                 chunkContent = thisChunkContent
+            } else {
+                chunkContent = finalizeContent.remainingContent
             }
             
             var toolCalls = finalizeContent.toolCalls
