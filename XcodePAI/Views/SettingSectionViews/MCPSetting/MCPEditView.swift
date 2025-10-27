@@ -228,7 +228,7 @@ struct MCPEditView: View {
                 
                 let newMCP = LLMMCP(id: currentMCP?.id ?? UUID(), name: name, url: url, description: description.isEmpty ? nil : description, headers: headers.count > 0 ? headers : nil)
                 
-                newMCP.checkService { success, tools in
+                MCPRunner.shared.check(mcp: newMCP) { success, tools in
                     showCreateMCPLoading = false
                     
                     guard success else {

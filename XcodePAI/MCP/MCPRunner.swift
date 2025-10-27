@@ -35,7 +35,57 @@ enum MCPError: LocalizedError {
 class MCPRunner {
     static let shared = MCPRunner()
     
+    private var checkingMCP: LLMMCP?
+    
     // MARK: - Public Interface
+    func check(mcp: LLMMCP, complete: @escaping (Bool, [LLMMCPTool]?) -> Void) {
+        checkingMCP = mcp
+        Task {
+            guard let url = URL(string: mcp.url) else {
+                DispatchQueue.main.async {
+                    complete(false, nil)
+                }
+                return
+            }
+            
+            let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
+            
+            let transport = HTTPClientTransport(
+                endpoint: url,
+                streaming: false) { request in
+                    guard let headers = mcp.headers else {
+                        return request
+                    }
+                    var newRequest = request
+                    for key in headers.keys {
+                        if let value = headers[key] {
+                            newRequest.setValue(value, forHTTPHeaderField: key)
+                        }
+                    }
+                    return newRequest
+                }
+            
+            if let result = try? await client.connect(transport: transport) {
+                if result.capabilities.tools != nil {
+                    let (tools, _) = try await client.listTools()
+                    
+                    var mcpTools = [LLMMCPTool]()
+                    for tool in tools {
+                        mcpTools.append(LLMMCPTool(tool: tool, mcp: mcp.name))
+                    }
+                    
+                    DispatchQueue.main.async {
+                        complete(true, mcpTools)
+                    }
+                    return
+                }
+            }
+            DispatchQueue.main.async {
+                complete(false, nil)
+            }
+        }
+    }
+    
     func run(mcpName: String, toolName: String, arguments: String?, complete: @escaping (Result<String, Error>) -> Void) {
         Task { [weak self] in
             guard let self = self else { return }

@@ -42,7 +42,7 @@ class LLMMCPTool: Identifiable, Codable, @unchecked Sendable {
         self.id = UUID()
         self.mcp = mcp
         self.name = tool.name
-        self.description = tool.description
+        self.description = tool.description ?? ""
         if let jsonData = try? JSONEncoder().encode(tool.inputSchema), let schema = String(data: jsonData, encoding: .utf8) {
             self.schema = schema
         } else {
