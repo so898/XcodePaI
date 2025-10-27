@@ -399,10 +399,19 @@ class LLMMessageToolCall {
     let type: String
     let function: LLMFunction
     
+    var raw: String?
+    
     init(id: String, type: String, function: LLMFunction) {
         self.id = id
         self.type = type
         self.function = function
+    }
+    
+    init(name: String? = nil, arguments: String? = nil, raw: String? = nil) {
+        self.id = ""
+        self.type = ""
+        self.function = LLMFunction(name: name, arguments: arguments)
+        self.raw = raw
     }
     
     init(dict: [String: Any]) throws {

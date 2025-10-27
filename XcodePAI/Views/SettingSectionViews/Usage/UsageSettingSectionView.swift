@@ -347,7 +347,7 @@ struct TokenUsageBarChart: View {
                     )
                     .foregroundStyle(by: .value("Model", data.modelName))
                     .annotation(position: .top) {
-                        Text(data.totalTokens)
+                        Text("\(data.totalTokens)")
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }

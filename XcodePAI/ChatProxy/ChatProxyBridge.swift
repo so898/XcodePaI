@@ -574,10 +574,7 @@ extension ChatProxyBridge: LLMClientDelegate {
     }
     
     func client(_ client: LLMClient, receivePart part: LLMAssistantMessage) {
-        if toolProcesser.processMessage(part) {
-            return
-        }
-
+        
         var response: LLMResponse?
         
         if thinkParser == .inReasoningContent {
@@ -588,11 +585,10 @@ extension ChatProxyBridge: LLMClientDelegate {
                 choices: [
                     LLMResponseChoice(
                         index: 0,
-                        finishReason: part.finishReason,
                         isFullMessage: false,
                         message: LLMResponseChoiceMessage(
                             role: roleReturned ? nil : "assistant",
-                            content: toolProcesser.processContent(part.content ?? ""),
+                            content: part.content ?? "",
                             reasoningContent: part.reason
                         )
                     )
@@ -619,7 +615,6 @@ extension ChatProxyBridge: LLMClientDelegate {
                         choices: [
                             LLMResponseChoice(
                                 index: 0,
-                                finishReason: part.finishReason,
                                 isFullMessage: false,
                                 message: LLMResponseChoiceMessage(
                                     role: roleReturned ? nil : "assistant",
@@ -637,7 +632,6 @@ extension ChatProxyBridge: LLMClientDelegate {
                         choices: [
                             LLMResponseChoice(
                                 index: 0,
-                                finishReason: part.finishReason,
                                 isFullMessage: false,
                                 message: LLMResponseChoiceMessage(
                                     role: roleReturned ? nil : "assistant",
@@ -650,8 +644,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                     // No reason in this state
                     break
                 }
-            } else if var content = part.content {
-                content = toolProcesser.processContent(content)
+            } else if let content = part.content {
                 if thinkState == .inProgress {
                     thinkState = .completed
                     let endThinkMark: String = {
@@ -671,7 +664,6 @@ extension ChatProxyBridge: LLMClientDelegate {
                         choices: [
                             LLMResponseChoice(
                                 index: 0,
-                                finishReason: part.finishReason,
                                 isFullMessage: false,
                                 message: LLMResponseChoiceMessage(
                                     role: roleReturned ? nil : "assistant",
@@ -688,7 +680,6 @@ extension ChatProxyBridge: LLMClientDelegate {
                         choices: [
                             LLMResponseChoice(
                                 index: 0,
-                                finishReason: part.finishReason,
                                 isFullMessage: false,
                                 message: LLMResponseChoiceMessage(
                                     role: roleReturned ? nil : "assistant",
@@ -700,14 +691,24 @@ extension ChatProxyBridge: LLMClientDelegate {
                 }
             }
         }
-        
-        if part.finishReason != nil, mcpToolUses.count > 0 {
-            // Wait for MCP tool call complete
-            print("Wait for MCP tool call complete")
-            return
-        }
 
         writeResponse(response)
+        
+        if !toolProcesser.processMessage(part), let finishReason = part.finishReason {
+            // Write finish reason
+            writeResponse(LLMResponse(
+                id: id,
+                model: "XcodePaI",
+                object: "chat.completion.chunk",
+                choices: [
+                    LLMResponseChoice(
+                        index: 0,
+                        finishReason: finishReason,
+                        isFullMessage: false
+                    )
+                ]
+            ))
+        }
     }
     
     func client(_ client: LLMClient, receiveMessage message: LLMAssistantMessage) {
@@ -762,26 +763,16 @@ extension ChatProxyBridge: LLMClientDelegate {
 
 class ResponseToolProcesser {
     
-    private var toolRequestCheck: ToolRequestCheckProcess = .none
-    private var maybeToolCallInContent: String = ""
-    
-    enum StartMarkType {
-        case custom
-        case r1
-    }
-    private var startMarkType: StartMarkType = .custom
-    
     private var messageToolCalls = [LLMMessageToolCall]()
     
     var getMCPToolUseCall: ((LLMMCPToolUse) -> Void)?
     
     func processMessage(_ message: LLMAssistantMessage) -> Bool {
-        if let finishReason = message.finishReason, finishReason == "tool_calls" {
-            processToolCalls()
-            return true
-        }
         if let tools = message.tools, tools.count > 0 {
             messageToolCalls.append(contentsOf: tools)
+        }
+        if let finishReason = message.finishReason, finishReason == "tool_calls" {
+            processToolCalls()
             return true
         }
         
@@ -826,124 +817,8 @@ class ResponseToolProcesser {
             getMCPToolUseCall?(LLMMCPToolUse(toolName: functionName, arguments: arguments, tid: id, type: type))
         }
     }
-        
-        
-    func processContent(_ originalContent: String) -> String {
-        var content = originalContent
-
-        switch toolRequestCheck {
-        case .none:
-            if content.contains("<") {
-                toolRequestCheck = .mightFound
-                if content.count > 1 {
-                    let components = content.split(separator: "<", maxSplits: 1)
-                    if components.count == 2 {
-                        content = String(components[0])
-                        maybeToolCallInContent = "<" + components[1]
-                    }
-                } else {
-                    content = ""
-                    maybeToolCallInContent = "<"
-                }
-            }
-            break
-        case .mightFound: fallthrough
-        case .found:
-            maybeToolCallInContent += content
-            content = ""
-            break
-        }
-        
-        if maybeToolCallInContent.count > 0 {
-            if toolRequestCheck == .mightFound {
-                if maybeToolCallInContent.contains(">") {
-                    var mark = ""
-                    let components = maybeToolCallInContent.split(separator: ">", maxSplits: 1)
-                    if components.count == 1 {
-                        mark = String(components[0]) + ">"
-                        maybeToolCallInContent = ""
-                    } else if components.count == 2 {
-                        mark = String(components[0]) + ">"
-                        maybeToolCallInContent = String(components[1])
-                    }
-                    
-                    if !mark.isEmpty {
-                        // Found tool use start mark
-                        if mark == ToolUseStartMark{
-                            startMarkType = .custom
-                            toolRequestCheck = .found
-                        } else if mark == ToolUseR1StarkMark {
-                            startMarkType = .r1
-                            toolRequestCheck = .found
-                        }
-                    }
-                    
-                    if toolRequestCheck != .found {
-                        // Not found start mark means not tool use action
-                        content = maybeToolCallInContent + content
-                        maybeToolCallInContent = ""
-                        toolRequestCheck = .none
-                    }
-                }
-            }
-            if toolRequestCheck == .found {
-                if startMarkType == .custom, maybeToolCallInContent.contains(ToolUseEndMark) {
-                    // Found tool use end mark means tool use action complete
-                    let components = maybeToolCallInContent.components(separatedBy: ToolUseEndMark)
-                    
-                    if let toolUse = try? LLMMCPToolUse(content: components[0]) {
-                        getMCPToolUseCall?(toolUse)
-                    }
-                    
-                    content = components[1]
-                    maybeToolCallInContent = ""
-                    toolRequestCheck = .none
-                } else if startMarkType == .r1, maybeToolCallInContent.contains(ToolUseR1EndMark) {
-                    let components = maybeToolCallInContent.components(separatedBy: ToolUseR1EndMark)
-                    let calls = components[0].components(separatedBy: "<｜tool▁call▁begin｜>")
-                    for var callContent in calls {
-                        guard !callContent.isEmpty, callContent.contains("<｜tool▁call▁end｜>") else { continue }
-                        
-                        callContent = callContent.replacingOccurrences(of: "<｜tool▁call▁end｜>", with: "")
-                        let lines = callContent.components(separatedBy: "\n")
-                        var functionName: String?
-                        var arguments: String?
-                        for idx in 0..<lines.count {
-                            let line = lines[idx]
-                            if line.contains("function<｜tool▁sep｜>") {
-                                functionName = line.replacingOccurrences(of: "function<｜tool▁sep｜>", with: "")
-                            }
-                            if line.substring(to: 3) == "```" {
-                                continue
-                            }
-                            if arguments != nil {
-                                arguments?.append("\n" + line)
-                            } else {
-                                var lineContent = line
-                                if lineContent.contains("<|") {
-                                    let components = lineContent.components(separatedBy: "<|")
-                                    lineContent = components[0]
-                                }
-                                arguments = lineContent
-                            }
-                        }
-                        
-                        if let functionName = functionName {
-                            getMCPToolUseCall?(LLMMCPToolUse(toolName: functionName, arguments: arguments))
-                        }
-                    }
-                    content = components[1]
-                    maybeToolCallInContent = ""
-                    toolRequestCheck = .none
-                }
-            }
-        }
-        return content
-    }
     
     func reset() {
-        toolRequestCheck = .none
-        maybeToolCallInContent = ""
         messageToolCalls.removeAll()
     }
 }
