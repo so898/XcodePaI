@@ -129,6 +129,8 @@ class LLMClient {
     private var isReasonComplete: Bool = false
     private var thinkTagComplete: Bool?
     private var content: String?
+    
+    private let toolCallExtractor = ToolCallExtractor()
     private var tools: [LLMMessageToolCall]?
     
     private func sendFullMessage() {
@@ -237,7 +239,21 @@ extension LLMClient {
                 reason = chunkRet.0
                 content = chunkRet.1
                 isReasonComplete = true
-                tools = chunkTools
+                
+                if let thisChunkContent = chunkContent {
+                    chunkContent = toolCallExtractor.processChunk(thisChunkContent)
+                }
+                let finalizeContent = toolCallExtractor.finalize()
+                if var thisChunkContent = chunkContent {
+                    thisChunkContent += finalizeContent.remainingContent
+                    chunkContent =  thisChunkContent
+                }
+                
+                var toolCalls = finalizeContent.toolCalls
+                if let chunkTools {
+                    toolCalls.append(contentsOf: chunkTools)
+                }
+                tools = toolCalls
                 
                 // Close client when full message received
                 self.stop()
@@ -271,12 +287,14 @@ extension LLMClient {
             }
         }
         
-        if let chunkContent = chunkContent {
+        if let thisChunkContent = chunkContent {
             if let content = content {
-                self.content = content + chunkContent
+                self.content = content + thisChunkContent
             } else {
-                content = chunkContent
+                content = thisChunkContent
             }
+            
+            chunkContent = toolCallExtractor.processChunk(thisChunkContent)
         }
         
         if let chunkTools = chunkTools {
@@ -285,6 +303,26 @@ extension LLMClient {
                 self.tools = tools
             } else {
                 tools = chunkTools
+            }
+        }
+        
+        if nil != chunkFinishReason {
+            let finalizeContent = toolCallExtractor.finalize()
+            if var thisChunkContent = chunkContent {
+                thisChunkContent += finalizeContent.remainingContent
+                chunkContent = thisChunkContent
+            }
+            
+            var toolCalls = finalizeContent.toolCalls
+            if let chunkTools {
+                toolCalls.append(contentsOf: chunkTools)
+            }
+            
+            chunkTools = toolCalls
+            tools = toolCalls
+            
+            if !toolCalls.isEmpty {
+                chunkFinishReason = "tool_calls"
             }
         }
         

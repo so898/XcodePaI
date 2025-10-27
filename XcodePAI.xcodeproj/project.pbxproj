@@ -73,6 +73,7 @@
 		799F5F752EA524E300868D0E /* RecordStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F742EA524DF00868D0E /* RecordStorage.swift */; };
 		799F5F772EA5252D00868D0E /* RecordTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F762EA5252900868D0E /* RecordTracker.swift */; };
 		799F5F7E2EA9217500868D0E /* UsageSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F7D2EA9216900868D0E /* UsageSettingSectionView.swift */; };
+		799F5F802EAF9F7B00868D0E /* ToolCallExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F7F2EAF9F7A00868D0E /* ToolCallExtractor.swift */; };
 		79BB48442E9E9EB5002F2255 /* ObjcAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48432E9E9EB0002F2255 /* ObjcAnalysis.swift */; };
 		79BB48462E9E9EC5002F2255 /* SourceAnalysisShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48452E9E9EC2002F2255 /* SourceAnalysisShared.swift */; };
 		79BB48482E9E9F00002F2255 /* SwiftAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48472E9E9EFD002F2255 /* SwiftAnalysis.swift */; };
@@ -204,6 +205,7 @@
 		799F5F742EA524DF00868D0E /* RecordStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordStorage.swift; sourceTree = "<group>"; };
 		799F5F762EA5252900868D0E /* RecordTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTracker.swift; sourceTree = "<group>"; };
 		799F5F7D2EA9216900868D0E /* UsageSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageSettingSectionView.swift; sourceTree = "<group>"; };
+		799F5F7F2EAF9F7A00868D0E /* ToolCallExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolCallExtractor.swift; sourceTree = "<group>"; };
 		79BB48432E9E9EB0002F2255 /* ObjcAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjcAnalysis.swift; sourceTree = "<group>"; };
 		79BB48452E9E9EC2002F2255 /* SourceAnalysisShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceAnalysisShared.swift; sourceTree = "<group>"; };
 		79BB48472E9E9EFD002F2255 /* SwiftAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftAnalysis.swift; sourceTree = "<group>"; };
@@ -345,6 +347,7 @@
 				790799B92E489328004D9D1A /* Extensions.swift */,
 				790799EC2E4B94B4004D9D1A /* LocalStorage.swift */,
 				795A74412E6F43D200F4BA1E /* LanguageManager.swift */,
+				799F5F7F2EAF9F7A00868D0E /* ToolCallExtractor.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -740,6 +743,7 @@
 				79BB48442E9E9EB5002F2255 /* ObjcAnalysis.swift in Sources */,
 				79CFC6B02E6A0CE300367E78 /* PartialSuggestion.swift in Sources */,
 				79CFC6E02E6C8CEA00367E78 /* Utils.swift in Sources */,
+				799F5F802EAF9F7B00868D0E /* ToolCallExtractor.swift in Sources */,
 				795A744C2E6F5A4000F4BA1E /* PluginDetailView.swift in Sources */,
 				799F5F752EA524E300868D0E /* RecordStorage.swift in Sources */,
 				790799B62E487F83004D9D1A /* HTTPConnection.swift in Sources */,
