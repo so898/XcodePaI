@@ -4,9 +4,9 @@
         <title>XcodePaI</title>
         <item>
             <title>1.0.3</title>
-            <pubDate>Wed, 15 Oct 2025 21:51:12 +0800</pubDate>
+            <pubDate>Wed, 15 Oct 2025 23:51:12 +0800</pubDate>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/so898/XcodePaI/releases/download/1.0.2(66)/XcodePaI.zip" sparkle:version="66" sparkle:shortVersionString="1.0.3" length="10216079" type="application/octet-stream"/>
+            <enclosure url="https://github.com/so898/XcodePaI/releases/download/1.0.3(75)/XcodePaI.zip" sparkle:version="75" sparkle:shortVersionString="1.0.3" length="12065593" type="application/octet-stream" sparkle:edSignature="rzY0WVubduBkAzsrqcw/XVSDLRmWqhe4LqLMcP4txZKsaW+/C2LeWftrEYFwA7st2iyZrVpaVRby9j4vYYbKDg=="/>
         </item>
     </channel>
 </rss>
