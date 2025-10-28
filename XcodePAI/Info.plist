@@ -17,5 +17,15 @@
 	<string>$(TeamIdentifierPrefix)</string>
 	<key>EXTENSION_BUNDLE_NAME</key>
 	<string>$(EXTENSION_BUNDLE_NAME)</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUEnableJavaScript</key>
+	<false/>
+	<key>SUFeedURL</key>
+	<string>$(SPARKLE_FEED_URL)</string>
+	<key>SUPublicEDKey</key>
+	<string>$(SPARKLE_PUBLIC_KEY)</string>
+	<key>SUScheduledCheckInterval</key>
+	<string>3600</string>
 </dict>
 </plist>
