@@ -13,6 +13,7 @@ import IPCServer
 import XcodeInspector
 import Service
 import SuggestionPortal
+import Sparkle
 
 class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     let service = Service.shared
@@ -44,6 +45,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         
         // Record Tracker
         _ = RecordTracker.shared
+        
+        // Update Check
+        SUUpdater.shared().checkForUpdatesInBackground()
         
         Task {[weak self] in
             await StorageManager.shared.load()

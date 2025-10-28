@@ -7,11 +7,14 @@
 
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+SLASH = / // Otherwise a double slash is treated as a comment, even inside a quoted string
 
-APP_VERSION = 1.0.2
-APP_BUILD = 66
+APP_VERSION = 1.0.3
+APP_BUILD = 75
 HOST_APP_NAME = XcodePaI
 BUNDLE_IDENTIFIER_BASE = com.R3Studio.XcodePAI
 APPLICATION_SUPPORT_FOLDER = com.R3Studio.XcodePAI
 EXTENSION_BUNDLE_NAME = XcodePaI Extension
 EXTENSION_MODULE_NAME = XcodePaIExtension
+SPARKLE_FEED_URL = https:$(SLASH)$(SLASH)raw.githubusercontent.com/so898/XcodePaI/refs/heads/main/appcast.xml
+SPARKLE_PUBLIC_KEY = G74nsSawbUZnwYTpUtj8sHT4Crg7cwvmofto5RrXSJs=

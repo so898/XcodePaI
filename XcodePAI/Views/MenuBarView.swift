@@ -415,7 +415,7 @@ extension MenuBarManager {
                 backing: .buffered,
                 defer: false)
             
-            window.level = .floating
+            window.level = .normal
             window.minSize = NSSize(width: 800, height: 600)
             window.toolbarStyle = .unified
             window.isReleasedWhenClosed = false
