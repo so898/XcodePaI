@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Sparkle
 
 struct AboutSettingSectionView: View {
     @State var appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
@@ -36,7 +37,7 @@ struct AboutSettingSectionView: View {
                 GridRow(alignment: .center) {
                     Text("Check Update")
                     Button("Check") {
-                        NSWorkspace.shared.open(URL(string: "https://github.com/so898/XcodePaI/releases/latest")!)
+                        SUUpdater.shared().checkForUpdates(self)
                     }
                 }
             }

@@ -74,6 +74,7 @@
 		799F5F772EA5252D00868D0E /* RecordTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F762EA5252900868D0E /* RecordTracker.swift */; };
 		799F5F7E2EA9217500868D0E /* UsageSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F7D2EA9216900868D0E /* UsageSettingSectionView.swift */; };
 		799F5F802EAF9F7B00868D0E /* ToolCallExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F7F2EAF9F7A00868D0E /* ToolCallExtractor.swift */; };
+		799F5F832EB0FF8000868D0E /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 799F5F822EB0FF8000868D0E /* Sparkle */; };
 		79BB48442E9E9EB5002F2255 /* ObjcAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48432E9E9EB0002F2255 /* ObjcAnalysis.swift */; };
 		79BB48462E9E9EC5002F2255 /* SourceAnalysisShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48452E9E9EC2002F2255 /* SourceAnalysisShared.swift */; };
 		79BB48482E9E9F00002F2255 /* SwiftAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BB48472E9E9EFD002F2255 /* SwiftAnalysis.swift */; };
@@ -246,6 +247,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				799F5F732EA521E500868D0E /* SQLite in Frameworks */,
+				799F5F832EB0FF8000868D0E /* Sparkle in Frameworks */,
 				79079A032E4E191D004D9D1A /* MCP in Frameworks */,
 				793260322E68AC070017E87F /* MainAppService in Frameworks */,
 			);
@@ -599,6 +601,7 @@
 				79079A022E4E191D004D9D1A /* MCP */,
 				793260312E68AC070017E87F /* MainAppService */,
 				799F5F722EA521E500868D0E /* SQLite */,
+				799F5F822EB0FF8000868D0E /* Sparkle */,
 			);
 			productName = XcodePAI;
 			productReference = 790799862E4507BA004D9D1A /* XcodePaI Dev.app */;
@@ -656,6 +659,7 @@
 			packageReferences = (
 				79079A012E4E191D004D9D1A /* XCRemoteSwiftPackageReference "swift-sdk" */,
 				799F5F712EA521E500868D0E /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+				799F5F812EB0FF8000868D0E /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 790799872E4507BA004D9D1A /* Products */;
@@ -1114,6 +1118,14 @@
 				minimumVersion = 0.15.4;
 			};
 		};
+		799F5F812EB0FF8000868D0E /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = exactVersion;
+				version = 2.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1130,6 +1142,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 799F5F712EA521E500868D0E /* XCRemoteSwiftPackageReference "SQLite.swift" */;
 			productName = SQLite;
+		};
+		799F5F822EB0FF8000868D0E /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 799F5F812EB0FF8000868D0E /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 		79F743352E674EA000C35D1B /* EditExtensionService */ = {
 			isa = XCSwiftPackageProductDependency;
