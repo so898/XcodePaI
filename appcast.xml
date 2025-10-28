@@ -1,0 +1,12 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>XcodePaI</title>
+        <item>
+            <title>1.0.3</title>
+            <pubDate>Wed, 15 Oct 2025 21:51:12 +0800</pubDate>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/so898/XcodePaI/releases/download/1.0.2(66)/XcodePaI.zip" sparkle:version="66" sparkle:shortVersionString="1.0.3" length="10216079" type="application/octet-stream"/>
+        </item>
+    </channel>
+</rss>
