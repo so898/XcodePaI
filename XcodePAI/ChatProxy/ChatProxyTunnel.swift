@@ -135,6 +135,7 @@ extension ChatProxyTunnel: HTTPConnectionDelegate {
     }
     
     func connection(_ connection: HTTPConnection, closed error: (any Error)?) {
+        bridge.stop()
         delegate?.tunnelStoped(self)
     }
 }

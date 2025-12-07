@@ -103,6 +103,11 @@ class ChatProxyBridge {
         llmClient?.request(newRequest)
     }
     
+    func stop() {
+        llmClient?.stop()
+        MenuBarManager.shared.stopLoading()
+    }
+    
     // Process message temp values
     private var lastSearchKeys = [String]()
 }
