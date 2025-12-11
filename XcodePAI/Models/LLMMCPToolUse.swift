@@ -7,6 +7,9 @@
 
 import Foundation
 
+let ToolUseStartMark = "<tool_use>"
+let ToolUseEndMark = "</tool_use>"
+
 enum LLMMCPToolUseError: Error, LocalizedError {
     case invalidToolNameFormat
     case invalidArgumentFormat

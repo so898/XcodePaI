@@ -39,7 +39,7 @@ class LLMAssistantMessage {
 class LLMClient {
     
     private let provider: LLMModelProvider
-    private let delegate: LLMClientDelegate
+    private var delegate: LLMClientDelegate?
     
     private var request: LLMRequest?
     private var tokenUsage: LLMResponseUsage?
@@ -91,7 +91,7 @@ class LLMClient {
         
         client.onOpen = { [weak self] in
             guard let `self` = self else { return }
-            self.delegate.clientConnected(self)
+            self.delegate?.clientConnected(self)
         }
         client.onMessage = { [weak self] event in
             guard let `self` = self else { return }
@@ -107,7 +107,7 @@ class LLMClient {
                 self.sendFullMessage()
             }
             
-            self.delegate.client(self, receiveError: error)
+            self.delegate?.client(self, receiveError: error)
             Task {[weak self] in
                 await client.close()
                 self?.eventSource = nil
@@ -117,6 +117,7 @@ class LLMClient {
     }
     
     func stop() {
+        delegate = nil
         Task {
             if let client = eventSource {
                 await client.close()
@@ -134,7 +135,7 @@ class LLMClient {
     private var tools: [LLMMessageToolCall]?
     
     private func sendFullMessage() {
-        delegate.client(self, receiveMessage: LLMAssistantMessage(reason: reason,
+        delegate?.client(self, receiveMessage: LLMAssistantMessage(reason: reason,
                                                                   isReasonComplete: true,
                                                                   content: content,
                                                                   tools: tools))
@@ -327,7 +328,7 @@ extension LLMClient {
             }
         }
         
-        delegate.client(self, receivePart: LLMAssistantMessage(reason: chunkReason,
+        delegate?.client(self, receivePart: LLMAssistantMessage(reason: chunkReason,
                                                                isReasonComplete: isReasonComplete,
                                                                content: chunkContent,
                                                                tools: chunkTools,

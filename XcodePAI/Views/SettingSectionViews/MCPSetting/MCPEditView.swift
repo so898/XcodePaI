@@ -18,6 +18,15 @@ class KVObject: Identifiable {
     }
 }
 
+class ArgObject: Identifiable {
+    let id = UUID()
+    @Published var value: String
+    
+    init(value: String) {
+        self.value = value
+    }
+}
+
 struct MCPEditView: View {
     let currentMCP: LLMMCP?
     
@@ -26,9 +35,15 @@ struct MCPEditView: View {
     var removeMCP: ((LLMMCP) -> Void)?
     
     @State private var name: String = ""
-    @State private var url: String = ""
     @State private var description: String = ""
+    
+    @State private var url: String = ""
     @State private var headers = [KVObject]()
+    
+    @State private var command: String = ""
+    @State private var args = [ArgObject]()
+    
+    @State private var isLocal: Bool = false
     
     @State var showCreateMCPAlert = false
     @State var showCreateMCPLoading = false
@@ -41,7 +56,7 @@ struct MCPEditView: View {
         self.createOrUpdateMCP = createOrUpdateMCP
         if let mcp = mcp {
             _name = State(initialValue: mcp.name)
-            _url = State(initialValue: mcp.url)
+            _url = State(initialValue: mcp.isLocal() ? "" : mcp.url)
             if let description = mcp.description {
                 _description = State(initialValue: description)
             }
@@ -54,6 +69,17 @@ struct MCPEditView: View {
                 }
                 _headers = State(initialValue: objects)
             }
+            
+            _command = State(initialValue: mcp.command ?? "")
+            if let args = mcp.args {
+                var objects = [ArgObject]()
+                for value in args {
+                    objects.append(ArgObject(value: value))
+                }
+                _args = State(initialValue: objects)
+            }
+            
+            _isLocal = State(initialValue: mcp.isLocal())
         }
         self.removeMCP = removeMCP
     }
@@ -119,7 +145,7 @@ struct MCPEditView: View {
                 Text(currentMCP?.name ?? "Add a MCP service".localizedString)
                     .font(.headline)
                     .fontWeight(.bold)
-                Text(currentMCP != nil ? "Remote MCP".localizedString : "Enter the information for the MCP.".localizedString)
+                Text(currentMCP != nil ? (isLocal ? "Local MCP".localizedString : "Remote MCP".localizedString) : "Enter the information for the MCP.".localizedString)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -142,52 +168,103 @@ struct MCPEditView: View {
             .background(Color.black.opacity(0.25))
             .cornerRadius(12)
             
-            VStack(spacing: 0) {
-                FormFieldRow(label: "URL".localizedString, content: {
-                    TextField("https://mcp.example.com".localizedString, text: $url)
-                        .textFieldStyle(.plain)
-                        .multilineTextAlignment(.trailing)
-                })
-            }
-            .background(Color.black.opacity(0.25))
-            .cornerRadius(12)
+            Picker("", selection: $isLocal) {
+                Text("Local".localizedString).tag(true)
+                Text("Remote".localizedString).tag(false)
+            }.pickerStyle(SegmentedPickerStyle())
+                .padding()
             
-            VStack(spacing: 0) {
-                
-                ForEach ($headers) { header in
-                    FormKVFieldRow {
-                        TextField("Header Key".localizedString, text: header.key)
-                            .textFieldStyle(.plain)
-                            .multilineTextAlignment(.leading)
-                    } value: {
-                        TextField("Header Value".localizedString, text: header.value)
+            if (isLocal) {
+                VStack(spacing: 0) {
+                    FormFieldRow(label: "Command".localizedString, content: {
+                        TextField("npx".localizedString, text: $command)
                             .textFieldStyle(.plain)
                             .multilineTextAlignment(.trailing)
-                    } deleteAction: {
-                        if let index = headers.firstIndex(where: { $0.id == header.id }) {
-                            headers.remove(at: index)
+                    })
+                }
+                .background(Color.black.opacity(0.25))
+                .cornerRadius(12)
+                
+                VStack(spacing: 0) {
+                    
+                    ForEach ($args) { arg in
+                        FormDeletableFieldRow(label: "") {
+                            TextField("Argument".localizedString, text: arg.value)
+                                .textFieldStyle(.plain)
+                                .multilineTextAlignment(.leading)
+                        } deleteAction: {
+                            if let index = args.firstIndex(where: { $0.id == arg.id }) {
+                                args.remove(at: index)
+                            }
                         }
+                        
+                        Divider().padding(.leading)
                     }
                     
-                    Divider().padding(.leading)
-                }
-                
-                HStack {
-                    Spacer()
-                    Button {
-                        headers.append(KVObject(key: "", value: ""))
-                    } label: {
-                        Image(systemName: "plus")
+                    HStack {
+                        Spacer()
+                        Button {
+                            args.append(ArgObject(value: ""))
+                        } label: {
+                            Image(systemName: "plus")
                                 .frame(width: 20, height: 20)
-                        Text("Add Header".localizedString)
+                            Text("Add Argument".localizedString)
+                        }
+                        Spacer()
                     }
-                    Spacer()
+                    .padding(.vertical, 16)
+                    
                 }
-                .padding(.vertical, 16)
-
+                .background(Color.black.opacity(0.25))
+                .cornerRadius(12)
+            } else {
+                VStack(spacing: 0) {
+                    FormFieldRow(label: "URL".localizedString, content: {
+                        TextField("https://mcp.example.com".localizedString, text: $url)
+                            .textFieldStyle(.plain)
+                            .multilineTextAlignment(.trailing)
+                    })
+                }
+                .background(Color.black.opacity(0.25))
+                .cornerRadius(12)
+                
+                VStack(spacing: 0) {
+                    
+                    ForEach ($headers) { header in
+                        FormKVFieldRow {
+                            TextField("Header Key".localizedString, text: header.key)
+                                .textFieldStyle(.plain)
+                                .multilineTextAlignment(.leading)
+                        } value: {
+                            TextField("Header Value".localizedString, text: header.value)
+                                .textFieldStyle(.plain)
+                                .multilineTextAlignment(.trailing)
+                        } deleteAction: {
+                            if let index = headers.firstIndex(where: { $0.id == header.id }) {
+                                headers.remove(at: index)
+                            }
+                        }
+                        
+                        Divider().padding(.leading)
+                    }
+                    
+                    HStack {
+                        Spacer()
+                        Button {
+                            headers.append(KVObject(key: "", value: ""))
+                        } label: {
+                            Image(systemName: "plus")
+                                .frame(width: 20, height: 20)
+                            Text("Add Header".localizedString)
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 16)
+                    
+                }
+                .background(Color.black.opacity(0.25))
+                .cornerRadius(12)
             }
-            .background(Color.black.opacity(0.25))
-            .cornerRadius(12)
         }
     }
         
@@ -221,12 +298,20 @@ struct MCPEditView: View {
             Button("Save".localizedString) {
                 showCreateMCPLoading = true
                 
-                var headers = [String: String]()
-                for header in self.headers {
-                    headers[header.key] = header.value
-                }
-                
-                let newMCP = LLMMCP(id: currentMCP?.id ?? UUID(), name: name, url: url, description: description.isEmpty ? nil : description, headers: headers.count > 0 ? headers : nil)
+                let newMCP = {
+                    if isLocal {
+                        var args = [String]()
+                        for arg in self.args {
+                            args.append(arg.value)
+                        }
+                        return LLMMCP(id: UUID(), name: name, command: command, args: args)
+                    }
+                    var headers = [String: String]()
+                    for header in self.headers {
+                        headers[header.key] = header.value
+                    }
+                    return LLMMCP(id: currentMCP?.id ?? UUID(), name: name, description: description.isEmpty ? nil : description, url: url, headers: headers.count > 0 ? headers : nil)
+                }()
                 
                 MCPRunner.shared.check(mcp: newMCP) { success, tools in
                     showCreateMCPLoading = false
@@ -243,7 +328,7 @@ struct MCPEditView: View {
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
-            .disabled(url.isEmpty || name.isEmpty)
+            .disabled((url.isEmpty && command.isEmpty) || name.isEmpty)
         }
     }
 }

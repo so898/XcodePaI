@@ -196,6 +196,7 @@ let package = Package(
         ),
         .target(name: "SuggestionPortal", dependencies: [
             "SuggestionBasic",
+            "Preferences",
         ]),
     ]
 )

@@ -11,21 +11,30 @@ import MCP
 class LLMMCP: Identifiable, ObservableObject, Codable {
     var id = UUID()
     @Published var name: String
-    @Published var url: String
     @Published var description: String?
+
+    // For Remote
+    @Published var url: String
     @Published var headers: [String: String]?
+    
+    // For Local
+    @Published var command: String?
+    @Published var args: [String]?
+    
     @Published var enabled: Bool
     
     enum CodingKeys: CodingKey {
         case id
         case name
-        case url
         case description
+        case url
         case headers
+        case command
+        case args
         case enabled
     }
     
-    init(id: UUID = UUID(), name: String, url: String, description: String? = nil, headers: [String: String]? = nil, enabled: Bool = true) {
+    init(id: UUID = UUID(), name: String, description: String? = nil, url: String, headers: [String: String]? = nil, enabled: Bool = true) {
         self.id = id
         self.name = name
         self.url = url
@@ -34,14 +43,29 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         self.enabled = enabled
     }
     
+    init(id: UUID = UUID(), name: String, description: String? = nil, command: String?, args:[String]?, enabled: Bool = true) {
+        self.id = id
+        self.name = name
+        self.description = description
+        self.url = "local"
+        self.command = command
+        self.args = args
+        self.enabled = enabled
+    }
+    
     // MARK: - Codable
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
-        url = try container.decode(String.self, forKey: .url)
         description = try container.decodeIfPresent(String.self, forKey: .description)
+        
+        url = try container.decode(String.self, forKey: .url)
         headers = try container.decodeIfPresent([String: String].self, forKey: .headers)
+        
+        command = try container.decodeIfPresent(String.self, forKey: .command)
+        args = try container.decodeIfPresent([String].self, forKey: .args)
+        
         enabled = try container.decode(Bool.self, forKey: .enabled)
     }
     
@@ -49,9 +73,14 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)
-        try container.encode(url, forKey: .url)
         try container.encodeIfPresent(description, forKey: .description)
+        
+        try container.encode(url, forKey: .url)
         try container.encodeIfPresent(headers, forKey: .headers)
+        
+        try container.encodeIfPresent(command, forKey: .command)
+        try container.encodeIfPresent(args, forKey: .args)
+        
         try container.encode(enabled, forKey: .enabled)
     }
     
@@ -72,7 +101,19 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
             ret["headers"] = headers
         }
         
+        if let command = command {
+            ret["command"] = command
+        }
+        
+        if let args = args {
+            ret["args"] = args
+        }
+        
         return ret
+    }
+    
+    public func isLocal() -> Bool {
+        return url == "local"
     }
 }
 

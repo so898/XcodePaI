@@ -227,6 +227,17 @@
         }
       }
     },
+    "Add Argument" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "增加参数"
+          }
+        }
+      }
+    },
     "Add config…" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -347,6 +358,17 @@
         }
       }
     },
+    "Argument" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "参数"
+          }
+        }
+      }
+    },
     "By adding plugins to enhance ChatProxy and code sugestion capabilities, and by modifying parameters to provide more information, the results become more accurate." : {
       "localizations" : {
         "zh-Hans" : {
@@ -448,6 +470,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "代码片段（默认）"
+          }
+        }
+      }
+    },
+    "Command" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "命令"
           }
         }
       }
@@ -858,6 +891,16 @@
         }
       }
     },
+    "Get suggestions in the middle of codes" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "行间代码补全"
+          }
+        }
+      }
+    },
     "Grant Permission" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1012,6 +1055,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "大语言模型提供商"
+          }
+        }
+      }
+    },
+    "Local" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地"
+          }
+        }
+      }
+    },
+    "Local MCP" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地 MCP"
           }
         }
       }
@@ -1334,6 +1399,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重新加载工具成功。"
+          }
+        }
+      }
+    },
+    "Remote" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "远程"
           }
         }
       }

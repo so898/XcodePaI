@@ -15,6 +15,7 @@ struct CompletionSettingSectionView: View {
     @State private var extensionPermissionStatus = Status.shared.getExtensionStatus()
     @AppStorage(\.acceptSuggestionWithTab) var acceptSuggestionWithTab
     @AppStorage(\.realtimeSuggestionDebounce) var realtimeSuggestionDebounce
+    @AppStorage(\.isSuggestionTypeInTheMiddleEnabled) var isSuggestionTypeInTheMiddleEnabled
     @State var isSuggestionFeatureDisabledLanguageListViewOpen = false
     
     @StateObject private var configManager = LLMCompletionConfigManager()
@@ -73,6 +74,12 @@ struct CompletionSettingSectionView: View {
                 GridRow(alignment: .center) {
                     Text("Accept suggestions with Tab")
                     Toggle("Enable", isOn: $acceptSuggestionWithTab)
+                        .toggleStyle(.checkbox)
+                }
+                
+                GridRow(alignment: .center) {
+                    Text("Get suggestions in the middle of codes")
+                    Toggle("Enable", isOn: $isSuggestionTypeInTheMiddleEnabled)
                         .toggleStyle(.checkbox)
                 }
                 

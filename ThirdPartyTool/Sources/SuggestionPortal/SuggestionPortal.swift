@@ -7,6 +7,7 @@
 
 import Foundation
 import SuggestionBasic
+import Preferences
 
 public protocol SuggestionPortalProtocol {
     func requestSuggestion(fileURL: URL,
@@ -19,11 +20,17 @@ public protocol SuggestionPortalProtocol {
 
 public enum SuggestionPortalError: Error, LocalizedError {
     case noPortal
+    case breakLineFail
+    case noSuggestionInMiddle
     
     public var errorDescription: String? {
         switch self {
         case .noPortal:
             return "No portal"
+        case .breakLineFail:
+            return "Break line fail"
+        case .noSuggestionInMiddle:
+            return "Suggestion in middle disabled"
         }
     }
 }
@@ -49,12 +56,20 @@ public class SuggestionPortal {
                                                  line: cursorPosition.line,
                                                  character: cursorPosition.character)
         
+        guard let result else {
+            throw SuggestionPortalError.breakLineFail
+        }
+        
+        if !result.endOfLine, !UserDefaults.shared.value(for: \.isSuggestionTypeInTheMiddleEnabled) {
+            throw SuggestionPortalError.breakLineFail
+        }
+        
         try Task.checkCancellation()
         
-        return try await current.requestSuggestion(fileURL: fileURL, originalContent: originalContent, cursorPosition: cursorPosition, prefixContent: result?.prefixContent, suffixContent: result?.suffixContent)
+        return try await current.requestSuggestion(fileURL: fileURL, originalContent: originalContent, cursorPosition: cursorPosition, prefixContent: result.prefixContent, suffixContent: result.suffixContent)
     }
     
-    func getContentAroundCursor(in string: String, line: Int, character: Int) -> (prefixContent: String, suffixContent: String)? {
+    func getContentAroundCursor(in string: String, line: Int, character: Int) -> (prefixContent: String, suffixContent: String, endOfLine: Bool)? {
         let lines = string.components(separatedBy: "\n")
         
         guard line >= 0, line < lines.count else {
@@ -77,6 +92,6 @@ public class SuggestionPortal {
         let suffixLines = lines[(line + 1)...].joined(separator: "\n")
         let suffixContent = suffixContentInCurrentLine.isEmpty ? suffixLines : "\(suffixContentInCurrentLine)\n\(suffixLines)"
         
-        return (prefixContent, suffixContent)
+        return (prefixContent, suffixContent, suffixContentInCurrentLine.isEmpty)
     }
 }

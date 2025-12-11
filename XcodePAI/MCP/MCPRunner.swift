@@ -7,6 +7,7 @@
 
 import Foundation
 import MCP
+import System
 
 // MARK: - Error Definitions
 enum MCPError: LocalizedError {
@@ -37,33 +38,20 @@ class MCPRunner {
     
     private var checkingMCP: LLMMCP?
     
+    private var localProcess: Process?
+    
     // MARK: - Public Interface
     func check(mcp: LLMMCP, complete: @escaping (Bool, [LLMMCPTool]?) -> Void) {
         checkingMCP = mcp
         Task {
-            guard let url = URL(string: mcp.url) else {
+            let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
+
+            guard let transport = makeTransport(mcp: mcp) else {
                 DispatchQueue.main.async {
                     complete(false, nil)
                 }
                 return
             }
-            
-            let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
-            
-            let transport = HTTPClientTransport(
-                endpoint: url,
-                streaming: false) { request in
-                    guard let headers = mcp.headers else {
-                        return request
-                    }
-                    var newRequest = request
-                    for key in headers.keys {
-                        if let value = headers[key] {
-                            newRequest.setValue(value, forHTTPHeaderField: key)
-                        }
-                    }
-                    return newRequest
-                }
             
             if let result = try? await client.connect(transport: transport) {
                 if result.capabilities.tools != nil {
@@ -77,12 +65,17 @@ class MCPRunner {
                     DispatchQueue.main.async {
                         complete(true, mcpTools)
                     }
+                    
+                    localProcess?.terminate()
+                    
                     return
                 }
             }
             DispatchQueue.main.async {
                 complete(false, nil)
             }
+            
+            localProcess?.terminate()
         }
     }
     
@@ -134,24 +127,11 @@ class MCPRunner {
     }
     
     private func run(mcp: LLMMCP, tool: LLMMCPTool, arguments: [String: Value]?) async throws -> String {
-        // Validate URL
-        guard let url = URL(string: mcp.url) else {
-            throw MCPError.invalidURL
-        }
-        
         // Create client and transport
         let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
         
-        let transport = HTTPClientTransport(
-            endpoint: url,
-            streaming: true
-        ) { request in
-            guard let headers = mcp.headers else { return request }
-            var newRequest = request
-            for (key, value) in headers {
-                newRequest.setValue(value, forHTTPHeaderField: key)
-            }
-            return newRequest
+        guard let transport = makeTransport(mcp: mcp) else {
+            throw MCPError.invalidURL
         }
         
         // Connect to server
@@ -180,4 +160,84 @@ class MCPRunner {
         
         return textContent
     }
+    
+    private func makeTransport(mcp: LLMMCP) -> Transport? {
+        if mcp.url == "local" {
+            // Terminate last process
+            if let localProcess {
+                localProcess.terminate()
+            }
+            
+            let command: String = mcp.command ?? "npx"
+            
+            let result = CommandFinder.findCommand(command)
+            var exe = ""
+            if result.exists, let path = result.path {
+                exe = path
+            } else {
+                return nil
+            }
+            
+            // If a command is specified, launch it and redirect I/O
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: exe)
+            process.arguments = mcp.args ?? []
+            
+            // copy current process environment
+            var env = ProcessInfo.processInfo.environment
+            
+            let binDir = URL(fileURLWithPath: exe).deletingLastPathComponent().path
+            if env["PATH"] == nil {
+                env["PATH"] = binDir
+            } else if !env["PATH"]!.contains(binDir) {
+                env["PATH"] = binDir + ":" + env["PATH"]!
+            }
+            
+            process.environment = env
+            let transport = process.stdioTransport()
+            
+            do {
+                try process.run()
+            } catch {
+                return nil
+            }
+            
+            localProcess = process
+            
+            return transport
+        } else if let url = URL(string: mcp.url) {
+            return HTTPClientTransport(
+                endpoint: url,
+                streaming: false) { request in
+                    guard let headers = mcp.headers else {
+                        return request
+                    }
+                    var newRequest = request
+                    for key in headers.keys {
+                        if let value = headers[key] {
+                            newRequest.setValue(value, forHTTPHeaderField: key)
+                        }
+                    }
+                    return newRequest
+                }
+        }
+        
+        return nil
+    }
+}
+
+extension Process {
+    
+    func stdioTransport() -> StdioTransport {
+        let input = Pipe()
+        let output = Pipe()
+        self.standardInput = input
+        self.standardOutput = output
+        
+        return StdioTransport(
+            input: FileDescriptor(rawValue: output.fileHandleForReading.fileDescriptor),
+            output: FileDescriptor(rawValue: input.fileHandleForWriting.fileDescriptor)
+        )
+    }
+    
 }

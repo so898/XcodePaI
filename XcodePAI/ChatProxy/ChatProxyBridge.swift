@@ -31,18 +31,6 @@ let ThinkInContentWithEOTEndMark = "\n\n~~EOT~~\n\n"
 let ThinkInContentWithCodeSnippetEndMark = "\n\n~~EOT~~\n\n```\n\n"
 
 // Tools
-enum ToolRequestCheckProcess {
-    case none
-    case mightFound
-    case found
-}
-
-let ToolUseStartMark = "<tool_use>"
-let ToolUseEndMark = "</tool_use>"
-
-let ToolUseR1StarkMark = "<｜tool▁calls▁begin｜>"
-let ToolUseR1EndMark = "<｜tool▁calls▁end｜>"
-
 let ToolUseInContentStartMark = "\n\n```tool_use\n\n"
 let ToolUseInContentEndMark = "\n\n~~EOTU~~\n\n```\n\n"
 
@@ -113,6 +101,11 @@ class ChatProxyBridge {
         
         llmClient = LLMClient(modelProvider, delegate: self)
         llmClient?.request(newRequest)
+    }
+    
+    func stop() {
+        llmClient?.stop()
+        MenuBarManager.shared.stopLoading()
     }
     
     // Process message temp values
