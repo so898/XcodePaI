@@ -858,6 +858,16 @@
         }
       }
     },
+    "Get suggestions in the middle of codes" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "行间代码补全"
+          }
+        }
+      }
+    },
     "Grant Permission" : {
       "localizations" : {
         "zh-Hans" : {
