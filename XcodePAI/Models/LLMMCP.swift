@@ -20,6 +20,7 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
     // For Local
     @Published var command: String?
     @Published var args: [String]?
+    @Published var env: [String: String]?
     
     @Published var enabled: Bool
     
@@ -31,6 +32,7 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         case headers
         case command
         case args
+        case env
         case enabled
     }
     
@@ -43,13 +45,14 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         self.enabled = enabled
     }
     
-    init(id: UUID = UUID(), name: String, description: String? = nil, command: String?, args:[String]?, enabled: Bool = true) {
+    init(id: UUID = UUID(), name: String, description: String? = nil, command: String?, args:[String]?, env: [String: String]? = nil, enabled: Bool = true) {
         self.id = id
         self.name = name
         self.description = description
         self.url = "local"
         self.command = command
         self.args = args
+        self.env = env
         self.enabled = enabled
     }
     
@@ -65,6 +68,7 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         
         command = try container.decodeIfPresent(String.self, forKey: .command)
         args = try container.decodeIfPresent([String].self, forKey: .args)
+        env = try container.decodeIfPresent([String: String].self, forKey: .env)
         
         enabled = try container.decode(Bool.self, forKey: .enabled)
     }
@@ -80,6 +84,7 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         
         try container.encodeIfPresent(command, forKey: .command)
         try container.encodeIfPresent(args, forKey: .args)
+        try container.encodeIfPresent(env, forKey: .env)
         
         try container.encode(enabled, forKey: .enabled)
     }
@@ -107,6 +112,10 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         
         if let args = args {
             ret["args"] = args
+        }
+        
+        if let env = env {
+            ret["env"] = env
         }
         
         return ret

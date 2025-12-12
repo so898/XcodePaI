@@ -193,6 +193,14 @@ class MCPRunner {
                 env["PATH"] = binDir + ":" + env["PATH"]!
             }
             
+            if let mcpEnv = mcp.env {
+                for key in mcpEnv.keys {
+                    if let value = mcpEnv[key] {
+                        env[key] = value
+                    }
+                }
+            }
+            
             process.environment = env
             let transport = process.stdioTransport()
             
