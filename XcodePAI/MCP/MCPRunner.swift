@@ -69,6 +69,7 @@ class MCPRunner {
                         complete(true, mcpTools)
                     }
                     
+                    await client.disconnect()
                     localProcess?.terminate()
                     
                     return
@@ -78,6 +79,7 @@ class MCPRunner {
                 complete(false, nil)
             }
             
+            await client.disconnect()
             localProcess?.terminate()
         }
     }
@@ -130,6 +132,9 @@ class MCPRunner {
     }
     
     private func run(mcp: LLMMCP, tool: LLMMCPTool, arguments: [String: Value]?) async throws -> String {
+        defer {
+            localProcess?.terminate()
+        }
         // Create client and transport
         let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
         
@@ -152,6 +157,8 @@ class MCPRunner {
         if let isError = isError, isError {
             throw MCPError.toolExecutionError("Tool execution failed")
         }
+        
+        await client.disconnect()
         
         // Extract text content
         guard let textContent = content.compactMap({ contentItem -> String? in
