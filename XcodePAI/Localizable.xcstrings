@@ -71,6 +71,9 @@
       },
       "shouldTranslate" : false
     },
+    "60" : {
+      "shouldTranslate" : false
+    },
     "About" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1743,6 +1746,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "时间段"
+          }
+        }
+      }
+    },
+    "Timeout" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "超时"
           }
         }
       }

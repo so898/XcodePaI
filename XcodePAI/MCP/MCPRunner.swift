@@ -16,6 +16,7 @@ enum MCPError: LocalizedError {
     case invalidURL
     case noTextContent
     case toolExecutionError(String)
+    case toolExecutionTimeout
     
     var errorDescription: String? {
         switch self {
@@ -29,6 +30,8 @@ enum MCPError: LocalizedError {
             return "MCP tool returned no text content"
         case .toolExecutionError(let message):
             return "Tool execution error: \(message)"
+        case .toolExecutionTimeout:
+            return "Tool execution timeout"
         }
     }
 }
@@ -138,10 +141,12 @@ class MCPRunner {
         try await client.connect(transport: transport)
         
         // Call tool
-        let (content, isError) = try await client.callTool(
-            name: tool.name,
-            arguments: arguments
-        )
+        let (content, isError) = try await Utils.withTimeout(seconds: TimeInterval(mcp.timeout ?? 60), throwError: MCPError.toolExecutionTimeout) {
+            return try await client.callTool(
+                name: tool.name,
+                arguments: arguments
+            )
+        }
         
         // Handle errors
         if let isError = isError, isError {
