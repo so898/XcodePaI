@@ -100,6 +100,7 @@ struct MCPDetailView: View {
             TableColumn("Description", value: \LLMMCPTool.description) { tool in
                 HStack{
                     Text(tool.description)
+                        .help(tool.description)
                     Spacer()
                 }
             }

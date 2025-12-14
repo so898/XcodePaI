@@ -16,6 +16,7 @@ enum MCPError: LocalizedError {
     case invalidURL
     case noTextContent
     case toolExecutionError(String)
+    case toolExecutionTimeout
     
     var errorDescription: String? {
         switch self {
@@ -29,6 +30,8 @@ enum MCPError: LocalizedError {
             return "MCP tool returned no text content"
         case .toolExecutionError(let message):
             return "Tool execution error: \(message)"
+        case .toolExecutionTimeout:
+            return "Tool execution timeout"
         }
     }
 }
@@ -66,6 +69,7 @@ class MCPRunner {
                         complete(true, mcpTools)
                     }
                     
+                    await client.disconnect()
                     localProcess?.terminate()
                     
                     return
@@ -75,6 +79,7 @@ class MCPRunner {
                 complete(false, nil)
             }
             
+            await client.disconnect()
             localProcess?.terminate()
         }
     }
@@ -127,6 +132,9 @@ class MCPRunner {
     }
     
     private func run(mcp: LLMMCP, tool: LLMMCPTool, arguments: [String: Value]?) async throws -> String {
+        defer {
+            localProcess?.terminate()
+        }
         // Create client and transport
         let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
         
@@ -138,15 +146,19 @@ class MCPRunner {
         try await client.connect(transport: transport)
         
         // Call tool
-        let (content, isError) = try await client.callTool(
-            name: tool.name,
-            arguments: arguments
-        )
+        let (content, isError) = try await Utils.withTimeout(seconds: TimeInterval(mcp.timeout ?? 60), throwError: MCPError.toolExecutionTimeout) {
+            return try await client.callTool(
+                name: tool.name,
+                arguments: arguments
+            )
+        }
         
         // Handle errors
         if let isError = isError, isError {
             throw MCPError.toolExecutionError("Tool execution failed")
         }
+        
+        await client.disconnect()
         
         // Extract text content
         guard let textContent = content.compactMap({ contentItem -> String? in
@@ -191,6 +203,14 @@ class MCPRunner {
                 env["PATH"] = binDir
             } else if !env["PATH"]!.contains(binDir) {
                 env["PATH"] = binDir + ":" + env["PATH"]!
+            }
+            
+            if let mcpEnv = mcp.env {
+                for key in mcpEnv.keys {
+                    if let value = mcpEnv[key] {
+                        env[key] = value
+                    }
+                }
             }
             
             process.environment = env

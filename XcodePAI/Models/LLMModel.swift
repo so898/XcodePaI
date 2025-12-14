@@ -10,6 +10,13 @@ import Combine
 
 typealias ChatProxyModel = LLMModel
 
+struct LLMResponseModel: Codable {
+    let id: String
+    let object: String?
+    let created: Int?
+    let owned_by: String?
+}
+
 /// Represents an LLM model with observable properties
 class LLMModel: Identifiable, ObservableObject, Codable {
     @Published var id: String
@@ -60,6 +67,13 @@ class LLMModel: Identifiable, ObservableObject, Codable {
         self.provider = provider
         self.enabled = (dict["enabled"] as? Bool) ?? true
         self.created = (dict["created"] as? Int) ?? Int(Date().timeIntervalSince1970)
+    }
+    
+    init(_ response: LLMResponseModel, provider: String) {
+        self.id = response.id
+        self.provider = provider
+        self.enabled = true
+        self.created = response.created ?? Int(Date().timeIntervalSince1970)
     }
     
     // MARK: - Codable

@@ -170,7 +170,7 @@ class CoroutineHTTPClient {
     ///   - urlString: URL string
     ///   - headers: HTTP headers
     /// - Returns: Decoded response data
-    func get<T: Decodable>(
+    func GET<T: Decodable>(
         _ urlString: String,
         headers: [String: Any]? = nil
     ) async throws -> T {

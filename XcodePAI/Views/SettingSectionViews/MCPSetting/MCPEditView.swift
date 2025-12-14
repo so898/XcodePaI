@@ -42,6 +42,9 @@ struct MCPEditView: View {
     
     @State private var command: String = ""
     @State private var args = [ArgObject]()
+    @State private var env = [KVObject]()
+    
+    @State private var timeout: String = ""
     
     @State private var isLocal: Bool = false
     
@@ -77,6 +80,19 @@ struct MCPEditView: View {
                     objects.append(ArgObject(value: value))
                 }
                 _args = State(initialValue: objects)
+            }
+            if let env = mcp.env {
+                var objects = [KVObject]()
+                for key in env.keys {
+                    if let value = env[key] {
+                        objects.append(KVObject(key: key, value: value))
+                    }
+                }
+                _env = State(initialValue: objects)
+            }
+            
+            if let timeoutValue = mcp.timeout {
+                _timeout = State(initialValue: String(timeoutValue))
             }
             
             _isLocal = State(initialValue: mcp.isLocal())
@@ -217,6 +233,43 @@ struct MCPEditView: View {
                 }
                 .background(Color.black.opacity(0.25))
                 .cornerRadius(12)
+                
+                VStack(spacing: 0) {
+                    
+                    ForEach ($env) { kv in
+                        FormKVFieldRow {
+                            TextField("Environment Key".localizedString, text: kv.key)
+                                .textFieldStyle(.plain)
+                                .multilineTextAlignment(.leading)
+                        } value: {
+                            TextField("Environment Value".localizedString, text: kv.value)
+                                .textFieldStyle(.plain)
+                                .multilineTextAlignment(.trailing)
+                        } deleteAction: {
+                            if let index = env.firstIndex(where: { $0.id == kv.id }) {
+                                env.remove(at: index)
+                            }
+                        }
+                        
+                        Divider().padding(.leading)
+                    }
+                    
+                    HStack {
+                        Spacer()
+                        Button {
+                            env.append(KVObject(key: "", value: ""))
+                        } label: {
+                            Image(systemName: "plus")
+                                .frame(width: 20, height: 20)
+                            Text("Add Environment Config".localizedString)
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 16)
+                    
+                }
+                .background(Color.black.opacity(0.25))
+                .cornerRadius(12)
             } else {
                 VStack(spacing: 0) {
                     FormFieldRow(label: "URL".localizedString, content: {
@@ -265,6 +318,16 @@ struct MCPEditView: View {
                 .background(Color.black.opacity(0.25))
                 .cornerRadius(12)
             }
+            
+            VStack(spacing: 0) {
+                FormFieldRow(label: "Timeout".localizedString, content: {
+                    TextField("60", text: $timeout)
+                        .textFieldStyle(.plain)
+                        .multilineTextAlignment(.trailing)
+                })
+            }
+            .background(Color.black.opacity(0.25))
+            .cornerRadius(12)
         }
     }
         
@@ -298,19 +361,29 @@ struct MCPEditView: View {
             Button("Save".localizedString) {
                 showCreateMCPLoading = true
                 
+                let timeout: Int? = {
+                    if let timeoutValue = Int(self.timeout), timeoutValue > 0 {
+                        return timeoutValue
+                    }
+                    return nil
+                }()
                 let newMCP = {
                     if isLocal {
                         var args = [String]()
                         for arg in self.args {
                             args.append(arg.value)
                         }
-                        return LLMMCP(id: UUID(), name: name, command: command, args: args)
+                        var env = [String: String]()
+                        for value in self.env {
+                            env[value.key] = value.value
+                        }
+                        return LLMMCP(id: UUID(), name: name, command: command, args: args, env: env, timeout: timeout)
                     }
                     var headers = [String: String]()
                     for header in self.headers {
                         headers[header.key] = header.value
                     }
-                    return LLMMCP(id: currentMCP?.id ?? UUID(), name: name, description: description.isEmpty ? nil : description, url: url, headers: headers.count > 0 ? headers : nil)
+                    return LLMMCP(id: currentMCP?.id ?? UUID(), name: name, description: description.isEmpty ? nil : description, url: url, headers: headers.count > 0 ? headers : nil, timeout: timeout)
                 }()
                 
                 MCPRunner.shared.check(mcp: newMCP) { success, tools in

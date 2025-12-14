@@ -71,6 +71,9 @@
       },
       "shouldTranslate" : false
     },
+    "60" : {
+      "shouldTranslate" : false
+    },
     "About" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -256,6 +259,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加自定义配置…"
+          }
+        }
+      }
+    },
+    "Add Environment Config" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "增加环境键值"
           }
         }
       }
@@ -539,12 +553,12 @@
         }
       }
     },
-    "Configuration window" : {
+    "Configuration Startup" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "配置窗口"
+            "value" : "启动配置"
           }
         }
       }
@@ -807,6 +821,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入提供商信息。"
+          }
+        }
+      }
+    },
+    "Environment Key" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "环境键"
+          }
+        }
+      }
+    },
+    "Environment Value" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "环境值"
           }
         }
       }
@@ -1197,12 +1233,12 @@
         }
       }
     },
-    "Open Configuration when StartUp" : {
+    "Open Configuration" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启动时打开配置"
+            "value" : "打开配置界面"
           }
         }
       }
@@ -1714,6 +1750,17 @@
         }
       }
     },
+    "Timeout" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "超时"
+          }
+        }
+      }
+    },
     "Today" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1814,6 +1861,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "是"
+          }
+        }
+      }
+    },
+    "Update Models" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新模型"
           }
         }
       }

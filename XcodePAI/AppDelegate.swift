@@ -75,6 +75,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                     }
                 }
             }
+            
+            if Configer.updateModelsWhenStartUp {
+                ProviderModelRefresher.shared.refreshAllProviderModels()
+            }
         }
     }
     

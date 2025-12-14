@@ -93,6 +93,7 @@
 		79CFC6E82E6DB20B00367E78 /* SuggestionTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6E72E6DB20400367E78 /* SuggestionTester.swift */; };
 		79CFC6FE2E6DCF8900367E78 /* CompletionDisabledLanguageList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6FD2E6DCF8200367E78 /* CompletionDisabledLanguageList.swift */; };
 		79CFC7002E6DD93B00367E78 /* AboutSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6FF2E6DD93500367E78 /* AboutSettingSectionView.swift */; };
+		79E64EB62EEEF0DA00844C5A /* ProviderModelRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E64EB52EEEF0D600844C5A /* ProviderModelRefresher.swift */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
@@ -227,6 +228,7 @@
 		79CFC6FD2E6DCF8200367E78 /* CompletionDisabledLanguageList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionDisabledLanguageList.swift; sourceTree = "<group>"; };
 		79CFC6FF2E6DD93500367E78 /* AboutSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingSectionView.swift; sourceTree = "<group>"; };
 		79E631042E69E41A005BB62B /* ThirdPartyCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyCore; sourceTree = "<group>"; };
+		79E64EB52EEEF0D600844C5A /* ProviderModelRefresher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderModelRefresher.swift; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
 		79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyEditView.swift; sourceTree = "<group>"; };
@@ -475,6 +477,7 @@
 				79079A192E4FBDBD004D9D1A /* MCPToolManager.swift */,
 				79F743062E65E8E400C35D1B /* LLMConfigManager.swift */,
 				79CFC6E52E6D73C400367E78 /* LLMCompletionConfigManager.swift */,
+				79E64EB52EEEF0D600844C5A /* ProviderModelRefresher.swift */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -736,6 +739,7 @@
 				790799E92E4A5665004D9D1A /* MenuBarView.swift in Sources */,
 				790799C92E48F688004D9D1A /* LLMModelProvider.swift in Sources */,
 				790799C02E48B833004D9D1A /* HTTPSSEClient.swift in Sources */,
+				79E64EB62EEEF0DA00844C5A /* ProviderModelRefresher.swift in Sources */,
 				790799A92E471FEA004D9D1A /* XcodePAIApp.swift in Sources */,
 				79CFC6E62E6D73CA00367E78 /* LLMCompletionConfigManager.swift in Sources */,
 				79F743072E65E8E800C35D1B /* LLMConfigManager.swift in Sources */,

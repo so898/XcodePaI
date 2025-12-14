@@ -20,7 +20,9 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
     // For Local
     @Published var command: String?
     @Published var args: [String]?
+    @Published var env: [String: String]?
     
+    @Published var timeout: Int?
     @Published var enabled: Bool
     
     enum CodingKeys: CodingKey {
@@ -31,25 +33,30 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         case headers
         case command
         case args
+        case env
+        case timeout
         case enabled
     }
     
-    init(id: UUID = UUID(), name: String, description: String? = nil, url: String, headers: [String: String]? = nil, enabled: Bool = true) {
+    init(id: UUID = UUID(), name: String, description: String? = nil, url: String, headers: [String: String]? = nil, timeout: Int? = nil, enabled: Bool = true) {
         self.id = id
         self.name = name
         self.url = url
         self.description = description
         self.headers = headers
+        self.timeout = timeout
         self.enabled = enabled
     }
     
-    init(id: UUID = UUID(), name: String, description: String? = nil, command: String?, args:[String]?, enabled: Bool = true) {
+    init(id: UUID = UUID(), name: String, description: String? = nil, command: String?, args:[String]?, env: [String: String]? = nil, timeout: Int? = nil, enabled: Bool = true) {
         self.id = id
         self.name = name
         self.description = description
         self.url = "local"
         self.command = command
         self.args = args
+        self.env = env
+        self.timeout = timeout
         self.enabled = enabled
     }
     
@@ -65,7 +72,9 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         
         command = try container.decodeIfPresent(String.self, forKey: .command)
         args = try container.decodeIfPresent([String].self, forKey: .args)
+        env = try container.decodeIfPresent([String: String].self, forKey: .env)
         
+        timeout = try container.decodeIfPresent(Int.self, forKey: .timeout)
         enabled = try container.decode(Bool.self, forKey: .enabled)
     }
     
@@ -80,7 +89,9 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         
         try container.encodeIfPresent(command, forKey: .command)
         try container.encodeIfPresent(args, forKey: .args)
+        try container.encodeIfPresent(env, forKey: .env)
         
+        try container.encodeIfPresent(timeout, forKey: .timeout)
         try container.encode(enabled, forKey: .enabled)
     }
     
@@ -107,6 +118,14 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         
         if let args = args {
             ret["args"] = args
+        }
+        
+        if let env = env {
+            ret["env"] = env
+        }
+        
+        if let timeout = timeout {
+            ret["timeout"] = timeout
         }
         
         return ret
