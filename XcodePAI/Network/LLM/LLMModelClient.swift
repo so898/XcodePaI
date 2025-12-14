@@ -36,6 +36,17 @@ class LLMModelClient {
             }
         }
     }
+    
+    private struct ModelListResponse: Codable {
+        let data: [LLMResponseModel]
+    }
+    
+    static func getModelsList(_  provider: LLMModelProvider) async throws -> [LLMModel] {
+        let response: ModelListResponse = try await CoroutineHTTPClient.shared.GET(provider.modelListUrl(), headers: provider.requestHeaders())
+        return response.data.map { model in
+            return LLMModel(model, provider: provider.name)
+        }
+    }
 }
 
 // MARK: Model Test with completions
