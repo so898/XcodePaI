@@ -553,12 +553,12 @@
         }
       }
     },
-    "Configuration window" : {
+    "Configuration Startup" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "配置窗口"
+            "value" : "启动配置"
           }
         }
       }
@@ -1233,12 +1233,12 @@
         }
       }
     },
-    "Open Configuration when StartUp" : {
+    "Open Configuration" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启动时打开配置"
+            "value" : "打开配置界面"
           }
         }
       }
@@ -1861,6 +1861,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "是"
+          }
+        }
+      }
+    },
+    "Update Models" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新模型"
           }
         }
       }

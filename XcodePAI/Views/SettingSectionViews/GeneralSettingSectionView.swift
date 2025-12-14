@@ -10,6 +10,7 @@ import SwiftUI
 struct GeneralSettingSectionView: View {
     @State private var contentLayout = 0 // 0 for Vertical, 1 for Horizontal
     @State private var openConfigurationOnStartUp = Configer.openConfigurationWhenStartUp
+    @State private var updateModelsWhenStartUp = Configer.updateModelsWhenStartUp
     @State private var forceLanguage: Configer.Language = Configer.forceLanguage
     @State private var showXcodeInspectorDebug = Configer.showXcodeInspectorDebug
     @State private var showLoadingWhenRequest = Configer.showLoadingWhenRequest
@@ -21,11 +22,20 @@ struct GeneralSettingSectionView: View {
             Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 18) {
                 
                 GridRow {
-                    Text("Configuration window")
-                    Toggle("Open Configuration when StartUp", isOn: $openConfigurationOnStartUp)
+                    Text("Configuration Startup")
+                    Toggle("Open Configuration", isOn: $openConfigurationOnStartUp)
                         .toggleStyle(.checkbox)
                         .onChange(of: openConfigurationOnStartUp) { _, newValue in
                             Configer.openConfigurationWhenStartUp = newValue
+                        }
+                }
+                
+                GridRow {
+                    Text("")
+                    Toggle("Update Models", isOn: $updateModelsWhenStartUp)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: updateModelsWhenStartUp) { _, newValue in
+                            Configer.updateModelsWhenStartUp = newValue
                         }
                 }
                 

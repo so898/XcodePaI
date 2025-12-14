@@ -60,8 +60,17 @@ class ModelManager: ObservableObject {
     }
     
     func replaceModels(_ models: [LLMModel]) {
-        self.models = models
-        saveModels(models)
+        let oldModels = StorageManager.shared.modelsWithProvider(name: storageKey)
+        var newModels = [LLMModel]()
+        for model in models {
+            for oldModel in oldModels {
+                if oldModel.id == model.id {
+                    model.enabled = oldModel.enabled
+                }
+            }
+            newModels.append(model)
+        }
+        saveModels(newModels)
     }
     
     func updateModel(_ model: LLMModel) {

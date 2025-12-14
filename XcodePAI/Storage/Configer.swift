@@ -22,6 +22,7 @@ class Configer {
     
     // MARK: - Keys
     private static let openConfigurationWhenStartUpKey = "OpenConfigurationWhenStartUp"
+    private static let updateModelsWhenStartUpKey = "UpdateModelsWhenStartUp"
     private static let chatProxyPortStorageKey = "ChatProxyPort"
     private static let chatProxyThinkStyleStorageKey = "ChatProxyThinkStyle"
     private static let chatProxyToolUseInRequestStorageKey = "chatProxyToolUseInRequest"
@@ -39,6 +40,15 @@ class Configer {
         }
         get {
             return Self.value(openConfigurationWhenStartUpKey, defaultValue: true) ?? true
+        }
+    }
+    
+    static var updateModelsWhenStartUp: Bool {
+        set {
+            Self.setValue(updateModelsWhenStartUpKey, value: newValue)
+        }
+        get {
+            return Self.value(updateModelsWhenStartUpKey, defaultValue: true) ?? true
         }
     }
     
