@@ -1,6 +1,17 @@
 # <img align="center" height="70" src="./Docs/Images/AppIcon.png"/> XcodePaI
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/so898/XcodePaI)
+<div align="center">
+  <img src="./Docs/Images/AppIcon.png" width="180" height="180" />
+  <h1>XcodePaI</h1>
+  <p>The AI pair programmer for Xcode.</p>
+
+  ![GitHub License](https://img.shields.io/github/license/so898/XcodePaI)
+  ![Platform](https://img.shields.io/badge/platform-macOS%2026.0%2B-brightgreen)
+  [![GitHub release (latest by date)](https://img.shields.io/github/v/release/so898/XcodePaI)](https://github.com/so898/XcodePaI/releases)
+  ![GitHub all releases](https://img.shields.io/github/downloads/so898/XcodePaI/total)
+  ![GitHub stars](https://img.shields.io/github/stars/so898/XcodePaI?style=social)
+  [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/so898/XcodePaI)
+</div>
 
 [XcodePaI](https://github.com/so898/XcodePaI)(/ɛksˈkoʊd pæl/) is an AI pair programmer
 tool that enchance your Xcode AI function which helps you write code faster and smarter. XcodePaI is an Xcode extension that provides local proxy to enchange Xcode 26 coding assistant and inline coding suggestions as you type.
