@@ -1,5 +1,3 @@
-# <img align="center" height="70" src="./Docs/Images/AppIcon.png"/> XcodePaI
-
 <div align="center">
   <img src="./Docs/Images/AppIcon.png" width="180" height="180" />
   <h1>XcodePaI</h1>
