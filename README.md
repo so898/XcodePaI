@@ -37,6 +37,8 @@ OpenAI format `v1/completions` and `v1/chat/completions` endpionts with <b>parti
 
 <img alt="Code Completion of XcodePaI" src="./Docs/Images/code-completions.gif" width="800" />
 
+**[How to config code completion with your model](./Docs/HowTo/UseModelForCodeCompletion.md)**.
+
 ## Requirements
 
 - macOS 15+
@@ -59,6 +61,8 @@ OpenAI format `v1/completions` and `v1/chat/completions` endpionts with <b>parti
    </p>
 
    XcodePaI accept model provider such as Ollama/Alibaba Cloud/OpenRouter and other provider support OpenAI `v1` endpoint format.
+
+   Check **[this document](./Docs/HowTo/AddModelProvider.md)** for adding new model providers.
 
 1. Open model provider detail to sync models from service
 
@@ -166,6 +170,8 @@ Two permissions are required for XcodePaI to function code completions properly:
 
    Press `tab` to accept the first line of a suggestion, hold `option` to view
    the full suggestion, and press `option` + `tab` to accept the full suggestion.
+
+You can check **[this document](./Docs/HowTo/UseModelForCodeCompletion.md)** for config your first code completion model.
 
 ## License
 
