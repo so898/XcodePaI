@@ -27,6 +27,7 @@ enum ThinkParser: Int {
 }
 
 let ThinkInContentWithCodeSnippetStartMark = "```think\n\n"
+let ThinkInContentWithCodeSnippetStartMarkWithFix = "```think: ThinkContent\n\n"
 let ThinkInContentWithEOTEndMark = "\n\n~~EOT~~\n\n"
 let ThinkInContentWithCodeSnippetEndMark = "\n\n~~EOT~~\n\n```\n\n"
 
@@ -66,6 +67,8 @@ class ChatProxyBridge {
     
     private var currentRequest: LLMRequest?
     private var recordAssistantMessages = [LLMMessage]()
+    
+    private var responseFixer = ResponseCodeSnippetFixer()
     
     init(id: String, delegate: ChatProxyBridgeDelegate) {
         self.id = id
@@ -280,6 +283,11 @@ extension ChatProxyBridge {
             if components.count == 2 {
                 returnContent = String(components[1])
             }
+        } else if returnContent.substring(to: ThinkInContentWithCodeSnippetStartMarkWithFix.count) == ThinkInContentWithCodeSnippetStartMarkWithFix {
+            let components = returnContent.split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
+            if components.count == 2 {
+                returnContent = String(components[1])
+            }
         } else if returnContent.contains(ThinkInContentWithEOTEndMark) {
             let components = returnContent.components(separatedBy: ThinkInContentWithEOTEndMark)
             if components.count == 2 {
@@ -290,6 +298,17 @@ extension ChatProxyBridge {
         // Remove all think parts using code snippet in assistant message
         while returnContent.contains(ThinkInContentWithCodeSnippetStartMark) {
             let firstComponents = returnContent.split(separator: ThinkInContentWithCodeSnippetStartMark, maxSplits: 1)
+            if firstComponents.count == 2 {
+                let secondComponents = String(firstComponents[1]).split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
+                if secondComponents.count == 2 {
+                    returnContent = String(firstComponents[0]) + "\n" + String(secondComponents[1])
+                }
+            }
+        }
+        
+        // Remove all think parts using code snippet in assistant message with fix
+        while returnContent.contains(ThinkInContentWithCodeSnippetStartMarkWithFix) {
+            let firstComponents = returnContent.split(separator: ThinkInContentWithCodeSnippetStartMarkWithFix, maxSplits: 1)
             if firstComponents.count == 2 {
                 let secondComponents = String(firstComponents[1]).split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
                 if secondComponents.count == 2 {
@@ -595,7 +614,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                     let startThinkMark: String = {
                         switch thinkParser {
                         case .inContentWithCodeSnippet:
-                            return ThinkInContentWithCodeSnippetStartMark
+                            return Configer.chatProxyCodeSnippetPreviewFix ? ThinkInContentWithCodeSnippetStartMarkWithFix : ThinkInContentWithCodeSnippetStartMark
                         default:
                             return ""
                         }
@@ -676,7 +695,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                                 isFullMessage: false,
                                 message: LLMResponseChoiceMessage(
                                     role: roleReturned ? nil : "assistant",
-                                    content: content
+                                    content: Configer.chatProxyCodeSnippetPreviewFix ? responseFixer.processMessage(content) : content
                                 )
                             )
                         ]
@@ -754,7 +773,96 @@ extension ChatProxyBridge: LLMClientDelegate {
     
 }
 
-class ResponseToolProcesser {
+// Fixer for Xcode 26.1.1+
+fileprivate class ResponseCodeSnippetFixer {
+    private enum State {
+        case normal
+        case firstBacktick
+        case secondBacktick
+        case thirdBacktick
+    }
+    
+    private var status = State.normal
+    private var backtick: Character = "`"
+    private var markdownLanguage: String = ""
+
+    func processMessage(_ content: String) -> String {
+        if status == .normal, !content.contains(backtick) {
+            return content
+        }
+        var newContent = ""
+        for char in content {
+            switch status {
+            case .normal:
+                if char == backtick {
+                    status = .firstBacktick
+                }
+            case .firstBacktick:
+                if char == backtick {
+                    status = .secondBacktick
+                } else {
+                    status = .normal
+                }
+            case .secondBacktick:
+                if char == backtick {
+                    status = .thirdBacktick
+                } else {
+                    status = .normal
+                }
+            case .thirdBacktick:
+                if char == ":" {
+                    // Has filename, just return
+                    status = .normal
+                    markdownLanguage = ""
+                } else if char == "\n" {
+                    status = .normal
+                    if markdownLanguage.count > 0 {
+                        // No filename, add filename
+                        let ext = languageExtensions[markdownLanguage.lowercased()] ?? "txt"
+                        markdownLanguage = ""
+                        newContent.append(": Code Snippet.\(ext)")
+                    }
+                } else {
+                    markdownLanguage.append(char)
+                }
+            }
+            newContent.append(char)
+        }
+        
+        return newContent
+    }
+    
+    private let languageExtensions: [String: String] = [
+        "swift": "swift",
+        "python": "py",
+        "javascript": "js",
+        "typescript": "ts",
+        "java": "java",
+        "kotlin": "kt",
+        "cpp": "cpp",
+        "c": "c",
+        "go": "go",
+        "rust": "rs",
+        "ruby": "rb",
+        "php": "php",
+        "html": "html",
+        "css": "css",
+        "json": "json",
+        "xml": "xml",
+        "yaml": "yaml",
+        "sql": "sql",
+        "shell": "sh",
+        "bash": "sh",
+        "markdown": "md",
+        "m": "m",
+        "h": "h",
+        "objc": "m",
+        "objective-c": "m",
+        "text": "txt",
+    ]
+}
+
+fileprivate class ResponseToolProcesser {
     
     private var messageToolCalls = [LLMMessageToolCall]()
     

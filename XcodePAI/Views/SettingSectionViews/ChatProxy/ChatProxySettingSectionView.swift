@@ -13,6 +13,7 @@ struct ChatProxySettingSectionView: View {
     @State private var thinkStyle: Int = Configer.chatProxyThinkStyle.rawValue
     @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
     @State private var cutSourceInSearchRequest = Configer.chatProxyCutSourceInSearchRequest
+    @State private var codeSnippetPreviewFix = Configer.chatProxyCodeSnippetPreviewFix
     
     @StateObject private var configManager = LLMConfigManager()
     
@@ -90,6 +91,15 @@ struct ChatProxySettingSectionView: View {
                         .toggleStyle(.checkbox)
                         .onChange(of: cutSourceInSearchRequest) { _, newValue in
                             Configer.chatProxyCutSourceInSearchRequest = newValue
+                        }
+                }
+                
+                GridRow {
+                    Text("Fix code snippet preview for Xcode 26.1.1+")
+                    Toggle("Enable", isOn: $codeSnippetPreviewFix)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: codeSnippetPreviewFix) { _, newValue in
+                            Configer.chatProxyCodeSnippetPreviewFix = newValue
                         }
                 }
             }

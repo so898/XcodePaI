@@ -905,6 +905,16 @@
         }
       }
     },
+    "Fix code snippet preview for Xcode 26.1.1+" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "修正 Xcode 26.1.1+ Code Snippet 预览"
+          }
+        }
+      }
+    },
     "French" : {
       "extractionState" : "manual",
       "localizations" : {

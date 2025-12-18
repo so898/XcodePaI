@@ -27,6 +27,7 @@ class Configer {
     private static let chatProxyThinkStyleStorageKey = "ChatProxyThinkStyle"
     private static let chatProxyToolUseInRequestStorageKey = "chatProxyToolUseInRequest"
     private static let chatProxyCutSourceInSearchRequestStorageKey = "chatProxyCutSourceInSearchRequest"
+    private static let chatProxyCodeSnippetPreviewFixStorageKey = "chatProxyCodeSnippetPreviewFix"
     private static let completionSelectConfigIdStorageKey = "completionSelectConfigId"
     private static let selectedPluginIdStorageKey = "selectedPluginId"
     private static let forceLanguageStorageKey = "forceLanguage"
@@ -86,6 +87,15 @@ class Configer {
         }
         get {
             return Self.value(chatProxyCutSourceInSearchRequestStorageKey, defaultValue: false) ?? false
+        }
+    }
+    
+    static var chatProxyCodeSnippetPreviewFix: Bool {
+        set {
+            Self.setValue(chatProxyCodeSnippetPreviewFixStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(chatProxyCodeSnippetPreviewFixStorageKey, defaultValue: true) ?? true
         }
     }
     
