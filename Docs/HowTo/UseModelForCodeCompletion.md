@@ -92,4 +92,3 @@ Finally, remember to select your desired configuration from the menu.
 <p align="center">
     <img alt="Screenshot of XcodePaI code completion model change menu" src="../Images/statusbar-menu-change-code-completion-model.png" width="648" />
 </p>
-'''
