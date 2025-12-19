@@ -93,10 +93,47 @@ struct GeneralSettingSectionView: View {
                             Configer.showLoadingWhenRequest = newValue
                         }
                 }
+                
+                GridRow {
+                    Divider().gridCellColumns(2)
+                }
+                
+                GridRow {
+                    Text("Record List")
+                    Button("Open List") {
+                        openRecordListWindow()
+                    }
+                }
             }
             .gridColumnAlignment(.trailing)
             .padding(30)
         }
         .navigationTitle("General".localizedString)
+    }
+    
+    func openRecordListWindow() {
+        if let window = RecordListView.currentWindow, !window.isVisible {
+            window.makeKeyAndOrderFront(nil)
+            return
+        } else if let window = RecordListView.currentWindow {
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+        let window = NSWindow(
+            contentRect: NSMakeRect(0, 0, (NSScreen.main?.frame.width ?? 1200) / 2, (NSScreen.main?.frame.height ?? 1000) / 2),
+            styleMask: [.titled, .closable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.center()
+        window.title = "Record List".localizedString
+        window.isReleasedWhenClosed = false
+        
+        let hostingController = NSHostingController(rootView: RecordListView())
+        window.contentView = hostingController.view
+        window.makeKeyAndOrderFront(nil)
+        
+        RecordListView.currentWindow = window
     }
 }

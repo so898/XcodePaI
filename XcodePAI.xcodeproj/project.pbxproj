@@ -94,6 +94,7 @@
 		79CFC6FE2E6DCF8900367E78 /* CompletionDisabledLanguageList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6FD2E6DCF8200367E78 /* CompletionDisabledLanguageList.swift */; };
 		79CFC7002E6DD93B00367E78 /* AboutSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6FF2E6DD93500367E78 /* AboutSettingSectionView.swift */; };
 		79E64EB62EEEF0DA00844C5A /* ProviderModelRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E64EB52EEEF0D600844C5A /* ProviderModelRefresher.swift */; };
+		79E64EB82EF5831E00844C5A /* RecordListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E64EB72EF5831500844C5A /* RecordListView.swift */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
@@ -229,6 +230,7 @@
 		79CFC6FF2E6DD93500367E78 /* AboutSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingSectionView.swift; sourceTree = "<group>"; };
 		79E631042E69E41A005BB62B /* ThirdPartyCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyCore; sourceTree = "<group>"; };
 		79E64EB52EEEF0D600844C5A /* ProviderModelRefresher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderModelRefresher.swift; sourceTree = "<group>"; };
+		79E64EB72EF5831500844C5A /* RecordListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordListView.swift; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
 		79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyEditView.swift; sourceTree = "<group>"; };
@@ -407,6 +409,7 @@
 				790799E12E4A36AC004D9D1A /* SettingSectionViews */,
 				790799DF2E4A342E004D9D1A /* SettingsView.swift */,
 				79079A242E54B275004D9D1A /* SettingsWindow.swift */,
+				79E64EB72EF5831500844C5A /* RecordListView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -722,6 +725,7 @@
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
 				79F28F342E5E187100F71A28 /* Configer.swift in Sources */,
 				79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */,
+				79E64EB82EF5831E00844C5A /* RecordListView.swift in Sources */,
 				790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */,
 				79CFC6AE2E69FCD400367E78 /* CoroutineHTTPClient.swift in Sources */,
 				799F5F7E2EA9217500868D0E /* UsageSettingSectionView.swift in Sources */,

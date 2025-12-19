@@ -329,6 +329,26 @@
         }
       }
     },
+    "All Models" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部模型"
+          }
+        }
+      }
+    },
+    "All Providers" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部提供商"
+          }
+        }
+      }
+    },
     "Allow suffix" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -495,6 +515,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "命令"
+          }
+        }
+      }
+    },
+    "Completion Accepted: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "补全接受：%@"
           }
         }
       }
@@ -1051,6 +1081,16 @@
         }
       }
     },
+    "Input Tokens: %lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入 Token：%lld"
+          }
+        }
+      }
+    },
     "Internet hosted model provider" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1168,6 +1208,16 @@
         }
       }
     },
+    "Metadata: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原始数据：%@"
+          }
+        }
+      }
+    },
     "Model" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1181,6 +1231,16 @@
     },
     "Model name" : {
       "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模型名称"
+          }
+        }
+      }
+    },
+    "Model Name" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1208,6 +1268,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "模型提供商"
+          }
+        }
+      }
+    },
+    "Model: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模型：%@"
           }
         }
       }
@@ -1274,6 +1344,16 @@
         }
       }
     },
+    "Output Tokens: %lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输出 Token：%lld"
+          }
+        }
+      }
+    },
     "Partial Request" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1281,6 +1361,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "补全格式请求"
+          }
+        }
+      }
+    },
+    "Period" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时间段"
           }
         }
       }
@@ -1374,6 +1464,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "实时代码补全"
+          }
+        }
+      }
+    },
+    "Record List" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求记录"
           }
         }
       }
@@ -1771,6 +1871,16 @@
         }
       }
     },
+    "Timestamp: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时间标：%@"
+          }
+        }
+      }
+    },
     "Today" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1809,6 +1919,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Token 用量排名"
+          }
+        }
+      }
+    },
+    "Token Usage Records" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token 使用记录"
           }
         }
       }
