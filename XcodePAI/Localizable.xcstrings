@@ -708,6 +708,16 @@
         }
       }
     },
+    "Detail" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "详情"
+          }
+        }
+      }
+    },
     "Disable" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1208,16 +1218,6 @@
         }
       }
     },
-    "Metadata: %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "原始数据：%@"
-          }
-        }
-      }
-    },
     "Model" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1581,12 +1581,45 @@
         }
       }
     },
+    "Request" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求"
+          }
+        }
+      }
+    },
+    "Response" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回应"
+          }
+        }
+      }
+    },
     "Response Language" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "响应语言"
+          }
+        }
+      }
+    },
+    "Response Reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回应原因"
           }
         }
       }
@@ -1929,6 +1962,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Token 使用记录"
+          }
+        }
+      }
+    },
+    "Tool" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工具"
           }
         }
       }
