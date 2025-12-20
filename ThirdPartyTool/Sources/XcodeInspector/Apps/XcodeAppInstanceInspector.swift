@@ -70,6 +70,7 @@ public final class XcodeAppInstanceInspector: AppInstanceInspector {
     @Published public fileprivate(set) var workspaceURL: URL? = nil
     @Published public fileprivate(set) var projectRootURL: URL? = nil
     @Published public fileprivate(set) var workspaces = [WorkspaceIdentifier: Workspace]()
+    @Published public fileprivate(set) var modelButtonLocation: CGPoint?
     @Published public private(set) var completionPanel: AXUIElement?
     public var realtimeWorkspaces: [WorkspaceIdentifier: WorkspaceInfo] {
         updateWorkspaceInfo()
@@ -238,6 +239,10 @@ public final class XcodeAppInstanceInspector: AppInstanceInspector {
                 }
 
                 self.axNotifications.send(.init(kind: event, element: notification.element))
+                
+                if event == .focusedUIElementChanged || event == .uiElementDestroyed || event == .windowMoved || event == .windowResized {
+                    updateModelButtonLocation()
+                }
 
                 if event == .focusedWindowChanged {
                     observeFocusedWindow()
@@ -400,6 +405,25 @@ extension XcodeAppInstanceInspector {
     // The screen that Xcode App located at
     public var appScreen: NSScreen? {
         appElement.focusedWindow?.maxIntersectionScreen
+    }
+    
+    func updateModelButtonLocation() {
+        if let navigator = appElement.focusedWindow?.firstChild(where: {
+            return $0.description == "navigator"
+        }), navigator.children.count == 1, let chatContent = navigator.children.first {
+            var found = false
+            for childElement in chatContent.children {
+                if childElement.title == "Attachements", let rect = childElement.rect {
+                    self.modelButtonLocation = CGPoint(x: rect.origin.x + rect.width, y: rect.origin.y + rect.height)
+                    found = true
+                }
+            }
+            if !found {
+                self.modelButtonLocation = nil
+            }
+        } else {
+            self.modelButtonLocation = nil
+        }
     }
 }
 
