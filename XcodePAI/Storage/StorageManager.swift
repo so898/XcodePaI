@@ -8,6 +8,11 @@
 import Foundation
 import Combine
 
+
+extension Notification.Name {
+    static let storageDefaultLLMUpdated = Notification.Name("StorageDefaultLLMUpdated")
+}
+
 class StorageManager {
     static let shared = StorageManager()
     
@@ -183,6 +188,7 @@ extension StorageManager {
         }
         llmConfigs.append(config)
         updateLLMConfigs(llmConfigs)
+        NotificationCenter.default.post(name: .storageDefaultLLMUpdated, object: nil)
     }
     
     func getChatProxyModels() -> [ChatProxyModel] {

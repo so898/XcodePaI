@@ -62,6 +62,8 @@
 		7932602F2E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793260292E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift */; };
 		793260302E689FEB0017E87F /* PreviousSuggestionCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793260272E689FEB0017E87F /* PreviousSuggestionCommand.swift */; };
 		793260322E68AC070017E87F /* MainAppService in Frameworks */ = {isa = PBXBuildFile; productRef = 793260312E68AC070017E87F /* MainAppService */; };
+		7940DF2B2EF7106B00565AE6 /* ChatProxyQuickWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF2A2EF7105E00565AE6 /* ChatProxyQuickWindowController.swift */; };
+		7940DF2F2EF8184B00565AE6 /* QuickWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF2E2EF8184A00565AE6 /* QuickWindowView.swift */; };
 		795A74402E6F3CD000F4BA1E /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */; };
 		795A74422E6F43D300F4BA1E /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74412E6F43D200F4BA1E /* LanguageManager.swift */; };
 		795A74452E6F4ACF00F4BA1E /* PluginProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74442E6F4AC700F4BA1E /* PluginProtocol.swift */; };
@@ -198,6 +200,8 @@
 		793260282E689FEB0017E87F /* RejectSuggestionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RejectSuggestionCommand.swift; sourceTree = "<group>"; };
 		793260292E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleRealtimeSuggestionsCommand.swift; sourceTree = "<group>"; };
 		793260432E68B3BD0017E87F /* ThirdPartyTool */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyTool; sourceTree = "<group>"; };
+		7940DF2A2EF7105E00565AE6 /* ChatProxyQuickWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyQuickWindowController.swift; sourceTree = "<group>"; };
+		7940DF2E2EF8184A00565AE6 /* QuickWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickWindowView.swift; sourceTree = "<group>"; };
 		795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		795A74412E6F43D200F4BA1E /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
 		795A74442E6F4AC700F4BA1E /* PluginProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginProtocol.swift; sourceTree = "<group>"; };
@@ -410,6 +414,7 @@
 				790799DF2E4A342E004D9D1A /* SettingsView.swift */,
 				79079A242E54B275004D9D1A /* SettingsWindow.swift */,
 				79E64EB72EF5831500844C5A /* RecordListView.swift */,
+				7940DF292EF7102C00565AE6 /* ChatProxyQuickWindow */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -483,6 +488,15 @@
 				79E64EB52EEEF0D600844C5A /* ProviderModelRefresher.swift */,
 			);
 			path = Storage;
+			sourceTree = "<group>";
+		};
+		7940DF292EF7102C00565AE6 /* ChatProxyQuickWindow */ = {
+			isa = PBXGroup;
+			children = (
+				7940DF2A2EF7105E00565AE6 /* ChatProxyQuickWindowController.swift */,
+				7940DF2E2EF8184A00565AE6 /* QuickWindowView.swift */,
+			);
+			path = ChatProxyQuickWindow;
 			sourceTree = "<group>";
 		};
 		795A74432E6F4AAF00F4BA1E /* Plugin */ = {
@@ -705,6 +719,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7940DF2F2EF8184B00565AE6 /* QuickWindowView.swift in Sources */,
 				790799EB2E4A5868004D9D1A /* AppDelegate.swift in Sources */,
 				79CFC6FE2E6DCF8900367E78 /* CompletionDisabledLanguageList.swift in Sources */,
 				79079A252E54B275004D9D1A /* SettingsWindow.swift in Sources */,
@@ -725,6 +740,7 @@
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
 				79F28F342E5E187100F71A28 /* Configer.swift in Sources */,
 				79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */,
+				7940DF2B2EF7106B00565AE6 /* ChatProxyQuickWindowController.swift in Sources */,
 				79E64EB82EF5831E00844C5A /* RecordListView.swift in Sources */,
 				790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */,
 				79CFC6AE2E69FCD400367E78 /* CoroutineHTTPClient.swift in Sources */,

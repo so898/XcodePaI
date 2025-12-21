@@ -70,7 +70,7 @@ public final class XcodeAppInstanceInspector: AppInstanceInspector {
     @Published public fileprivate(set) var workspaceURL: URL? = nil
     @Published public fileprivate(set) var projectRootURL: URL? = nil
     @Published public fileprivate(set) var workspaces = [WorkspaceIdentifier: Workspace]()
-    @Published public fileprivate(set) var modelButtonLocation: CGPoint?
+    @Published public fileprivate(set) var modelButtonAreaFrame: NSRect?
     @Published public private(set) var completionPanel: AXUIElement?
     public var realtimeWorkspaces: [WorkspaceIdentifier: WorkspaceInfo] {
         updateWorkspaceInfo()
@@ -240,7 +240,7 @@ public final class XcodeAppInstanceInspector: AppInstanceInspector {
 
                 self.axNotifications.send(.init(kind: event, element: notification.element))
                 
-                if event == .focusedUIElementChanged || event == .uiElementDestroyed || event == .windowMoved || event == .windowResized {
+                if event == .focusedUIElementChanged || event == .created || event == .uiElementDestroyed || event == .windowMoved || event == .windowResized {
                     updateModelButtonLocation()
                 }
 
@@ -411,18 +411,35 @@ extension XcodeAppInstanceInspector {
         if let navigator = appElement.focusedWindow?.firstChild(where: {
             return $0.description == "navigator"
         }), navigator.children.count == 1, let chatContent = navigator.children.first {
-            var found = false
+            var next = false
+            var origin: CGPoint?
+            var width: CGFloat?
             for childElement in chatContent.children {
                 if childElement.title == "Attachements", let rect = childElement.rect {
-                    self.modelButtonLocation = CGPoint(x: rect.origin.x + rect.width, y: rect.origin.y + rect.height)
-                    found = true
+                    origin = CGPoint(x: rect.origin.x + rect.size.width, y: (appScreen?.frame.height ?? 0) - rect.origin.y)
+                    next = true
+                } else if next {
+                    next = false
+                    if let origin, let rect = childElement.rect {
+                        // When there is error shown in the bottom of code assistants, no AX notificaiton received
+                        // So the area width must -20 to make a safe are for error button and number
+                        let safeWidthForError: CGFloat = {
+                            if childElement.description == "Error" {
+                                return 0
+                            }
+                            return 20
+                        }()
+                        width = rect.origin.x - origin.x - rect.size.width - safeWidthForError
+                    }
                 }
             }
-            if !found {
-                self.modelButtonLocation = nil
+            if let origin, let width {
+                self.modelButtonAreaFrame = NSRect(origin: origin, size: CGSizeMake(width, 19))
+            } else {
+                self.modelButtonAreaFrame = nil
             }
         } else {
-            self.modelButtonLocation = nil
+            self.modelButtonAreaFrame = nil
         }
     }
 }

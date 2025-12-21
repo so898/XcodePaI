@@ -1438,6 +1438,16 @@
         }
       }
     },
+    "Quick Window" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快捷切换浮窗"
+          }
+        }
+      }
+    },
     "Rate" : {
       "localizations" : {
         "zh-Hans" : {

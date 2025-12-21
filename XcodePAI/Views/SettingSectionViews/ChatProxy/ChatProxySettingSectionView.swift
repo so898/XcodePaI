@@ -14,6 +14,7 @@ struct ChatProxySettingSectionView: View {
     @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
     @State private var cutSourceInSearchRequest = Configer.chatProxyCutSourceInSearchRequest
     @State private var codeSnippetPreviewFix = Configer.chatProxyCodeSnippetPreviewFix
+    @State private var quickWindowEnabled = Configer.chatProxyQuickWindow
     
     @StateObject private var configManager = LLMConfigManager()
     
@@ -100,6 +101,15 @@ struct ChatProxySettingSectionView: View {
                         .toggleStyle(.checkbox)
                         .onChange(of: codeSnippetPreviewFix) { _, newValue in
                             Configer.chatProxyCodeSnippetPreviewFix = newValue
+                        }
+                }
+                
+                GridRow {
+                    Text("Quick Window")
+                    Toggle("Enable", isOn: $quickWindowEnabled)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: quickWindowEnabled) { _, newValue in
+                            Configer.chatProxyQuickWindow = newValue
                         }
                 }
             }

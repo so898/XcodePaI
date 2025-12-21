@@ -84,6 +84,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     private var timer: Timer?
     private var serviceStarted = false
+    private let quickController = ChatProxyQuickWindowController()
     
     @MainActor private func checkAndStartServer() {
         guard Utils.checkAccessibilityPermission(), !serviceStarted else {
@@ -95,6 +96,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         serviceStarted = true
         
         _ = XcodeInspector.shared
+        quickController.setup()
         service.start()
         AXIsProcessTrustedWithOptions([
             kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true,
