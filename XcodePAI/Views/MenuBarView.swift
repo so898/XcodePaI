@@ -338,7 +338,9 @@ extension MenuBarManager: NSMenuDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
-        menu.addItem(NSMenuItem(title: "Exit".localizedString, action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        item = NSMenuItem(title: "Exit".localizedString, action: #selector(exitApp), keyEquivalent: "q")
+        item.target = self
+        menu.addItem(item)
     }
 }
 
@@ -432,6 +434,10 @@ extension MenuBarManager {
         settingsWindowController?.window?.center()
         settingsWindowController?.window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+    
+    @objc func exitApp() {
+        NSApplication.shared.terminate(nil)
     }
 }
 
