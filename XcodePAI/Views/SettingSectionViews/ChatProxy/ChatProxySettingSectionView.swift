@@ -16,6 +16,8 @@ struct ChatProxySettingSectionView: View {
     @State private var codeSnippetPreviewFix = Configer.chatProxyCodeSnippetPreviewFix
     @State private var quickWindowEnabled = Configer.chatProxyQuickWindow
     
+    @State private var axPermissionGranted = Utils.checkAccessibilityPermission()
+    
     @StateObject private var configManager = LLMConfigManager()
     
     @State private var isShowingSheet = false
@@ -88,6 +90,7 @@ struct ChatProxySettingSectionView: View {
                 
                 GridRow {
                     Text("Cut source code in Xcode search result")
+                        .help("To avoid exceeding the model's token limit with irrelevant code from Xcode's full-file search results, this feature intelligently condenses the source code around the search keyword.")
                     Toggle("Enable", isOn: $cutSourceInSearchRequest)
                         .toggleStyle(.checkbox)
                         .onChange(of: cutSourceInSearchRequest) { _, newValue in
@@ -97,6 +100,7 @@ struct ChatProxySettingSectionView: View {
                 
                 GridRow {
                     Text("Fix code snippet preview for Xcode 26.1.1+")
+                        .help("A regression in Xcode 26.1.1 (and subsequent releases) prevents the code assistant from displaying previews for code snippets. The solution involves generating a virtual file name for each snippet; this name serves as the preview content within the interface.")
                     Toggle("Enable", isOn: $codeSnippetPreviewFix)
                         .toggleStyle(.checkbox)
                         .onChange(of: codeSnippetPreviewFix) { _, newValue in
@@ -106,7 +110,9 @@ struct ChatProxySettingSectionView: View {
                 
                 GridRow {
                     Text("Quick Window")
+                        .help("The Quick Window is a floating panel that appears below the text input field in Xcode's code assistant. It allows users to switch the model used by ChatProxy or to enable/disable MCP during an ongoing/new conversation. This feature require Accessibility Permission.")
                     Toggle("Enable", isOn: $quickWindowEnabled)
+                        .disabled(!axPermissionGranted)
                         .toggleStyle(.checkbox)
                         .onChange(of: quickWindowEnabled) { _, newValue in
                             Configer.chatProxyQuickWindow = newValue

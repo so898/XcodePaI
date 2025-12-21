@@ -74,6 +74,16 @@
     "60" : {
       "shouldTranslate" : false
     },
+    "A regression in Xcode 26.1.1 (and subsequent releases) prevents the code assistant from displaying previews for code snippets. The solution involves generating a virtual file name for each snippet; this name serves as the preview content within the interface." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xcode 26.1.1+ 版本有一个 bug 导致 Code Assistant 中的代码片段（Code Snippet）无法在对话框中显示。开启这个功能会给每个代码片段都生成一各对应的文件名，保证对话中代码片段的展示。"
+          }
+        }
+      }
+    },
     "About" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -579,16 +589,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "配置"
-          }
-        }
-      }
-    },
-    "Configuration Startup" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "启动配置"
           }
         }
       }
@@ -1747,6 +1747,16 @@
         }
       }
     },
+    "Startup Actions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用启动行为"
+          }
+        }
+      }
+    },
     "Suggestion Debounce Time" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1871,6 +1881,16 @@
         }
       }
     },
+    "The Quick Window is a floating panel that appears below the text input field in Xcode's code assistant. It allows users to switch the model used by ChatProxy or to enable/disable MCP during an ongoing/new conversation. This feature require Accessibility Permission." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快捷切换浮窗是一个展示在 Code Assistant 输入框下方的浮动窗口，这个窗口可以让用户快速切换对话使用的模型和对话时启用的 MCP。这个浮窗需要开启辅助功能权限才可使用。"
+          }
+        }
+      }
+    },
     "This Month" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1920,6 +1940,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "时间标：%@"
+          }
+        }
+      }
+    },
+    "To avoid exceeding the model's token limit with irrelevant code from Xcode's full-file search results, this feature intelligently condenses the source code around the search keyword." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为了防止 Xcode 全文搜索触发模型的 Token 数量限制，这个功能通过裁剪搜索结果中的代码，只保留和搜索关键词相关的内容，节省 Token 消耗。"
           }
         }
       }

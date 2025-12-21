@@ -22,7 +22,7 @@ struct GeneralSettingSectionView: View {
             Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 18) {
                 
                 GridRow {
-                    Text("Configuration Startup")
+                    Text("Startup Actions")
                     Toggle("Open Configuration", isOn: $openConfigurationOnStartUp)
                         .toggleStyle(.checkbox)
                         .onChange(of: openConfigurationOnStartUp) { _, newValue in
@@ -77,20 +77,20 @@ struct GeneralSettingSectionView: View {
                 }
                 
                 GridRow {
-                    Text("Xcode Inspector Debug")
-                    Toggle("Show In Statusbar Menu", isOn: $showXcodeInspectorDebug)
-                        .toggleStyle(.checkbox)
-                        .onChange(of: showXcodeInspectorDebug) { _, newValue in
-                            Configer.showXcodeInspectorDebug = newValue
-                        }
-                }
-                
-                GridRow {
                     Text("Show loading when requesting")
                     Toggle("Show In Statusbar Icon", isOn: $showLoadingWhenRequest)
                         .toggleStyle(.checkbox)
                         .onChange(of: showLoadingWhenRequest) { _, newValue in
                             Configer.showLoadingWhenRequest = newValue
+                        }
+                }
+                
+                GridRow {
+                    Text("Xcode Inspector Debug")
+                    Toggle("Show In Statusbar Menu", isOn: $showXcodeInspectorDebug)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: showXcodeInspectorDebug) { _, newValue in
+                            Configer.showXcodeInspectorDebug = newValue
                         }
                 }
                 
