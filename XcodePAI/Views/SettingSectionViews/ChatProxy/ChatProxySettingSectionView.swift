@@ -109,8 +109,13 @@ struct ChatProxySettingSectionView: View {
                 }
                 
                 GridRow {
-                    Text("Quick Window")
-                        .help("The Quick Window is a floating panel that appears below the text input field in Xcode's code assistant. It allows users to switch the model used by ChatProxy or to enable/disable MCP during an ongoing/new conversation. This feature require Accessibility Permission.")
+                    HStack(spacing: 3) {
+                        Text("Quick Window")
+                            .help("The Quick Window is a floating panel that appears below the text input field in Xcode's code assistant. It allows users to switch the model used by ChatProxy or to enable/disable MCP during an ongoing/new conversation. This feature require Accessibility Permission.")
+                        Image(systemName: "flask.fill")
+                            .foregroundStyle(.blue)
+                            .help("Experimental Feature")
+                    }
                     Toggle("Enable", isOn: $quickWindowEnabled)
                         .disabled(!axPermissionGranted)
                         .toggleStyle(.checkbox)
