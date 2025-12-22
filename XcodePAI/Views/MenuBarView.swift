@@ -416,7 +416,7 @@ extension MenuBarManager {
                 styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
                 backing: .buffered,
                 defer: false)
-            
+            window.collectionBehavior = [.fullScreenAuxiliary, .canJoinAllSpaces]
             window.level = .normal
             window.minSize = NSSize(width: 800, height: 600)
             window.toolbarStyle = .unified
