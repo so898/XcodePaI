@@ -9,7 +9,6 @@ import SwiftUI
 
 struct QuickWindowView: View {
     @StateObject private var dataManager = QuickWindowDataManager()
-    @State private var selectedOption = "未选择"
     
     var body: some View {
         VStack{
@@ -37,7 +36,9 @@ struct QuickWindowView: View {
                     Text(dataManager.defaultCofig?.modelName ?? "Unset")
                         .foregroundColor(Color(nsColor: .textColor))
                 }
-                .menuStyle(BorderlessButtonMenuStyle())
+                .background(Color(nsColor: .textBackgroundColor))
+                .clipShape(.capsule)
+                .frame(height: 19)
                 
                 if !dataManager.availableMCPs.isEmpty {
                     Menu {
@@ -54,9 +55,11 @@ struct QuickWindowView: View {
                         }
                     } label: {
                         Text("MCP")
-                            .foregroundColor(dataManager.defaultCofig?.mcps.isEmpty ?? true ? Color(nsColor: .textColor) : Color.blue)
+                            .foregroundColor((dataManager.defaultCofig?.mcps.isEmpty ?? true) ? Color(nsColor: .textColor) : Color.white)
                     }
-                    .menuStyle(BorderlessButtonMenuStyle())
+                    .background((dataManager.defaultCofig?.mcps.isEmpty ?? true) ? Color(nsColor: .textBackgroundColor) : Color(nsColor: .selectedContentBackgroundColor))
+                    .clipShape(.capsule)
+                    .frame(height: 19)
                 }
             }
             Spacer()

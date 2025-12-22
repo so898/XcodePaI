@@ -27,7 +27,7 @@ class ChatProxyQuickWindowController {
         it.backgroundColor = .clear
         it.level = .floating
         it.collectionBehavior = [.fullScreenAuxiliary, .transient, .canJoinAllSpaces]
-        it.hasShadow = true
+        it.hasShadow = false
         it.contentView = NSHostingView(
             rootView: QuickWindowView()
         )
