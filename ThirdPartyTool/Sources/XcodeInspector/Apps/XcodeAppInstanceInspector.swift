@@ -240,9 +240,7 @@ public final class XcodeAppInstanceInspector: AppInstanceInspector {
 
                 self.axNotifications.send(.init(kind: event, element: notification.element))
                 
-                if event == .focusedUIElementChanged || event == .created || event == .uiElementDestroyed || event == .windowMoved || event == .windowResized {
-                    updateModelButtonLocation()
-                }
+                updateModelButtonLocation(event)
 
                 if event == .focusedWindowChanged {
                     observeFocusedWindow()
@@ -407,7 +405,14 @@ extension XcodeAppInstanceInspector {
         appElement.focusedWindow?.maxIntersectionScreen
     }
     
-    func updateModelButtonLocation() {
+    func updateModelButtonLocation(_ event: AXNotificationKind) {
+        guard event == .applicationActivated || event == .applicationDeactivated || event == .focusedWindowChanged || event == .focusedUIElementChanged || event == .created || event == .uiElementDestroyed || event == .windowMoved || event == .windowResized || event == .windowMiniaturized || event == .windowDeminiaturized else {
+            return
+        }
+        if event == .applicationDeactivated || event == .windowMiniaturized {
+            self.modelButtonAreaFrame = nil
+            return
+        }
         if let navigator = appElement.focusedWindow?.firstChild(where: {
             return $0.description == "navigator"
         }), navigator.children.count == 1, let chatContent = navigator.children.first {
