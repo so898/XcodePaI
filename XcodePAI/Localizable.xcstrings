@@ -898,6 +898,16 @@
         }
       }
     },
+    "Experimental Feature" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "实验性功能"
+          }
+        }
+      }
+    },
     "Extension Permission" : {
       "localizations" : {
         "zh-Hans" : {
