@@ -29,9 +29,11 @@ struct GitCommitView: View {
                 onRefresh: refreshGitInfo,
                 onGenerateCommitMessage: {
                     Task {
+                        LoadingState.shared.show(text: "Generating…".localizedString)
                         generatingCommit = true
                         let result = await gitManager.generateCommitMessage(commitMessage)
                         generatingCommit = false
+                        LoadingState.shared.hide()
                         if !result.isEmpty {
                             commitMessage = result
                         }
@@ -40,6 +42,7 @@ struct GitCommitView: View {
                 onCommit: { performCommit() }
             )
             .frame(height: 140)
+            
         }
         .alert(alertState.title, isPresented: $alertState.isPresented) {
             Button("OK", role: .cancel) { }
@@ -49,6 +52,7 @@ struct GitCommitView: View {
         .task {
             await gitManager.loadGitStatus(from: initialPath)
         }
+        .globalLoading()
     }
     
     // MARK: - Private Methods
@@ -451,6 +455,8 @@ struct DiffLineView: View {
 
 // MARK: - Commit Section
 struct CommitSection: View {
+    @EnvironmentObject private var loadingState: LoadingState
+    
     @ObservedObject var gitManager: GitManager
     @Binding var commitMessage: String
     @Binding var generatingCommit: Bool
@@ -516,7 +522,7 @@ struct CommitMessageEditor: View {
             )
             .overlay(alignment: .topLeading) {
                 if text.isEmpty && !isFocused {
-                    Text("Enter commit message...")
+                    Text("Enter commit message…")
                         .font(.system(size: 12))
                         .foregroundColor(.gray)
                         .padding(.horizontal, 5)

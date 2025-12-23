@@ -902,7 +902,7 @@
         }
       }
     },
-    "Enter commit message..." : {
+    "Enter commit message…" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1074,6 +1074,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "生成提交信息"
+          }
+        }
+      }
+    },
+    "Generating…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成中…"
           }
         }
       }

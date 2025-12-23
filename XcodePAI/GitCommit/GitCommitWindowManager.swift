@@ -47,8 +47,7 @@ class GitCommitWindowManager: NSObject, @unchecked Sendable {
         )
         window.path = path
         window.delegate = self
-        window.isReleasedWhenClosed = false
-        window.level = .floating
+        window.isReleasedWhenClosed = true
         window.contentView = NSHostingView(
             rootView: GitCommitView(initialPath: path)
         )
