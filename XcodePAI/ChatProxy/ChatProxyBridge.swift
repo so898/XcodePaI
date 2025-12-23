@@ -354,7 +354,7 @@ extension ChatProxyBridge {
             let languageContent: String = {
                 switch forceLanguage {
                 case .english:
-                    return ""
+                    return PromptTemplate.FLEnglish
                 case .chinese:
                     return PromptTemplate.FLChinese
                 case .french:

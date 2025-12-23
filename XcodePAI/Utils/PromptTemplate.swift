@@ -61,6 +61,7 @@ extension PromptTemplate {
 
 // MARK: Force Language
 extension PromptTemplate {
+    static let FLEnglish = "Response in English."
     static let FLChinese = "请使用中文进行回答。"
     static let FLFrance = "Veuillez répondre en français."
     static let FLRussian = "Пожалуйста, ответьте на русском языке."
