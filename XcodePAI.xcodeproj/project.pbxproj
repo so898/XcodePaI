@@ -64,6 +64,10 @@
 		793260322E68AC070017E87F /* MainAppService in Frameworks */ = {isa = PBXBuildFile; productRef = 793260312E68AC070017E87F /* MainAppService */; };
 		7940DF2B2EF7106B00565AE6 /* ChatProxyQuickWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF2A2EF7105E00565AE6 /* ChatProxyQuickWindowController.swift */; };
 		7940DF2F2EF8184B00565AE6 /* QuickWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF2E2EF8184A00565AE6 /* QuickWindowView.swift */; };
+		7940DF352EFAC43000565AE6 /* GitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF342EFAC42F00565AE6 /* GitManager.swift */; };
+		7940DF372EFAC47100565AE6 /* GitCommitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF362EFAC46B00565AE6 /* GitCommitView.swift */; };
+		7940DF392EFAC72A00565AE6 /* GitModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF382EFAC72600565AE6 /* GitModels.swift */; };
+		7940DF3C2EFAC82B00565AE6 /* GitCommitWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF3B2EFAC82400565AE6 /* GitCommitWindowManager.swift */; };
 		7940DF3E2EFAD65900565AE6 /* GitCommitCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF3D2EFAD65100565AE6 /* GitCommitCommand.swift */; };
 		795A74402E6F3CD000F4BA1E /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */; };
 		795A74422E6F43D300F4BA1E /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74412E6F43D200F4BA1E /* LanguageManager.swift */; };
@@ -203,6 +207,10 @@
 		793260432E68B3BD0017E87F /* ThirdPartyTool */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyTool; sourceTree = "<group>"; };
 		7940DF2A2EF7105E00565AE6 /* ChatProxyQuickWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyQuickWindowController.swift; sourceTree = "<group>"; };
 		7940DF2E2EF8184A00565AE6 /* QuickWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickWindowView.swift; sourceTree = "<group>"; };
+		7940DF342EFAC42F00565AE6 /* GitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitManager.swift; sourceTree = "<group>"; };
+		7940DF362EFAC46B00565AE6 /* GitCommitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCommitView.swift; sourceTree = "<group>"; };
+		7940DF382EFAC72600565AE6 /* GitModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitModels.swift; sourceTree = "<group>"; };
+		7940DF3B2EFAC82400565AE6 /* GitCommitWindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCommitWindowManager.swift; sourceTree = "<group>"; };
 		7940DF3D2EFAD65100565AE6 /* GitCommitCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCommitCommand.swift; sourceTree = "<group>"; };
 		795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		795A74412E6F43D200F4BA1E /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
@@ -325,6 +333,7 @@
 				79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */,
 				79F28F312E5CD61C00F71A28 /* LLMConfig.swift */,
 				79CFC6E32E6D548300367E78 /* LLMCompletionConfig.swift */,
+				7940DF382EFAC72600565AE6 /* GitModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -340,6 +349,7 @@
 				79079A042E4E1930004D9D1A /* MCP */,
 				7907999F2E471FEA004D9D1A /* ChatProxy */,
 				79CFC6AC2E69FA6E00367E78 /* Completion */,
+				7940DF3A2EFAC80900565AE6 /* GitCommit */,
 				795A74432E6F4AAF00F4BA1E /* Plugin */,
 				799F5F6E2EA5218E00868D0E /* Record */,
 				790799A12E471FEA004D9D1A /* Assets.xcassets */,
@@ -417,6 +427,7 @@
 				79079A242E54B275004D9D1A /* SettingsWindow.swift */,
 				79E64EB72EF5831500844C5A /* RecordListView.swift */,
 				7940DF292EF7102C00565AE6 /* ChatProxyQuickWindow */,
+				7940DF362EFAC46B00565AE6 /* GitCommitView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -499,6 +510,15 @@
 				7940DF2E2EF8184A00565AE6 /* QuickWindowView.swift */,
 			);
 			path = ChatProxyQuickWindow;
+			sourceTree = "<group>";
+		};
+		7940DF3A2EFAC80900565AE6 /* GitCommit */ = {
+			isa = PBXGroup;
+			children = (
+				7940DF342EFAC42F00565AE6 /* GitManager.swift */,
+				7940DF3B2EFAC82400565AE6 /* GitCommitWindowManager.swift */,
+			);
+			path = GitCommit;
 			sourceTree = "<group>";
 		};
 		795A74432E6F4AAF00F4BA1E /* Plugin */ = {
@@ -742,6 +762,8 @@
 				799F5F772EA5252D00868D0E /* RecordTracker.swift in Sources */,
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
 				79F28F342E5E187100F71A28 /* Configer.swift in Sources */,
+				7940DF3C2EFAC82B00565AE6 /* GitCommitWindowManager.swift in Sources */,
+				7940DF372EFAC47100565AE6 /* GitCommitView.swift in Sources */,
 				79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */,
 				7940DF2B2EF7106B00565AE6 /* ChatProxyQuickWindowController.swift in Sources */,
 				79E64EB82EF5831E00844C5A /* RecordListView.swift in Sources */,
@@ -786,6 +808,7 @@
 				79079A072E4F9449004D9D1A /* LLMMCPTool.swift in Sources */,
 				79BB48482E9E9F00002F2255 /* SwiftAnalysis.swift in Sources */,
 				79079A082E4F9449004D9D1A /* LLMMCP.swift in Sources */,
+				7940DF352EFAC43000565AE6 /* GitManager.swift in Sources */,
 				79CFC6B82E6B53BA00367E78 /* PrefixSuffixSuggestion.swift in Sources */,
 				79CFC6E22E6D546800367E78 /* CompletionEditView.swift in Sources */,
 				79CFC6DE2E6C8C1B00367E78 /* CompletionSettingSectionView.swift in Sources */,
@@ -799,6 +822,7 @@
 				79079A0D2E4F95E8004D9D1A /* MCPSettingView.swift in Sources */,
 				790799B42E487E08004D9D1A /* TCPConnection.swift in Sources */,
 				790799FE2E4CF7C0004D9D1A /* ModelAddView.swift in Sources */,
+				7940DF392EFAC72A00565AE6 /* GitModels.swift in Sources */,
 				79CFC6E82E6DB20B00367E78 /* SuggestionTester.swift in Sources */,
 				790799C72E48F624004D9D1A /* LLMClient.swift in Sources */,
 				79079A0A2E4F94FB004D9D1A /* Components.swift in Sources */,

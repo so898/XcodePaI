@@ -37,6 +37,17 @@
     "%@" : {
       "shouldTranslate" : false
     },
+    "%@ (%lld)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ (%2$lld)"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
     "%@ Completions for %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -339,6 +350,17 @@
         }
       }
     },
+    "Alert" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "警告"
+          }
+        }
+      }
+    },
     "All Models" : {
       "localizations" : {
         "zh-Hans" : {
@@ -409,6 +431,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "参数"
+          }
+        }
+      }
+    },
+    "Author: %@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Author: %1$@ (%2$@)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "作者：%1$@（%2$@）"
           }
         }
       }
@@ -525,6 +563,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "命令"
+          }
+        }
+      }
+    },
+    "Commit" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提交"
+          }
+        }
+      }
+    },
+    "Commit failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提交失败"
+          }
+        }
+      }
+    },
+    "Commit successful!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提交成功！"
           }
         }
       }
@@ -832,6 +902,16 @@
         }
       }
     },
+    "Enter commit message..." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入提交信息…"
+          }
+        }
+      }
+    },
     "Enter the information for the config." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -983,6 +1063,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "通用"
+          }
+        }
+      }
+    },
+    "Generate Commit Message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成提交信息"
           }
         }
       }
@@ -1323,6 +1414,27 @@
         }
       }
     },
+    "No staged files" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无暂存文件"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "确定"
+          }
+        }
+      }
+    },
     "Open Configuration" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1354,6 +1466,17 @@
         }
       }
     },
+    "Optimize Commit Message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "优化提交信息"
+          }
+        }
+      }
+    },
     "Output Tokens: %lld" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1381,6 +1504,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "时间段"
+          }
+        }
+      }
+    },
+    "Please enter commit message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请输入提交信息"
           }
         }
       }
@@ -1494,6 +1628,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请求记录"
+          }
+        }
+      }
+    },
+    "Refresh git status" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刷新仓库状态"
           }
         }
       }
@@ -1686,6 +1831,16 @@
         }
       }
     },
+    "Select a file to view diff" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择文件查看修改"
+          }
+        }
+      }
+    },
     "Settings" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1753,6 +1908,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "部分提供商支持在请求参数中使用工具。"
+          }
+        }
+      }
+    },
+    "Stage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂存"
+          }
+        }
+      }
+    },
+    "Stage All" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部暂存"
+          }
+        }
+      }
+    },
+    "Stage file" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂存文件"
+          }
+        }
+      }
+    },
+    "Staged Changes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已暂存修改"
           }
         }
       }
@@ -2085,6 +2284,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "是"
+          }
+        }
+      }
+    },
+    "Unstage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消暂存"
+          }
+        }
+      }
+    },
+    "Unstage All" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部取消"
+          }
+        }
+      }
+    },
+    "Unstage file" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消暂存文件"
+          }
+        }
+      }
+    },
+    "Unstaged Changes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未暂存修改"
           }
         }
       }
