@@ -118,7 +118,7 @@ struct ModelProviderDetailView: View {
             
             TableColumn("Action") { model in
                 Button {
-                    LoadingState.shared.show(text: "Testing…")
+                    LoadingState.shared.show(text: "Testing…".localizedString)
                     LLMModelClient.testModel(model, provider: provider) { ret in
                         LoadingState.shared.hide()
                         testResult = ret
