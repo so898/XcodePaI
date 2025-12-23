@@ -57,7 +57,7 @@ public class IPCServer {
                 reply(updatedContent)
             }
         }
-        wormhole?.listenMessage(for: "toggleRealtimeSuggestion") {[weak self] (editorContent: EditorContent, reply) in
+        wormhole?.listenMessage(for: "toggleRealtimeSuggestion") {[weak self] (_: Data, reply) in
             guard let `self` = self else { return }
             self.toggleRealtimeSuggestion { _ in
                 reply(nil)
@@ -123,6 +123,8 @@ extension IPCServer {
     
     public func toggleRealtimeSuggestion(withReply reply: @escaping (Error?) -> Void) {
         print("toggleRealtimeSuggestion")
+        let value = UserDefaults.shared.value(for: \.realtimeSuggestionToggle)
+        UserDefaults.shared.set(!value, for: \.realtimeSuggestionToggle)
         reply(nil)
     }
     

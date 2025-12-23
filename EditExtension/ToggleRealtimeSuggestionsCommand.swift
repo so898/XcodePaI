@@ -3,10 +3,10 @@ import SuggestionBasic
 import Foundation
 import XcodeKit
 
-class ToggleRealtimeSuggestionsCommand: NSObject, XCSourceEditorCommand, CommandType {
+class ToggleRealtimeSuggestionsCommand: NSObject, @MainActor XCSourceEditorCommand, CommandType {
     var name: String { "Enable/Disable Completions" }
 
-    func perform(
+    @MainActor func perform(
         with invocation: XCSourceEditorCommandInvocation,
         completionHandler: @escaping (Error?) -> Void
     ) {
