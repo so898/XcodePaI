@@ -63,7 +63,12 @@ public class IPCServer {
                 reply(nil)
             }
         }
-        
+        wormhole?.listenMessage(for: "gitCommit") {[weak self] (_: Data, reply) in
+            guard let `self` = self else { return }
+            self.gitCommit { _ in
+                reply(nil)
+            }
+        }
         
     }
 }
@@ -121,4 +126,9 @@ extension IPCServer {
         reply(nil)
     }
     
+    public func gitCommit(withReply reply: @escaping (Error?) -> Void) {
+        print("gitCommit")
+        NotificationCenter.default.post(name: .init(rawValue: "OpenNewGitCommitWindow"), object: nil)
+        reply(nil)
+    }
 }

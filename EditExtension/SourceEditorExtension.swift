@@ -19,6 +19,7 @@ class SourceEditorExtension: NSObject, XCSourceEditorExtension {
             PreviousSuggestionCommand(),
             ToggleRealtimeSuggestionsCommand(),
             SyncTextSettingsCommand(),
+            GitCommitCommand(),
         ].map(makeCommandDefinition)
     }
     

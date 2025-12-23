@@ -64,6 +64,7 @@
 		793260322E68AC070017E87F /* MainAppService in Frameworks */ = {isa = PBXBuildFile; productRef = 793260312E68AC070017E87F /* MainAppService */; };
 		7940DF2B2EF7106B00565AE6 /* ChatProxyQuickWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF2A2EF7105E00565AE6 /* ChatProxyQuickWindowController.swift */; };
 		7940DF2F2EF8184B00565AE6 /* QuickWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF2E2EF8184A00565AE6 /* QuickWindowView.swift */; };
+		7940DF3E2EFAD65900565AE6 /* GitCommitCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF3D2EFAD65100565AE6 /* GitCommitCommand.swift */; };
 		795A74402E6F3CD000F4BA1E /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */; };
 		795A74422E6F43D300F4BA1E /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74412E6F43D200F4BA1E /* LanguageManager.swift */; };
 		795A74452E6F4ACF00F4BA1E /* PluginProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74442E6F4AC700F4BA1E /* PluginProtocol.swift */; };
@@ -202,6 +203,7 @@
 		793260432E68B3BD0017E87F /* ThirdPartyTool */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyTool; sourceTree = "<group>"; };
 		7940DF2A2EF7105E00565AE6 /* ChatProxyQuickWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyQuickWindowController.swift; sourceTree = "<group>"; };
 		7940DF2E2EF8184A00565AE6 /* QuickWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickWindowView.swift; sourceTree = "<group>"; };
+		7940DF3D2EFAD65100565AE6 /* GitCommitCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCommitCommand.swift; sourceTree = "<group>"; };
 		795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		795A74412E6F43D200F4BA1E /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
 		795A74442E6F4AC700F4BA1E /* PluginProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginProtocol.swift; sourceTree = "<group>"; };
@@ -595,6 +597,7 @@
 				793260272E689FEB0017E87F /* PreviousSuggestionCommand.swift */,
 				793260292E689FEB0017E87F /* ToggleRealtimeSuggestionsCommand.swift */,
 				79CFC6AA2E69EB1900367E78 /* SyncTextSettingsCommand.swift */,
+				7940DF3D2EFAD65100565AE6 /* GitCommitCommand.swift */,
 				79F7432E2E67325A00C35D1B /* Helpers.swift */,
 				79F743222E672E2700C35D1B /* EditExtension.entitlements */,
 				79F743232E672E2700C35D1B /* Info.plist */,
@@ -806,6 +809,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7940DF3E2EFAD65900565AE6 /* GitCommitCommand.swift in Sources */,
 				7932602B2E689FEB0017E87F /* GetSuggestionsCommand.swift in Sources */,
 				7932602D2E689FEB0017E87F /* RejectSuggestionCommand.swift in Sources */,
 				7932602E2E689FEB0017E87F /* NextSuggestionCommand.swift in Sources */,

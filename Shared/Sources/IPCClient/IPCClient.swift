@@ -111,4 +111,12 @@ public extension IPCClient {
         
         wormhole.sendMessage(Data(), identifier: "toggleRealtimeSuggestion")
     }
+    
+    func gitCommit() throws {
+        guard let wormhole else {
+            throw IPCExtensionServiceError.failedToCreateIPCConnection
+        }
+        
+        wormhole.sendMessage(Data(), identifier: "gitCommit")
+    }
 }
