@@ -158,6 +158,25 @@ class LLMCompletionClient {
         return (id, response.choices.first?.message.content)
     }
     
+    static func doChatReqeust(_ request: LLMRequest, provider: LLMModelProvider, messages: [LLMMessage], timeout: TimeInterval? = nil) async throws -> String {
+        guard let data = try? JSONSerialization.data(withJSONObject: request.toDictionary()) else {
+            throw CoroutineHTTPClientError.encodingError
+        }
+        
+        let retData = try await CoroutineHTTPClient.POST(urlString: provider.chatCompletionsUrl(), headers: provider.requestHeaders(), body: data, timeout: timeout)
+        
+        guard let jsonDict = try? JSONSerialization.jsonObject(with: retData) as? [String: Any] else {
+            throw CoroutineHTTPClientError.decodingError
+        }
+        
+        let response = try LLMResponse(dict: jsonDict)
+        
+        // Record token usages
+        _ = recordTokenUsage(provider, request: request, response: response)
+        
+        return response.choices.first?.message.content ?? ""
+    }
+    
     static private func recordTokenUsage(_ provider: LLMModelProvider, request: LLMRequest, response: LLMResponse) -> Int64? {
         let requestString = {
             if let data = try? JSONSerialization.data(withJSONObject: request.toDictionary()) {
@@ -173,7 +192,7 @@ class LLMCompletionClient {
             outputTokens = tokenUsage.completionTokens ?? 0
         }
         
-        return recordTokenUsage(provider.name, modelName: request.model, promptTokens: promptTokens, outputTokens: outputTokens, requestString: requestString, responseString: response.choices.first?.message.content)
+        return recordTokenUsage(provider.name, modelName: request.model, promptTokens: promptTokens, outputTokens: outputTokens, requestString: requestString, responseString: response.choices.first?.message.content, reason: response.choices.first?.message.reasoningContent)
     }
     
     static private func recordTokenUsage(_ provider: LLMModelProvider, modelName: String, requestDict: [String: String], response: PrefixCompleteResponse) -> Int64? {
@@ -194,7 +213,7 @@ class LLMCompletionClient {
         return recordTokenUsage(provider.name, modelName: modelName, promptTokens: promptTokens, outputTokens: outputTokens, requestString: requestString, responseString: response.choices.first?.text)
     }
     
-    static private func recordTokenUsage(_ providerName: String, modelName: String, promptTokens: Int?, outputTokens: Int?, requestString: String, responseString: String?) -> Int64? {
-        return RecordTracker.shared.recordTokenUsage(modelProvider: providerName, modelName: modelName, inputTokens: promptTokens ?? 0, outputTokens: outputTokens ?? 0, isCompletion: true, metadata: ["request": requestString, "resp_content": (responseString ?? "")])
+    static private func recordTokenUsage(_ providerName: String, modelName: String, promptTokens: Int?, outputTokens: Int?, requestString: String, responseString: String?, reason: String? = nil) -> Int64? {
+        return RecordTracker.shared.recordTokenUsage(modelProvider: providerName, modelName: modelName, inputTokens: promptTokens ?? 0, outputTokens: outputTokens ?? 0, isCompletion: true, metadata: ["request": requestString, "resp_content": (responseString ?? ""), "resp_reason": (reason ?? "")])
     }
 }

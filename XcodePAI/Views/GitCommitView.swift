@@ -30,11 +30,18 @@ struct GitCommitView: View {
                 onGenerateCommitMessage: {
                     Task {
                         generatingCommit = true
-                        let result = await gitManager.generateCommitMessage(commitMessage)
-                        generatingCommit = false
-                        if !result.isEmpty {
-                            commitMessage = result
+                        do {
+                            let result = try await gitManager.generateCommitMessage(commitMessage)
+                            if !result.isEmpty {
+                                commitMessage = result
+                            }
+                        } catch {
+                            alertState = AlertState(
+                                message: error.localizedDescription,
+                                isPresented: true
+                            )
                         }
+                        generatingCommit = false
                     }
                 },
                 onCommit: { performCommit() }
@@ -97,6 +104,7 @@ struct GitCommitView: View {
         )
         
         if success {
+            gitManager.selectedFile = nil
             commitMessage = ""
         }
     }

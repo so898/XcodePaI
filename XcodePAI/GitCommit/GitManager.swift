@@ -491,7 +491,7 @@ class GitManager: ObservableObject {
 // MARK: - Commit Message Generation Extension
 extension GitManager {
     /// Generate commit message from draft
-    func generateCommitMessage(_ draft: String? = nil) async -> String {
+    func generateCommitMessage(_ draft: String? = nil) async throws -> String {
         defer {
             MenuBarManager.shared.stopLoading()
         }
@@ -537,52 +537,20 @@ extension GitManager {
             prompt = prompt.replacingOccurrences(of: "<USER_DRAFT>", with: "")
         }
 
-        return await doLLMReqeust(with: prompt)
+        return try await doLLMReqeust(with: prompt)
     }
     
-    private func doLLMReqeust(with prompt: String) async -> String {
-        guard let config = StorageManager.shared.defaultConfig(), let modelProvider = config.getModelProvider() else {
+    private func doLLMReqeust(with prompt: String) async throws -> String {
+        guard let config = StorageManager.shared.defaultConfig(), let model = config.getModel(), let modelProvider = config.getModelProvider() else {
             return ""
         }
         
         var messages = [LLMMessage]()
         messages.append(LLMMessage(role: "user", content: prompt))
         
-        let request = LLMRequest(model: config.modelName, messages:messages, stream: false, enableThinking: true)
+        let request = LLMRequest(model: model.id, messages:messages, stream: false, enableThinking: true)
         
-        guard let data = try? JSONSerialization.data(withJSONObject: request.toDictionary()) else {
-            return ""
-        }
-        
-        guard let retData = try? await CoroutineHTTPClient.POST(urlString: modelProvider.chatCompletionsUrl(), headers: modelProvider.requestHeaders(), body: data) else {
-            return ""
-        }
-        
-        guard let jsonDict = try? JSONSerialization.jsonObject(with: retData) as? [String: Any] else {
-            return ""
-        }
-        
-        guard let response = try? LLMResponse(dict: jsonDict) else {
-            return ""
-        }
-        
-        // Record token usages
-        let requestString = {
-            if let data = try? JSONSerialization.data(withJSONObject: request.toDictionary()) {
-                return String(data: data, encoding: .utf8) ?? ""
-            }
-            return ""
-        }()
-        
-        var promptTokens = 0
-        var outputTokens = 0
-        if let tokenUsage = response.usage {
-            promptTokens = tokenUsage.promptTokens ?? 0
-            outputTokens = tokenUsage.completionTokens ?? 0
-        }
-        RecordTracker.shared.recordTokenUsage(modelProvider: modelProvider.name, modelName: config.modelName, inputTokens: promptTokens, outputTokens: outputTokens, isCompletion: false, metadata: ["request": requestString, "resp_content": (response.choices.first?.message.content ?? ""), "resp_reason": (response.choices.first?.message.reasoningContent ?? "")])
-        
-        return response.choices.first?.message.content ?? ""
+        return try await LLMCompletionClient.doChatReqeust(request, provider: modelProvider, messages: messages, timeout: 60 * 5)
     }
     
     private func stagedFileInfos() async -> String {
