@@ -548,9 +548,9 @@ extension GitManager {
         var messages = [LLMMessage]()
         messages.append(LLMMessage(role: "user", content: prompt))
         
-        let request = LLMRequest(model: model.id, messages:messages, stream: false, enableThinking: true)
+        let request = LLMRequest(model: model.id, messages:messages, stream: false, enableThinking: Configer.gitCommitGenerateUseThink)
         
-        return try await LLMCompletionClient.doChatReqeust(request, provider: modelProvider, messages: messages, timeout: 60 * 5)
+        return try await LLMCompletionClient.doChatReqeust(request, provider: modelProvider, messages: messages, timeout: Configer.gitCommitGenerateTimeout)
     }
     
     private func stagedFileInfos() async -> String {

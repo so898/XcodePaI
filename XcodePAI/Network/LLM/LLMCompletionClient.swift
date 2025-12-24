@@ -172,12 +172,12 @@ class LLMCompletionClient {
         let response = try LLMResponse(dict: jsonDict)
         
         // Record token usages
-        _ = recordTokenUsage(provider, request: request, response: response)
+        _ = recordTokenUsage(provider, request: request, response: response, isComplete: false)
         
         return response.choices.first?.message.content ?? ""
     }
     
-    static private func recordTokenUsage(_ provider: LLMModelProvider, request: LLMRequest, response: LLMResponse) -> Int64? {
+    static private func recordTokenUsage(_ provider: LLMModelProvider, request: LLMRequest, response: LLMResponse, isComplete: Bool = true) -> Int64? {
         let requestString = {
             if let data = try? JSONSerialization.data(withJSONObject: request.toDictionary()) {
                 return String(data: data, encoding: .utf8) ?? ""
@@ -192,7 +192,7 @@ class LLMCompletionClient {
             outputTokens = tokenUsage.completionTokens ?? 0
         }
         
-        return recordTokenUsage(provider.name, modelName: request.model, promptTokens: promptTokens, outputTokens: outputTokens, requestString: requestString, responseString: response.choices.first?.message.content, reason: response.choices.first?.message.reasoningContent)
+        return recordTokenUsage(provider.name, modelName: request.model, isComplete: isComplete, promptTokens: promptTokens, outputTokens: outputTokens, requestString: requestString, responseString: response.choices.first?.message.content, reason: response.choices.first?.message.reasoningContent)
     }
     
     static private func recordTokenUsage(_ provider: LLMModelProvider, modelName: String, requestDict: [String: String], response: PrefixCompleteResponse) -> Int64? {
@@ -210,10 +210,10 @@ class LLMCompletionClient {
             outputTokens = tokenUsage.completion_tokens
         }
         
-        return recordTokenUsage(provider.name, modelName: modelName, promptTokens: promptTokens, outputTokens: outputTokens, requestString: requestString, responseString: response.choices.first?.text)
+        return recordTokenUsage(provider.name, modelName: modelName, isComplete: true, promptTokens: promptTokens, outputTokens: outputTokens, requestString: requestString, responseString: response.choices.first?.text)
     }
     
-    static private func recordTokenUsage(_ providerName: String, modelName: String, promptTokens: Int?, outputTokens: Int?, requestString: String, responseString: String?, reason: String? = nil) -> Int64? {
-        return RecordTracker.shared.recordTokenUsage(modelProvider: providerName, modelName: modelName, inputTokens: promptTokens ?? 0, outputTokens: outputTokens ?? 0, isCompletion: true, metadata: ["request": requestString, "resp_content": (responseString ?? ""), "resp_reason": (reason ?? "")])
+    static private func recordTokenUsage(_ providerName: String, modelName: String, isComplete: Bool, promptTokens: Int?, outputTokens: Int?, requestString: String, responseString: String?, reason: String? = nil) -> Int64? {
+        return RecordTracker.shared.recordTokenUsage(modelProvider: providerName, modelName: modelName, inputTokens: promptTokens ?? 0, outputTokens: outputTokens ?? 0, isCompletion: isComplete, metadata: ["request": requestString, "resp_content": (responseString ?? ""), "resp_reason": (reason ?? "")])
     }
 }
