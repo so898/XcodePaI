@@ -29,11 +29,9 @@ struct GitCommitView: View {
                 onRefresh: refreshGitInfo,
                 onGenerateCommitMessage: {
                     Task {
-                        LoadingState.shared.show(text: "Generating…".localizedString)
                         generatingCommit = true
                         let result = await gitManager.generateCommitMessage(commitMessage)
                         generatingCommit = false
-                        LoadingState.shared.hide()
                         if !result.isEmpty {
                             commitMessage = result
                         }
@@ -52,7 +50,28 @@ struct GitCommitView: View {
         .task {
             await gitManager.loadGitStatus(from: initialPath)
         }
-        .globalLoading()
+        .sheet(isPresented: $generatingCommit, content: {
+            loadingOverlay
+        })
+    }
+    
+    private var loadingOverlay: some View {
+        Group {
+            ZStack {
+                // Loading
+                HStack(spacing: 16) {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .secondary))
+                    
+                    Text("Generating…".localizedString)
+                        .foregroundColor(.primary)
+                        .font(.headline)
+                }
+                .padding(30)
+            }
+            .zIndex(999) // On the top
+            .transition(.opacity)
+        }
     }
     
     // MARK: - Private Methods
