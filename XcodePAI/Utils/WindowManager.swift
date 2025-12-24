@@ -90,6 +90,45 @@ extension WindowManager {
     }
 }
 
+// MARK: Record Window
+extension WindowManager {
+    class RecordListWindow: NSWindow {
+    }
+    
+    func openRecordListWindow() {
+        for controller in windowControllers {
+            if let window = controller.window as? RecordListWindow, !window.isVisible {
+                window.makeKeyAndOrderFront(nil)
+                return
+            } else if let window = controller.window as? RecordListWindow {
+                window.makeKeyAndOrderFront(nil)
+                NSApp.activate(ignoringOtherApps: true)
+                return
+            }
+        }
+        let window = RecordListWindow(
+            contentRect: NSMakeRect(0, 0, (NSScreen.main?.frame.width ?? 1200) / 2, (NSScreen.main?.frame.height ?? 1000) / 2),
+            styleMask: [.titled, .closable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.delegate = self
+        window.center()
+        window.title = "Record List".localizedString
+        window.isReleasedWhenClosed = false
+        window.contentView = NSHostingView(rootView: RecordListView())
+        window.makeKeyAndOrderFront(nil)
+        
+        let wc = NSWindowController(window: window)
+        wc.showWindow(nil)
+        wc.window?.center()
+        wc.window?.makeKeyAndOrderFront(nil)
+        windowControllers.append(wc)
+        
+        afterWindowControllerChanged()
+    }
+}
+
 // MARK: Git Commit Window
 extension WindowManager {
     

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct GeneralSettingSectionView: View {
-    @State private var contentLayout = 0 // 0 for Vertical, 1 for Horizontal
     @State private var openConfigurationOnStartUp = Configer.openConfigurationWhenStartUp
     @State private var updateModelsWhenStartUp = Configer.updateModelsWhenStartUp
     @State private var forceLanguage: Configer.Language = Configer.forceLanguage
@@ -101,7 +100,7 @@ struct GeneralSettingSectionView: View {
                 GridRow {
                     Text("Record List")
                     Button("Open List") {
-                        openRecordListWindow()
+                        WindowManager.shared.openRecordListWindow()
                     }
                 }
             }
@@ -109,31 +108,5 @@ struct GeneralSettingSectionView: View {
             .padding(30)
         }
         .navigationTitle("General".localizedString)
-    }
-    
-    func openRecordListWindow() {
-        if let window = RecordListView.currentWindow, !window.isVisible {
-            window.makeKeyAndOrderFront(nil)
-            return
-        } else if let window = RecordListView.currentWindow {
-            window.makeKeyAndOrderFront(nil)
-            NSApp.activate(ignoringOtherApps: true)
-            return
-        }
-        let window = NSWindow(
-            contentRect: NSMakeRect(0, 0, (NSScreen.main?.frame.width ?? 1200) / 2, (NSScreen.main?.frame.height ?? 1000) / 2),
-            styleMask: [.titled, .closable, .resizable],
-            backing: .buffered,
-            defer: false
-        )
-        window.center()
-        window.title = "Record List".localizedString
-        window.isReleasedWhenClosed = false
-        
-        let hostingController = NSHostingController(rootView: RecordListView())
-        window.contentView = hostingController.view
-        window.makeKeyAndOrderFront(nil)
-        
-        RecordListView.currentWindow = window
     }
 }

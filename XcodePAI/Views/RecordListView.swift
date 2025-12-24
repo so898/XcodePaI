@@ -60,9 +60,7 @@ final class RecordViewModel: ObservableObject {
     }
 }
 
-struct RecordListView: View {
-    static weak var currentWindow: NSWindow?
-    
+struct RecordListView: View {    
     @StateObject private var viewModel = RecordViewModel()
     
     var body: some View {
