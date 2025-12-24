@@ -359,7 +359,11 @@ struct DiffHunkView: View {
                 if hunk.file.isStaged {
                     await gitManager.unstageHunk(hunk)
                 } else {
-                    await gitManager.stageHunk(hunk)
+                    if hunk.file.changeType == .untracked {
+                        await gitManager.stageFile(hunk.file)
+                    } else {
+                        await gitManager.stageHunk(hunk)
+                    }
                 }
             }
         }

@@ -64,12 +64,15 @@ class GitManager: ObservableObject {
     func refreshGitInfo() async {
         async let username = getUsername()
         async let email = getEmail()
-        async let unstaged = getUnstagedFiles()
+        let unstaged = await getUnstagedFiles()
+        let untracked = await getUntrackedFiles()
         async let staged = getStagedFiles()
         
         gitUsername = await username
         gitEmail = await email
-        unstagedFiles = await unstaged
+        unstagedFiles.removeAll()
+        unstagedFiles.append(contentsOf: unstaged)
+        unstagedFiles.append(contentsOf: untracked)
         stagedFiles = await staged
     }
     
@@ -103,6 +106,31 @@ class GitManager: ObservableObject {
         return parseGitStatus(output: output, isStaged: false)
     }
     
+    private func getUntrackedFiles() async -> [GitFile] {
+        let output = await runGitCommand(["status", "--porcelain"])
+        let files = parseGitPorcelain(output: output)
+        
+        var result = [GitFile]()
+        for file in files {
+            let filePath = (gitRepoPath as NSString).appendingPathComponent(file.path)
+            if FileManager.default.fileIsDirectory(atPath: filePath) {
+                if let paths = Utils.getAllFiles(in: filePath) {
+                    for path in paths {
+                        var newPath = path.replacingOccurrences(of: gitRepoPath, with: "")
+                        if newPath.first == "/" {
+                            newPath.removeFirst()
+                        }
+                        result.append(GitFile(path: newPath, changeType: .untracked, isStaged: false))
+                    }
+                }
+            } else {
+                result.append(file)
+            }
+        }
+        
+        return result
+    }
+    
     private func getStagedFiles() async -> [GitFile] {
         let output = await runGitCommand(["diff", "--cached", "--name-status"])
         return parseGitStatus(output: output, isStaged: true)
@@ -124,6 +152,26 @@ class GitManager: ObservableObject {
             }
     }
     
+    private func parseGitPorcelain(output: String) -> [GitFile] {
+        return output
+            .components(separatedBy: .newlines)
+            .filter { !$0.isEmpty }
+            .compactMap { line -> GitFile? in
+                let components = line.components(separatedBy: " ")
+                guard components.count == 2 else { return nil }
+                
+                let status = components[0]
+                let path = components[1]
+                let changeType = GitChangeType.from(status: status)
+                
+                if changeType == .untracked {
+                    return GitFile(path: path, changeType: .untracked, isStaged: false)
+                }
+                
+                return nil
+            }
+    }
+    
     /// Get file content
     func getFileContent(for file: GitFile) -> String? {
         let filePath = (gitRepoPath as NSString).appendingPathComponent(file.path)
@@ -139,11 +187,22 @@ class GitManager: ObservableObject {
         return await runGitCommand(args)
     }
     
+    func getDeletedContent(for file: GitFile) async -> String {
+        return await runGitCommand(["show", "HEAD:\(file.path)"])
+    }
+    
     /// Load diff information for a file
     func loadDiff(for file: GitFile) async {
         selectedFile = file
-        let output = await getDiffContent(for: file)
-        fileDiff = parseDiff(output: output, file: file)
+        if file.changeType == .deleted {
+            let output = await getDeletedContent(for: file)
+            fileDiff = parseDeleted(output: output, file: file)
+        } else if file.changeType == .untracked {
+            fileDiff = parseUntracked(file: file)
+        } else {
+            let output = await getDiffContent(for: file)
+            fileDiff = parseDiff(output: output, file: file)
+        }
     }
     
     // MARK: - Diff Parsing
@@ -213,6 +272,52 @@ class GitManager: ObservableObject {
         if let hunk = currentHunk, !hunkLines.isEmpty {
             hunks.append(DiffHunk(header: hunk.header, lines: hunkLines, file: file))
         }
+        
+        return hunks
+    }
+    
+    private func parseDeleted(output: String, file: GitFile) -> [DiffHunk] {
+        var hunks: [DiffHunk] = []
+        let lines = output.components(separatedBy: .newlines)
+        
+        var hunkLines: [DiffLine] = []
+        
+        var lineNum = 0
+        for line in lines {
+            hunkLines.append(DiffLine(
+                oldLineNum: lineNum,
+                newLineNum: nil,
+                content: line,
+                type: .deletion
+            ))
+            lineNum += 1
+        }
+        hunks.append(DiffHunk(header: "", lines: hunkLines, file: file))
+        
+        return hunks
+    }
+    
+    private func parseUntracked(file: GitFile) -> [DiffHunk] {
+        var hunks: [DiffHunk] = []
+        
+        guard let content = getFileContent(for: file) else {
+            return hunks
+        }
+        let lines = content.components(separatedBy: .newlines)
+        
+        var hunkLines: [DiffLine] = []
+        
+        var lineNum = 0
+        for line in lines {
+            hunkLines.append(DiffLine(
+                oldLineNum: nil,
+                newLineNum: lineNum,
+                content: line,
+                type: .addition
+            ))
+            lineNum += 1
+        }
+        hunks.append(DiffHunk(header: "", lines: hunkLines, file: file))
         
         return hunks
     }
@@ -475,7 +580,7 @@ extension GitManager {
             promptTokens = tokenUsage.promptTokens ?? 0
             outputTokens = tokenUsage.completionTokens ?? 0
         }
-        RecordTracker.shared.recordTokenUsage(modelProvider: modelProvider.name, modelName: config.modelName, inputTokens: promptTokens, outputTokens: outputTokens, isCompletion: false, metadata: ["request": requestString, "resp_content": (response.choices.first?.message.content ?? "")])
+        RecordTracker.shared.recordTokenUsage(modelProvider: modelProvider.name, modelName: config.modelName, inputTokens: promptTokens, outputTokens: outputTokens, isCompletion: false, metadata: ["request": requestString, "resp_content": (response.choices.first?.message.content ?? ""), "resp_reason": (response.choices.first?.message.reasoningContent ?? "")])
         
         return response.choices.first?.message.content ?? ""
     }
@@ -485,16 +590,19 @@ extension GitManager {
         
         for file in stagedFiles {
             let diff = await getDiffContent(for: file)
-            let content = getFileContent(for: file) ?? ""
+            let content = {
+                if file.changeType == .added || file.changeType == .deleted {
+                    return ""
+                }
+                
+                if ["pbxproj", "xcscheme"].contains(((gitRepoPath as NSString).appendingPathComponent(file.path) as NSString).pathExtension)  {
+                    return ""
+                }
+                
+                return getFileContent(for: file) ?? ""
+            }()
             
-            let fileInfo = """
-            ### \(file.path)
-               ```diff
-               \(diff)
-               ```
-               \(content)
-            """
-            infos.append(fileInfo)
+            infos.append(PromptTemplate.diffFileInfoTemplate(file.path, diff, content))
         }
         
         return infos.joined(separator: "\n\n")

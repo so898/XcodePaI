@@ -22,6 +22,7 @@ enum GitChangeType {
     case deleted
     case renamed
     case copied
+    case untracked
     
     static func from(status: String) -> GitChangeType {
         switch status {
@@ -30,6 +31,7 @@ enum GitChangeType {
         case "D": return .deleted
         case "R": return .renamed
         case "C": return .copied
+        case "??": return .untracked
         default: return .modified
         }
     }
@@ -41,6 +43,7 @@ enum GitChangeType {
         case .deleted: return "D"
         case .renamed: return "R"
         case .copied: return "C"
+        case .untracked: return "U"
         }
     }
     
@@ -51,6 +54,7 @@ enum GitChangeType {
         case .deleted: return .red
         case .renamed: return .purple
         case .copied: return .orange
+        case .untracked: return Color(nsColor: .darkGray)
         }
     }
 }

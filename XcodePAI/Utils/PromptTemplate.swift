@@ -135,4 +135,14 @@ extension PromptTemplate {
        ```
     
     """
+    
+    static func diffFileInfoTemplate(_ path: String, _ diff: String, _ content: String) -> String {
+        return """
+            ### \(path)
+               ```diff
+               \(diff)
+               ```
+               \(content)
+            """
+    }
 }
