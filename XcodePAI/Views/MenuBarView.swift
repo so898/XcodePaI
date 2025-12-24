@@ -401,49 +401,13 @@ extension MenuBarManager {
         PluginManager.shared.updateSelectePlugin(id: Configer.selectedPluginId)
     }
     
+    @MainActor
     @objc public func openSettingsView() {
-        if let windowController = settingsWindowController, windowController.window?.isVisible == true {
-            windowController.window?.close()
-            return
-        }
-        
-        if settingsWindowController == nil {
-            let settingsView = SettingsView().globalLoading()
-            let hostingController = NSHostingController(rootView: settingsView)
-            
-            let window = SettingsWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
-                styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
-                backing: .buffered,
-                defer: false)
-            window.collectionBehavior = [.fullScreenAuxiliary, .canJoinAllSpaces]
-            window.level = .normal
-            window.minSize = NSSize(width: 800, height: 600)
-            window.toolbarStyle = .unified
-            window.isReleasedWhenClosed = false
-            window.contentViewController = hostingController
-            window.delegate = self
-            
-            let wc = NSWindowController(window: window)
-            self.settingsWindowController = wc
-        }
-        
-        NSApp.setActivationPolicy(.regular)
-        
-        settingsWindowController?.showWindow(nil)
-        settingsWindowController?.window?.center()
-        settingsWindowController?.window?.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
+        WindowManager.shared.openSettingsView()
     }
     
     @objc func exitApp() {
         NSApplication.shared.terminate(nil)
-    }
-}
-
-extension MenuBarManager: NSWindowDelegate {
-    func windowWillClose(_ notification: Notification) {
-        NSApp.setActivationPolicy(.accessory)
     }
 }
 

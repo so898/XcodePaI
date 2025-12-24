@@ -52,7 +52,6 @@
 		79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1B2E50D144004D9D1A /* PromptTemplate.swift */; };
 		79079A1E2E50F452004D9D1A /* LLMMCPToolUse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */; };
 		79079A202E51C116004D9D1A /* MCPRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A1F2E51C114004D9D1A /* MCPRunner.swift */; };
-		79079A252E54B275004D9D1A /* SettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A242E54B275004D9D1A /* SettingsWindow.swift */; };
 		79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79079A262E54BFBA004D9D1A /* StorageManager.swift */; };
 		7932600F2E675B800017E87F /* XcodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79F743112E672E1200C35D1B /* XcodeKit.framework */; };
 		793260102E675B800017E87F /* XcodeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 79F743112E672E1200C35D1B /* XcodeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -67,7 +66,6 @@
 		7940DF352EFAC43000565AE6 /* GitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF342EFAC42F00565AE6 /* GitManager.swift */; };
 		7940DF372EFAC47100565AE6 /* GitCommitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF362EFAC46B00565AE6 /* GitCommitView.swift */; };
 		7940DF392EFAC72A00565AE6 /* GitModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF382EFAC72600565AE6 /* GitModels.swift */; };
-		7940DF3C2EFAC82B00565AE6 /* GitCommitWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF3B2EFAC82400565AE6 /* GitCommitWindowManager.swift */; };
 		7940DF3E2EFAD65900565AE6 /* GitCommitCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7940DF3D2EFAD65100565AE6 /* GitCommitCommand.swift */; };
 		795A74402E6F3CD000F4BA1E /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */; };
 		795A74422E6F43D300F4BA1E /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74412E6F43D200F4BA1E /* LanguageManager.swift */; };
@@ -102,6 +100,7 @@
 		79CFC7002E6DD93B00367E78 /* AboutSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79CFC6FF2E6DD93500367E78 /* AboutSettingSectionView.swift */; };
 		79E64EB62EEEF0DA00844C5A /* ProviderModelRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E64EB52EEEF0D600844C5A /* ProviderModelRefresher.swift */; };
 		79E64EB82EF5831E00844C5A /* RecordListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E64EB72EF5831500844C5A /* RecordListView.swift */; };
+		79F0069A2EFBE4BD005728D9 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F006992EFBE4B9005728D9 /* WindowManager.swift */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
@@ -197,7 +196,6 @@
 		79079A1B2E50D144004D9D1A /* PromptTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptTemplate.swift; sourceTree = "<group>"; };
 		79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMMCPToolUse.swift; sourceTree = "<group>"; };
 		79079A1F2E51C114004D9D1A /* MCPRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPRunner.swift; sourceTree = "<group>"; };
-		79079A242E54B275004D9D1A /* SettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindow.swift; sourceTree = "<group>"; };
 		79079A262E54BFBA004D9D1A /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		793260242E689FEB0017E87F /* GetSuggestionsCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetSuggestionsCommand.swift; sourceTree = "<group>"; };
 		793260252E689FEB0017E87F /* NextSuggestionCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextSuggestionCommand.swift; sourceTree = "<group>"; };
@@ -210,7 +208,6 @@
 		7940DF342EFAC42F00565AE6 /* GitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitManager.swift; sourceTree = "<group>"; };
 		7940DF362EFAC46B00565AE6 /* GitCommitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCommitView.swift; sourceTree = "<group>"; };
 		7940DF382EFAC72600565AE6 /* GitModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitModels.swift; sourceTree = "<group>"; };
-		7940DF3B2EFAC82400565AE6 /* GitCommitWindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCommitWindowManager.swift; sourceTree = "<group>"; };
 		7940DF3D2EFAD65100565AE6 /* GitCommitCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitCommitCommand.swift; sourceTree = "<group>"; };
 		795A743F2E6F3CD000F4BA1E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		795A74412E6F43D200F4BA1E /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
@@ -245,6 +242,7 @@
 		79E631042E69E41A005BB62B /* ThirdPartyCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ThirdPartyCore; sourceTree = "<group>"; };
 		79E64EB52EEEF0D600844C5A /* ProviderModelRefresher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderModelRefresher.swift; sourceTree = "<group>"; };
 		79E64EB72EF5831500844C5A /* RecordListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordListView.swift; sourceTree = "<group>"; };
+		79F006992EFBE4B9005728D9 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
 		79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyEditView.swift; sourceTree = "<group>"; };
@@ -373,6 +371,7 @@
 				795A74412E6F43D200F4BA1E /* LanguageManager.swift */,
 				799F5F7F2EAF9F7A00868D0E /* ToolCallExtractor.swift */,
 				7975BF8B2EEB30C900821BBF /* CommandFinder.swift */,
+				79F006992EFBE4B9005728D9 /* WindowManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -424,7 +423,6 @@
 				790799E82E4A565E004D9D1A /* MenuBarView.swift */,
 				790799E12E4A36AC004D9D1A /* SettingSectionViews */,
 				790799DF2E4A342E004D9D1A /* SettingsView.swift */,
-				79079A242E54B275004D9D1A /* SettingsWindow.swift */,
 				79E64EB72EF5831500844C5A /* RecordListView.swift */,
 				7940DF292EF7102C00565AE6 /* ChatProxyQuickWindow */,
 				7940DF362EFAC46B00565AE6 /* GitCommitView.swift */,
@@ -516,7 +514,6 @@
 			isa = PBXGroup;
 			children = (
 				7940DF342EFAC42F00565AE6 /* GitManager.swift */,
-				7940DF3B2EFAC82400565AE6 /* GitCommitWindowManager.swift */,
 			);
 			path = GitCommit;
 			sourceTree = "<group>";
@@ -745,7 +742,6 @@
 				7940DF2F2EF8184B00565AE6 /* QuickWindowView.swift in Sources */,
 				790799EB2E4A5868004D9D1A /* AppDelegate.swift in Sources */,
 				79CFC6FE2E6DCF8900367E78 /* CompletionDisabledLanguageList.swift in Sources */,
-				79079A252E54B275004D9D1A /* SettingsWindow.swift in Sources */,
 				79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */,
 				790799C42E48D914004D9D1A /* LLMResponse.swift in Sources */,
 				79CFC6B42E6B3EE900367E78 /* LLMCompletionClient.swift in Sources */,
@@ -762,7 +758,6 @@
 				799F5F772EA5252D00868D0E /* RecordTracker.swift in Sources */,
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
 				79F28F342E5E187100F71A28 /* Configer.swift in Sources */,
-				7940DF3C2EFAC82B00565AE6 /* GitCommitWindowManager.swift in Sources */,
 				7940DF372EFAC47100565AE6 /* GitCommitView.swift in Sources */,
 				79079A162E4FBD95004D9D1A /* ModelManager.swift in Sources */,
 				7940DF2B2EF7106B00565AE6 /* ChatProxyQuickWindowController.swift in Sources */,
@@ -796,6 +791,7 @@
 				790799F22E4BB5E2004D9D1A /* ModelProviderIconListView.swift in Sources */,
 				790799BE2E48B6BD004D9D1A /* HTTPClient.swift in Sources */,
 				795A744A2E6F53A300F4BA1E /* PluginSettingSectionView.swift in Sources */,
+				79F0069A2EFBE4BD005728D9 /* WindowManager.swift in Sources */,
 				790799F02E4BAE54004D9D1A /* AppIconView.swift in Sources */,
 				79BB48442E9E9EB5002F2255 /* ObjcAnalysis.swift in Sources */,
 				79CFC6B02E6A0CE300367E78 /* PartialSuggestion.swift in Sources */,

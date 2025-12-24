@@ -74,10 +74,4 @@ class ChatProxyQuickWindowController {
     }
 }
 
-class CanBecomeKeyWindow: NSWindow {
-    var canBecomeKeyChecker: () -> Bool = { true }
-    override var canBecomeKey: Bool { canBecomeKeyChecker() }
-    override var canBecomeMain: Bool { canBecomeKeyChecker() }
-}
-
 

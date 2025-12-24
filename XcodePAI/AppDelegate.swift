@@ -43,7 +43,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         // IPC
         _ = IPCServer.shared
         
-        _ = GitCommitWindowManager.shared
+        // Windows
+        _ = WindowManager.shared
         
         // Record Tracker
         _ = RecordTracker.shared
