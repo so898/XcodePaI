@@ -26,19 +26,6 @@ enum ThinkParser: Int {
     case inReasoningContent = 2
 }
 
-let ThinkInContentWithCodeSnippetStartMark = "```think\n\n"
-let ThinkInContentWithCodeSnippetStartMarkWithFix = "```think: ThinkContent\n\n"
-let ThinkInContentWithEOTEndMark = "\n\n~~EOT~~\n\n"
-let ThinkInContentWithCodeSnippetEndMark = "\n\n~~EOT~~\n\n```\n\n"
-
-// Tools
-let ToolUseInContentStartMark = "\n\n```tool_use\n\n"
-let ToolUseInContentEndMark = "\n\n~~EOTU~~\n\n```\n\n"
-
-// Xcode Search
-let XcodePromptSearchMark = "##SEARCH:"
-let XcodePromptSearchResultMark = "Your search results are provided below:"
-
 struct SourceCodeInContent {
     let fileType: String?
     let fileName: String?
