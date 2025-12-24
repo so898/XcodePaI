@@ -220,6 +220,16 @@ extension MenuBarManager: NSMenuDelegate {
             item.submenu = subMenu
         }
         
+        if Configer.showGitCommitInStatusMenu {
+            
+            menu.addItem(NSMenuItem.separator())
+            
+            item = NSMenuItem(title: "Open Git Commit Window".localizedString, action: #selector(openGitCommitWindow), keyEquivalent: "")
+            item.target = self
+            item.isEnabled = true
+            menu.addItem(item)
+        }
+        
         if Configer.showXcodeInspectorDebug, Utils.checkAccessibilityPermission() {
             
             menu.addItem(NSMenuItem.separator())
@@ -388,6 +398,12 @@ extension MenuBarManager {
             DisabledLanguageList.shared.disable(lang)
         } else {
             DisabledLanguageList.shared.enable(lang)
+        }
+    }
+    
+    @MainActor @objc private func openGitCommitWindow() {
+        Task {
+            await WindowManager.shared.receiveOpenNewCommitWindowNotificaiton()
         }
     }
     

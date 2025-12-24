@@ -30,6 +30,9 @@ class Configer {
     private static let chatProxyCodeSnippetPreviewFixStorageKey = "chatProxyCodeSnippetPreviewFix"
     private static let chatProxyQuickWindowStorageKey = "chatProxyQuickWindow"
     private static let completionSelectConfigIdStorageKey = "completionSelectConfigId"
+    private static let showGitCommitInStatusMenuStorageKey = "showGitCommitInStatusMenu"
+    private static let gitCommitGenerateUseThinkStorageKey = "gitCommitGenerateUseThink"
+    private static let gitCommitGenerateTimeoutStorageKey = "gitCommitGenerateTimeout"
     private static let selectedPluginIdStorageKey = "selectedPluginId"
     private static let forceLanguageStorageKey = "forceLanguage"
     private static let showXcodeInspectorDebugStorageKey = "showXcodeInspectorDebug"
@@ -118,6 +121,33 @@ class Configer {
                 return uuid
             }
             return UUID()
+        }
+    }
+    
+    static var showGitCommitInStatusMenu: Bool {
+        set {
+            Self.setValue(showGitCommitInStatusMenuStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(showGitCommitInStatusMenuStorageKey, defaultValue: false) ?? false
+        }
+    }
+    
+    static var gitCommitGenerateUseThink: Bool {
+        set {
+            Self.setValue(gitCommitGenerateUseThinkStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(gitCommitGenerateUseThinkStorageKey, defaultValue: false) ?? false
+        }
+    }
+    
+    static var gitCommitGenerateTimeout: TimeInterval {
+        set {
+            Self.setValue(gitCommitGenerateTimeoutStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(gitCommitGenerateTimeoutStorageKey, defaultValue: 5 * 60) ?? 5 * 60
         }
     }
     

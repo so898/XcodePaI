@@ -101,6 +101,7 @@
 		79E64EB62EEEF0DA00844C5A /* ProviderModelRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E64EB52EEEF0D600844C5A /* ProviderModelRefresher.swift */; };
 		79E64EB82EF5831E00844C5A /* RecordListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E64EB72EF5831500844C5A /* RecordListView.swift */; };
 		79F0069A2EFBE4BD005728D9 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F006992EFBE4B9005728D9 /* WindowManager.swift */; };
+		79F0069C2EFC2263005728D9 /* GitIntegrationSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F0069B2EFC224B005728D9 /* GitIntegrationSettingSectionView.swift */; };
 		79F28F322E5CD62500F71A28 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F312E5CD61C00F71A28 /* LLMConfig.swift */; };
 		79F28F342E5E187100F71A28 /* Configer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F332E5E186800F71A28 /* Configer.swift */; };
 		79F28F372E5E243C00F71A28 /* ChatProxyEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */; };
@@ -243,6 +244,7 @@
 		79E64EB52EEEF0D600844C5A /* ProviderModelRefresher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderModelRefresher.swift; sourceTree = "<group>"; };
 		79E64EB72EF5831500844C5A /* RecordListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordListView.swift; sourceTree = "<group>"; };
 		79F006992EFBE4B9005728D9 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
+		79F0069B2EFC224B005728D9 /* GitIntegrationSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitIntegrationSettingSectionView.swift; sourceTree = "<group>"; };
 		79F28F312E5CD61C00F71A28 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		79F28F332E5E186800F71A28 /* Configer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configer.swift; sourceTree = "<group>"; };
 		79F28F362E5E243100F71A28 /* ChatProxyEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyEditView.swift; sourceTree = "<group>"; };
@@ -438,8 +440,9 @@
 				79079A0B2E4F95B7004D9D1A /* MCPSetting */,
 				79F28F352E5E241D00F71A28 /* ChatProxy */,
 				79CFC6CD2E6C155D00367E78 /* Completion */,
+				79F0069B2EFC224B005728D9 /* GitIntegrationSettingSectionView.swift */,
 				795A74482E6F530600F4BA1E /* Plugin */,
-				799F5F7C2EA9215600868D0E /* Usage */,
+				799F5F7D2EA9216900868D0E /* UsageSettingSectionView.swift */,
 				79CFC6FF2E6DD93500367E78 /* AboutSettingSectionView.swift */,
 			);
 			path = SettingSectionViews;
@@ -544,14 +547,6 @@
 				799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */,
 			);
 			path = Record;
-			sourceTree = "<group>";
-		};
-		799F5F7C2EA9215600868D0E /* Usage */ = {
-			isa = PBXGroup;
-			children = (
-				799F5F7D2EA9216900868D0E /* UsageSettingSectionView.swift */,
-			);
-			path = Usage;
 			sourceTree = "<group>";
 		};
 		79BB48422E9E9E86002F2255 /* SourceAnalysis */ = {
@@ -798,6 +793,7 @@
 				79CFC6E02E6C8CEA00367E78 /* Utils.swift in Sources */,
 				799F5F802EAF9F7B00868D0E /* ToolCallExtractor.swift in Sources */,
 				795A744C2E6F5A4000F4BA1E /* PluginDetailView.swift in Sources */,
+				79F0069C2EFC2263005728D9 /* GitIntegrationSettingSectionView.swift in Sources */,
 				799F5F752EA524E300868D0E /* RecordStorage.swift in Sources */,
 				790799B62E487F83004D9D1A /* HTTPConnection.swift in Sources */,
 				790799B22E4873B7004D9D1A /* TCPServer.swift in Sources */,

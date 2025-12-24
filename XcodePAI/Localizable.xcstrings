@@ -23,6 +23,17 @@
       },
       "shouldTranslate" : false
     },
+    "%.0f" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
     "%.1f" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1078,6 +1089,26 @@
         }
       }
     },
+    "Generate Commit Message With Think" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成提交信息时使用思考"
+          }
+        }
+      }
+    },
+    "Generate Timeout" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成超时时间"
+          }
+        }
+      }
+    },
     "Generating…" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1095,6 +1126,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "行间代码补全"
+          }
+        }
+      }
+    },
+    "Git Commit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Git 提交信息"
           }
         }
       }
@@ -1209,6 +1251,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入 Token：%lld"
+          }
+        }
+      }
+    },
+    "Integration" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "集成"
           }
         }
       }
@@ -1452,6 +1505,27 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开配置界面"
+          }
+        }
+      }
+    },
+    "Open Git Commit Window" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Git 提交信息窗口"
+          }
+        }
+      }
+    },
+    "Open Git Commit Window Within Statusbar Menu" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在状态栏菜单中显示 Git 提交信息窗口入口"
           }
         }
       }
@@ -1869,6 +1943,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置…"
+          }
+        }
+      }
+    },
+    "Show Git Commit In Statusbar Menu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在状态栏菜单中展示 Git 提交信息开关"
           }
         }
       }
