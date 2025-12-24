@@ -107,3 +107,78 @@ extension Utils {
         }
     }
 }
+
+enum FileSearchOption {
+    case allFiles
+    case withExtensions([String]) // Only include files with specific extensions
+    case excludeExtensions([String]) // Exclude files with specific extensions
+    case withPrefix(String) // Only include files with specific prefix
+}
+
+extension Utils {
+    static func getAllFiles(in folderPath: String, options: FileSearchOption = .allFiles) -> [String]? {
+        let fileManager = FileManager.default
+        var allFiles: [String] = []
+        
+        // Check path validity
+        guard fileManager.fileIsDirectory(atPath: folderPath) else {
+            print("Error: Path does not exist or is not a directory")
+            return nil
+        }
+        
+        // Determine if file matches the options
+        func shouldIncludeFile(_ filePath: String) -> Bool {
+            let url = URL(fileURLWithPath: filePath)
+            
+            switch options {
+            case .allFiles:
+                return true
+                
+            case .withExtensions(let extensions):
+                let fileExt = url.pathExtension.lowercased()
+                return extensions.contains { $0.lowercased() == fileExt }
+                
+            case .excludeExtensions(let extensions):
+                let fileExt = url.pathExtension.lowercased()
+                return !extensions.contains { $0.lowercased() == fileExt }
+                
+            case .withPrefix(let prefix):
+                return url.lastPathComponent.hasPrefix(prefix)
+            }
+        }
+        
+        // Recursive traversal function
+        func traverseDirectory(at path: String) {
+            do {
+                let contents = try fileManager.contentsOfDirectory(atPath: path)
+                
+                for item in contents {
+                    let fullPath = (path as NSString).appendingPathComponent(item)
+                    var isDir: ObjCBool = false
+                    
+                    if fileManager.fileExists(atPath: fullPath, isDirectory: &isDir) {
+                        if isDir.boolValue {
+                            // Skip some system folders (optional)
+                            let fileName = (fullPath as NSString).lastPathComponent
+                            if !fileName.hasPrefix(".") { // Skip hidden folders
+                                traverseDirectory(at: fullPath)
+                            }
+                        } else {
+                            // Check if it matches the filter criteria
+                            if shouldIncludeFile(fullPath) {
+                                allFiles.append(fullPath)
+                            }
+                        }
+                    }
+                }
+            } catch {
+                print("Error reading directory: \(error)")
+            }
+        }
+        
+        traverseDirectory(at: folderPath)
+        
+        // Sort alphabetically (optional)
+        return allFiles.sorted()
+    }
+}
