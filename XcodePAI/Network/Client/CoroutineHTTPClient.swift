@@ -32,7 +32,7 @@ enum CoroutineHTTPClientError: Error, LocalizedError {
         case .encodingError:
             return "Encoding error"
         case .invalidURL:
-            return  "Invalid URL"
+            return "Invalid URL"
         case .unknown(let error):
             return "Unknown error: \(error)"
         case .invalidResponse:
@@ -119,7 +119,8 @@ class CoroutineHTTPClient {
     static func POST(
         urlString: String,
         headers: [String: Any]? = nil,
-        body: Data? = nil
+        body: Data? = nil,
+        timeout: TimeInterval? = nil
     ) async throws -> Data {
         
         guard let url = URL(string: urlString) else {
@@ -129,6 +130,10 @@ class CoroutineHTTPClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = body
+        
+        if let timeout {
+            request.timeoutInterval = timeout
+        }
         
         // Add headers
         headers?.forEach { key, value in
