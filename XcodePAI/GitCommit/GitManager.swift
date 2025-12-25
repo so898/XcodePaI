@@ -357,10 +357,8 @@ class GitManager: ObservableObject {
     }
     
     func stageAll() async {
-        await withTaskGroup(of: Void.self) { group in
-            for file in unstagedFiles {
-                group.addTask { await self.stageFile(file) }
-            }
+        for file in unstagedFiles {
+            await stageFile(file)
         }
     }
     
@@ -370,10 +368,8 @@ class GitManager: ObservableObject {
     }
     
     func unstageAll() async {
-        await withTaskGroup(of: Void.self) { group in
-            for file in stagedFiles {
-                group.addTask { await self.unstageFile(file) }
-            }
+        for file in stagedFiles {
+            await unstageFile(file)
         }
     }
     
