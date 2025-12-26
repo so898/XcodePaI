@@ -34,26 +34,7 @@ class WindowManager: NSObject, @unchecked Sendable {
 // MARK: Setting Window
 extension WindowManager {
      
-    class SettingsWindow: NSWindow {
-        override var acceptsFirstResponder: Bool {
-            return true
-        }
-        
-        override func keyDown(with event: NSEvent) {
-            let isCommandPressed = event.modifierFlags.contains(.command)
-            
-            if isCommandPressed && event.charactersIgnoringModifiers?.lowercased() == "f" {
-                return
-            } else if isCommandPressed && event.charactersIgnoringModifiers?.lowercased() == "q" {
-                self.close()
-                return
-            } else if isCommandPressed && event.charactersIgnoringModifiers?.lowercased() == "w" {
-                self.close()
-                return
-            }
-            
-            super.keyDown(with: event)
-        }
+    class SettingsWindow: CommandKeyOverrideWindow {
     }
     
     @MainActor
@@ -73,13 +54,14 @@ extension WindowManager {
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered,
             defer: false)
+        window.delegate = self
         window.collectionBehavior = [.fullScreenAuxiliary, .canJoinAllSpaces]
         window.level = .normal
         window.minSize = NSSize(width: 800, height: 600)
         window.toolbarStyle = .unified
         window.isReleasedWhenClosed = false
         window.contentViewController = hostingController
-        window.delegate = self
+        window.canBecomeKeyChecker = { true }
         
         let wc = NSWindowController(window: window)
         wc.window?.center()
@@ -92,7 +74,7 @@ extension WindowManager {
 
 // MARK: Record Window
 extension WindowManager {
-    class RecordListWindow: NSWindow {
+    class RecordListWindow: CommandKeyOverrideWindow {
     }
     
     func openRecordListWindow() {
@@ -113,11 +95,10 @@ extension WindowManager {
             defer: false
         )
         window.delegate = self
-        window.center()
         window.title = "Record List".localizedString
         window.isReleasedWhenClosed = false
         window.contentView = NSHostingView(rootView: RecordListView())
-        window.makeKeyAndOrderFront(nil)
+        window.canBecomeKeyChecker = { true }
         
         let wc = NSWindowController(window: window)
         wc.showWindow(nil)
@@ -132,7 +113,7 @@ extension WindowManager {
 // MARK: Git Commit Window
 extension WindowManager {
     
-    class GitCommitWindow: CanBecomeKeyWindow {
+    class GitCommitWindow: CommandKeyOverrideWindow {
         var path: String?
     }
     
@@ -199,4 +180,26 @@ class CanBecomeKeyWindow: NSWindow {
     var canBecomeKeyChecker: () -> Bool = { true }
     override var canBecomeKey: Bool { canBecomeKeyChecker() }
     override var canBecomeMain: Bool { canBecomeKeyChecker() }
+}
+
+class CommandKeyOverrideWindow: CanBecomeKeyWindow {
+    override var acceptsFirstResponder: Bool {
+        return true
+    }
+    
+    override func keyDown(with event: NSEvent) {
+        let isCommandPressed = event.modifierFlags.contains(.command)
+        
+        if isCommandPressed && event.charactersIgnoringModifiers?.lowercased() == "f" {
+            return
+        } else if isCommandPressed && event.charactersIgnoringModifiers?.lowercased() == "q" {
+            self.close()
+            return
+        } else if isCommandPressed && event.charactersIgnoringModifiers?.lowercased() == "w" {
+            self.close()
+            return
+        }
+        
+        super.keyDown(with: event)
+    }
 }
