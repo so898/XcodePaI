@@ -40,7 +40,7 @@ extension WindowManager {
     @MainActor
     public func openSettingsView() {
         for windowController in windowControllers {
-            if let window = windowController.window as? SettingsWindow, windowController.window?.isVisible == true {
+            if let window = windowController.window as? SettingsWindow {
                 window.close()
                 return
             }
@@ -163,16 +163,14 @@ extension WindowManager {
 }
 
 extension WindowManager: NSWindowDelegate {
-    func windowShouldClose(_ window: NSWindow) -> Bool {
-        if let controller = window.windowController {
+    func windowWillClose(_ notification: Notification) {
+        if let window = notification.object as? NSWindow, let controller = window.windowController {
             windowControllers.removeAll { c in
                 c == controller
             }
         }
         
         afterWindowControllerChanged()
-        
-        return true
     }
 }
 
