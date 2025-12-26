@@ -15,6 +15,9 @@ class MenuBarManager: NSObject, ObservableObject {
     
     static let shared = MenuBarManager()
     
+    public var exitAction = false
+    public var menuOpened = false
+    
     private var menuItem: NSStatusItem?
     private var settingsWindowController: NSWindowController?
     
@@ -352,6 +355,14 @@ extension MenuBarManager: NSMenuDelegate {
         item.target = self
         menu.addItem(item)
     }
+    
+    func menuWillOpen(_ menu: NSMenu) {
+        menuOpened = true
+    }
+    
+    func menuDidClose(_ menu: NSMenu) {
+        menuOpened = false
+    }
 }
 
 // MARK: Actions
@@ -423,6 +434,7 @@ extension MenuBarManager {
     }
     
     @objc func exitApp() {
+        exitAction = true
         NSApplication.shared.terminate(nil)
     }
 }

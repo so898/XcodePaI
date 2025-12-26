@@ -21,10 +21,22 @@ class WindowManager: NSObject, @unchecked Sendable {
         NotificationCenter.default.addObserver(self, selector: #selector(receiveOpenNewCommitWindowNotificaiton), name: .init(rawValue: "OpenNewGitCommitWindow"), object: nil)
     }
     
+    private(set) var hasWindowOpened: Bool = false
+    
+    func quitAction() {
+        for windowController in windowControllers {
+            if windowController.window?.isVisible ?? false {
+                windowController.close()
+            }
+        }
+    }
+    
     private func afterWindowControllerChanged() {
         if windowControllers.isEmpty {
+            hasWindowOpened = false
             NSApp.setActivationPolicy(.accessory)
         } else {
+            hasWindowOpened = true
             NSApp.setActivationPolicy(.regular)
             NSApp.activate(ignoringOtherApps: true)
         }

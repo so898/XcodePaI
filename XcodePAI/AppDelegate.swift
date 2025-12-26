@@ -123,4 +123,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return false
     }
+    
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        if MenuBarManager.shared.exitAction {
+            return .terminateNow
+        }
+        if WindowManager.shared.hasWindowOpened {
+            WindowManager.shared.quitAction()
+            return .terminateCancel
+        }
+        return .terminateNow
+    }
 }
