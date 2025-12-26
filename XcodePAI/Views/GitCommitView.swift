@@ -15,6 +15,7 @@ struct GitCommitView: View {
     @State private var generatingCommit = false
     
     let initialPath: String
+    let titleText: (_ title: String) -> Void
     
     var body: some View {
         VStack(spacing: 0) {
@@ -57,6 +58,7 @@ struct GitCommitView: View {
         }
         .task {
             await gitManager.loadGitStatus(from: initialPath)
+            titleText("\(gitManager.getRepoName()) - \(await gitManager.getBranchName())")
         }
         .sheet(isPresented: $generatingCommit, content: {
             loadingOverlay

@@ -160,7 +160,9 @@ extension WindowManager {
         window.delegate = self
         window.isReleasedWhenClosed = true
         window.contentView = NSHostingView(
-            rootView: GitCommitView(initialPath: path)
+            rootView: GitCommitView(initialPath: path, titleText: { title in
+                window.title = title
+            })
         )
         window.canBecomeKeyChecker = { true }
         
