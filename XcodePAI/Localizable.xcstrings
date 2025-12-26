@@ -93,6 +93,12 @@
       },
       "shouldTranslate" : false
     },
+    "⌘⏎" : {
+      "shouldTranslate" : false
+    },
+    "⌘G" : {
+      "shouldTranslate" : false
+    },
     "60" : {
       "shouldTranslate" : false
     },

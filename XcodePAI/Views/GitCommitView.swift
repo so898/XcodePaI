@@ -51,6 +51,7 @@ struct GitCommitView: View {
         }
         .alert(alertState.title, isPresented: $alertState.isPresented) {
             Button("OK", role: .cancel) { }
+                .keyboardShortcut(.defaultAction)
         } message: {
             Text(alertState.message)
         }
@@ -580,16 +581,33 @@ struct ActionButtons: View {
             }
             .buttonStyle(.borderless)
             .help("Refresh git status".localizedString)
+            .keyboardShortcut(.init("r", modifiers: [.command]))
             
             Spacer()
+            Button {
+                onGenerate()
+            } label: {
+                Text(generateButtonTitle)
+                Text("⌘G")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .buttonStyle(.bordered)
+            .disabled(isGenerateDisabled)
+            .keyboardShortcut(.init("g", modifiers: [.command]))
             
-            Button(generateButtonTitle, action: onGenerate)
-                .buttonStyle(.bordered)
-                .disabled(isGenerateDisabled)
-            
-            Button("Commit", action: onCommit)
-                .buttonStyle(.borderedProminent)
-                .disabled(isCommitDisabled)
+            Button {
+                onCommit()
+            } label: {
+                Text("Commit")
+                Text("⌘⏎")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(isCommitDisabled)
+            .keyboardShortcut(.init(.return, modifiers: [.command]))
+
         }
     }
 }
