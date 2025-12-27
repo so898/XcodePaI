@@ -11,7 +11,7 @@ import XcodeInspector
 
 final class TabToAcceptSuggestion {
     let hook: CGEventHookType = CGEventHook(eventsOfInterest: [.keyDown]) { message in
-        Logger.service.debug("TabToAcceptSuggestion: \(message)")
+//        Logger.service.debug("TabToAcceptSuggestion: \(message)")
     }
 
     let workspacePool: WorkspacePool

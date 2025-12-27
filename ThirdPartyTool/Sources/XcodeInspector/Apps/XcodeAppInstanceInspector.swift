@@ -406,6 +406,9 @@ extension XcodeAppInstanceInspector {
     }
     
     func updateModelButtonLocation(_ event: AXNotificationKind) {
+        guard let enabled = UserDefaults.standard.value(forKey: "chatProxyQuickWindow") as? Bool, enabled else {
+            return
+        }
         guard event == .applicationActivated || event == .applicationDeactivated || event == .focusedWindowChanged || event == .focusedUIElementChanged || event == .created || event == .uiElementDestroyed || event == .windowMoved || event == .windowResized || event == .windowMiniaturized || event == .windowDeminiaturized else {
             return
         }
