@@ -37,12 +37,20 @@ OpenAI format `v1/completions` and `v1/chat/completions` endpionts with <b>parti
 
 <img alt="Code Completion of XcodePaI" src="./Docs/Images/code-completions.gif" width="800" />
 
-**[How to config code completion with your model](./Docs/HowTo/UseModelForCodeCompletion.md)**.
+## Git Integration
+
+You can use XcodePaI to manage your code changes and generate git commit mesage with models.
 
 ## Requirements
 
 - macOS 15+
 - Xcode 16+
+
+## Guide
+
+- **[How to add model provider](./Docs/HowTo/AddModelProvider.md)**
+- **[How to use model for code completion](./Docs/HowTo/UseModelForCodeCompletion.md)**
+- **[How to generate git commit message](./Docs/HowTo/UseModelForCodeCompletion.md)**
 
 ## Getting Started
 
