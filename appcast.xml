@@ -3,10 +3,10 @@
     <channel>
         <title>XcodePaI</title>
         <item>
-            <title>1.0.4</title>
-            <pubDate>Sun, 14 Dec 2025 23:29:00 +0800</pubDate>
+            <title>1.0.5</title>
+            <pubDate>周日, 28 12月 2025 17:15:29 +0800</pubDate>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/so898/XcodePaI/releases/download/1.0.4(88)/XcodePaI.zip" sparkle:version="88" sparkle:shortVersionString="1.0.4" length="12350663" type="application/octet-stream" sparkle:edSignature="k1oYTD2Lgbvt8VvrdUEXbt+SFuJrdvpuvr5CgSDnBsRe9ndXbDTwSoJ5zUWPa4p285fGQQGrPxt5Jazmvyo6BQ=="/>
+            <enclosure url="https://github.com/so898/XcodePaI/releases/download/1.0.5(99)/XcodePaI.zip" sparkle:version="99" sparkle:shortVersionString="1.0.5" length="12623235" type="application/octet-stream" sparkle:edSignature="rVPEeZLlnoE8wDC+Ql8jXnfzkx5ZUP2JB+HL3jy6+3gQBh5CWKwprE/xit2euFejpXBB3FUiFtuG4QsUVJc9DQ=="/>
         </item>
     </channel>
 </rss>
