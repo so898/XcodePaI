@@ -9,8 +9,8 @@
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 SLASH = / // Otherwise a double slash is treated as a comment, even inside a quoted string
 
-APP_VERSION = 1.0.4
-APP_BUILD = 88
+APP_VERSION = 1.0.5
+APP_BUILD = 99
 HOST_APP_NAME = XcodePaI
 BUNDLE_IDENTIFIER_BASE = com.R3Studio.XcodePAI
 APPLICATION_SUPPORT_FOLDER = com.R3Studio.XcodePAI
