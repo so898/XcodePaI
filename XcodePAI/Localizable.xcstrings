@@ -2308,6 +2308,7 @@
       }
     },
     "Token Usage Records" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {

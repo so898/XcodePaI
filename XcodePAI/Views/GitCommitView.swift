@@ -13,6 +13,7 @@ struct GitCommitView: View {
     @State private var commitMessage = ""
     @State private var alertState = AlertState()
     @State private var generatingCommit = false
+    @StateObject private var languageManager = LanguageManager.shared
     
     let initialPath: String
     let titleText: (_ title: String) -> Void
@@ -63,6 +64,7 @@ struct GitCommitView: View {
         .sheet(isPresented: $generatingCommit, content: {
             loadingOverlay
         })
+        .environment(\.locale, languageManager.currentLanguage == nil ? .current : .init(identifier: languageManager.currentLanguage!))
     }
     
     private var loadingOverlay: some View {

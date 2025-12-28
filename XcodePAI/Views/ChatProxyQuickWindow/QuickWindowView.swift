@@ -9,6 +9,7 @@ import SwiftUI
 
 struct QuickWindowView: View {
     @StateObject private var dataManager = QuickWindowDataManager()
+    @StateObject private var languageManager = LanguageManager.shared
     
     var body: some View {
         VStack{
@@ -65,6 +66,7 @@ struct QuickWindowView: View {
             Spacer()
         }
         .frame(height: QuickWindowHeight)
+        .environment(\.locale, languageManager.currentLanguage == nil ? .current : .init(identifier: languageManager.currentLanguage!))
     }
     
     private func selectModel(_ id: String, provider: String) {

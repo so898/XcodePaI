@@ -62,6 +62,7 @@ final class RecordViewModel: ObservableObject {
 
 struct RecordListView: View {    
     @StateObject private var viewModel = RecordViewModel()
+    @StateObject private var languageManager = LanguageManager.shared
     
     var body: some View {
         VStack {
@@ -178,7 +179,8 @@ struct RecordListView: View {
                 .padding(.vertical, 4)
             }
         }
-        .navigationTitle("Token Usage Records")
+        .navigationTitle("Token Usage Records".localizedString)
+        .environment(\.locale, languageManager.currentLanguage == nil ? .current : .init(identifier: languageManager.currentLanguage!))
     }
 }
 
