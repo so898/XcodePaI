@@ -62,8 +62,17 @@ extension PartialSuggestion: SuggestionPortalProtocol {
             return []
         }
         
-        if let firstCodeBlock = Utils.extractMarkdownCodeBlocks(from: completionContent).first {
-            completionContent = firstCodeBlock
+        let (hasCodeBlock, codes) = Utils.extractMarkdownCodeBlocks(from: completionContent)
+        if hasCodeBlock {
+            if let firstCodeBlock = codes.first {
+                completionContent = firstCodeBlock
+            } else {
+                completionContent = ""
+            }
+        }
+        
+        guard !completionContent.isEmpty else {
+            return []
         }
         
         completionContent += "\n"

@@ -61,9 +61,15 @@ extension PrefixSuffixSuggestion: SuggestionPortalProtocol {
                 
                 let (id, responseContent) = try await LLMCompletionClient.doPromptChatCompletionRequest(model, provider: provider, context: context, prompt: prefixContent ?? "", suffix: hasSuffix ? suffixContent : nil, system: PromptTemplate.codeSuggestionFIMChatCompletionSystemPrompt.replacingOccurrences(of: "{{LANGUAGE}}", with: language), headers: headers)
                 
-                if let responseContent = responseContent,
-                   let firstCodeBlock = Utils.extractMarkdownCodeBlocks(from: responseContent).first {
-                    return (id, firstCodeBlock)
+                if let responseContent = responseContent {
+                    let (hasCodeBlock, codes) = Utils.extractMarkdownCodeBlocks(from: responseContent)
+                    if hasCodeBlock {
+                        if let firstCodeBlock = codes.first {
+                            return (id, firstCodeBlock)
+                        } else {
+                            return (id, nil)
+                        }
+                    }
                 }
                 
                 return (id, responseContent)

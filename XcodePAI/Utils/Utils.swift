@@ -17,16 +17,18 @@ struct Utils {
 
 // MARK: Extract code block from LLM reponse markdown
 extension Utils {
-    static func extractMarkdownCodeBlocks(from text: String) -> [String] {
+    static func extractMarkdownCodeBlocks(from text: String) -> (Bool, [String]) {
         var codeBlocks: [String] = []
         var currentLines: [String] = []
         var inCodeBlock = false
+        var foundCodeBlock = false
         
         let lines = text.components(separatedBy: .newlines)
         
         for line in lines {
             if !inCodeBlock, isCodeBlockStart(line: line) {
                 // New code block
+                foundCodeBlock = true
                 inCodeBlock = true
                 currentLines = []
                 continue
@@ -62,7 +64,7 @@ extension Utils {
             codeBlocks.append(codeContent)
         }
         
-        return codeBlocks
+        return (foundCodeBlock, codeBlocks)
     }
     
     // Check code block start mark
