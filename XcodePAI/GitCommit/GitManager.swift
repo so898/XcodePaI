@@ -532,8 +532,15 @@ extension GitManager {
         } else {
             prompt = prompt.replacingOccurrences(of: "<USER_DRAFT>", with: "")
         }
+        
+        let message = try await doLLMReqeust(with: prompt)
+        
+        let (hasBlock, contents) = Utils.extractMarkdownCodeBlocks(from: message)
+        if hasBlock {
+            return contents.first ?? ""
+        }
 
-        return try await doLLMReqeust(with: prompt)
+        return message
     }
     
     private func doLLMReqeust(with prompt: String) async throws -> String {
