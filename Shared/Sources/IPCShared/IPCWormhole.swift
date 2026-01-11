@@ -24,64 +24,66 @@ public enum IPCWormholeError: Error, LocalizedError {
     }
 }
 
+// MARK: - Supporting Private Protocols
+
+private protocol AnyReplyHandler {
+    func handleReply(data: Data)
+    func timeout()
+}
+
+private protocol AnyMessageListener {
+    func handleMessage(data: Data, replyHandler: @escaping (Any?) -> Void)
+}
+
+// MARK: - Inter-process communication class
+
 /// Inter-process communication class, designed based on MMWormhole
 public class IPCWormhole: NSObject, @unchecked Sendable {
     private let groupID: String
     private let directoryURL: URL
-    private var listeners: [String: Any] = [:]
-    private var pendingReplies: [String: Any] = [:]
+    private var listeners: [String: Any] = [:]          // stores AnyMessageListener
+    private var pendingReplies: [String: AnyReplyHandler] = [:]
     private let serialQueue = DispatchQueue(label: "com.ipcwormhole.serial")
     private var filePresenter: IPCFilePresenter?
-    private let operationQueue = OperationQueue()
-    
     // Unique process instance identifier to prevent self-consumption
     private let instanceID: String
-    private var sentMessageIDs: Set<String> = []
-    private let maxSentMessageIDsCache = 1000
-    
     // Performance optimization: cache processed files to avoid duplicate processing
     private var processedFiles: Set<String> = []
     private let maxProcessedFilesCache = 1000
-    
     // Debounce handling: avoid frequent file system events
     private var debounceTimer: DispatchSourceTimer?
-    private let debounceInterval: TimeInterval = 0.05 // 50ms debounce
-    
+    private let debounceInterval: TimeInterval = 0.05   // 50ms debounce
     // Fallback polling mechanism: ensure cross-app file changes can be detected
     private var fallbackTimer: DispatchSourceTimer?
     private var isMonitoring = false
-    private let fallbackInterval: TimeInterval = 0.2 // 200ms polling interval
+    private let fallbackInterval: TimeInterval = 0.2    // 200ms polling interval
     
     /// Initialize inter-process communication class
     /// - Parameter groupID: App Group identifier
     public init(groupID: String) throws {
         self.groupID = groupID
-        
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupID) else {
             throw IPCWormholeError.groupContainerNotFound
         }
-        
         self.directoryURL = containerURL.appendingPathComponent("IPCWormhole")
-        
         // Generate unique process instance identifier to prevent self-consumption
         self.instanceID = UUID().uuidString
-        
-        // Configure operation queue
-        operationQueue.maxConcurrentOperationCount = 1
-        operationQueue.name = "com.ipcwormhole.filepresenter"
-        
         super.init()
         
         // Ensure directory exists
         try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true, attributes: nil)
         
-        // Start monitoring
-        startMonitoring()
+        // Start monitoring asynchronously on the serial queue
+        serialQueue.async { [weak self] in
+            self?.startMonitoring()
+        }
     }
     
     deinit {
         stopMonitoring()
     }
+    
+    // MARK: - Public Methods
     
     /// Send message (no reply)
     /// - Parameters:
@@ -151,37 +153,36 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
         }
     }
     
-    // MARK: - Private Methods
+    // MARK: - Private Core Methods
     
     private func startMonitoring() {
         guard !isMonitoring else { return }
         isMonitoring = true
         
-        // Strategy 1: Try using NSFilePresenter
+        // Strategy 1: Use NSFilePresenter
         setupFilePresenterMonitoring()
         
-        // Strategy 2: Always use polling as fallback to ensure cross-app reliability
+        // Strategy 2: Always use polling as fallback
         setupFallbackPolling()
         
         // Process existing files
-        serialQueue.async { [weak self] in
-            self?.handleFileSystemEvent()
-        }
+        handleFileSystemEvent()
     }
     
     private func setupFilePresenterMonitoring() {
         guard filePresenter == nil else { return }
         
-        // Create NSFilePresenter
-        filePresenter = IPCFilePresenter(directoryURL: directoryURL) { [weak self] in
+        let presenter = IPCFilePresenter(directoryURL: directoryURL) { [weak self] in
             self?.scheduleFileSystemEventHandling()
         }
         
-        // Register on main thread
-        DispatchQueue.main.async { [weak self] in
-            guard let presenter = self?.filePresenter else { return }
-            NSFileCoordinator.addFilePresenter(presenter)
+        let add = { NSFileCoordinator.addFilePresenter(presenter) }
+        if Thread.isMainThread {
+            add()
+        } else {
+            DispatchQueue.main.sync(execute: add)
         }
+        self.filePresenter = presenter
     }
     
     private func setupFallbackPolling() {
@@ -197,29 +198,25 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
         guard isMonitoring else { return }
         isMonitoring = false
         
-        // Cancel debounce timer
         debounceTimer?.cancel()
         debounceTimer = nil
         
-        // Stop fallback polling
         fallbackTimer?.cancel()
         fallbackTimer = nil
         
-        // Remove file presenter on main thread
         if let presenter = filePresenter {
-            DispatchQueue.main.async {
-                NSFileCoordinator.removeFilePresenter(presenter)
+            let remove = { NSFileCoordinator.removeFilePresenter(presenter) }
+            if Thread.isMainThread {
+                remove()
+            } else {
+                DispatchQueue.main.sync(execute: remove)
             }
             filePresenter = nil
         }
     }
     
-    /// Debounced file system event handling
     private func scheduleFileSystemEventHandling() {
-        // Cancel previous timer
         debounceTimer?.cancel()
-        
-        // Create new timer
         debounceTimer = DispatchSource.makeTimerSource(queue: serialQueue)
         debounceTimer?.schedule(deadline: .now() + debounceInterval)
         debounceTimer?.setEventHandler { [weak self] in
@@ -239,10 +236,6 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
                 requiresReply: false,
                 senderID: instanceID
             )
-            
-            // Record sent message ID to prevent self-consumption
-            sentMessageIDs.insert(messageID)
-            
             try writeMessage(envelope)
         } catch {
             print("Failed to send message: \(error)")
@@ -266,21 +259,19 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
                 senderID: instanceID
             )
             
-            // Record sent message ID to prevent self-consumption
-            sentMessageIDs.insert(messageID)
+            var replyHandler = ReplyHandler<R>(completion: completion)
             
-            // Store pending reply message
-            let replyHandler = ReplyHandler<R>(completion: completion)
+            let timeoutWorkItem = DispatchWorkItem { [weak self] in
+                self?.serialQueue.async {
+                    if let handler = self?.pendingReplies.removeValue(forKey: messageID) {
+                        handler.timeout()
+                    }
+                }
+            }
+            replyHandler.timeoutWorkItem = timeoutWorkItem
+            
             pendingReplies[messageID] = replyHandler
-            
-            // Set timeout
-//            DispatchQueue.global().asyncAfter(deadline: .now() + replyTimeout) { [weak self] in
-//                self?.serialQueue.async {
-//                    if let _ = self?.pendingReplies.removeValue(forKey: messageID) {
-//                        completion(.failure(IPCWormholeError.timeout))
-//                    }
-//                }
-//            }
+            DispatchQueue.global().asyncAfter(deadline: .now() + replyTimeout, execute: timeoutWorkItem)
             
             try writeMessage(envelope)
         } catch {
@@ -298,16 +289,13 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
         do {
             let fileURLs = try FileManager.default.contentsOfDirectory(
                 at: directoryURL,
-                includingPropertiesForKeys: [.contentModificationDateKey, .fileSizeKey],
+                includingPropertiesForKeys: [.contentModificationDateKey],
                 options: [.skipsHiddenFiles]
             ).filter { $0.pathExtension == "json" }
             
-            // Sort by modification time, process new files first
             let sortedFiles = fileURLs.sorted { url1, url2 in
-                guard let date1 = try? url1.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate,
-                      let date2 = try? url2.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate else {
-                    return false
-                }
+                let date1 = (try? url1.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? .distantPast
+                let date2 = (try? url2.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? .distantPast
                 return date1 < date2
             }
             
@@ -315,55 +303,33 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
                 handleMessageFile(fileURL)
             }
             
-            // Clean cache to prevent memory leaks
+            // Trim processedFiles cache if too large
             if processedFiles.count > maxProcessedFilesCache {
-                let excess = processedFiles.count - maxProcessedFilesCache / 2
-                let toRemove = Array(processedFiles.prefix(excess))
-                processedFiles.subtract(toRemove)
+                let target = maxProcessedFilesCache / 2
+                while processedFiles.count > target {
+                    processedFiles.removeFirst()
+                }
             }
-            
-            // Clean sent message IDs cache
-            if sentMessageIDs.count > maxSentMessageIDsCache {
-                let excess = sentMessageIDs.count - maxSentMessageIDsCache / 2
-                let toRemove = Array(sentMessageIDs.prefix(excess))
-                sentMessageIDs.subtract(toRemove)
-            }
-            
         } catch {
-            // Silently handle errors to avoid log spam
+            // Silently ignore directory read errors
         }
     }
     
     private func handleMessageFile(_ fileURL: URL) {
         let fileName = fileURL.lastPathComponent
-        
-        // Check if this file has been processed
-        guard !processedFiles.contains(fileName) else {
-            return
-        }
+        guard !processedFiles.contains(fileName) else { return }
         
         do {
             let data = try Data(contentsOf: fileURL)
             let envelope = try JSONDecoder().decode(MessageEnvelope.self, from: data)
             
-            // Prevent self-consumption: check if it's a message sent by self
+            // Prevent self-consumption using senderID
             if envelope.senderID == instanceID {
-                // Mark as processed and delete file, but don't process business logic
                 processedFiles.insert(fileName)
                 return
             }
             
-            // Also check if it's a sent message ID (double protection)
-            if sentMessageIDs.contains(envelope.id) {
-                processedFiles.insert(fileName)
-                try? FileManager.default.removeItem(at: fileURL)
-                return
-            }
-            
-            // Mark as processed
             processedFiles.insert(fileName)
-            
-            // Delete processed file
             try? FileManager.default.removeItem(at: fileURL)
             
             if envelope.isReply {
@@ -372,7 +338,6 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
                 handleIncomingMessage(envelope)
             }
         } catch {
-            // Delete invalid file
             try? FileManager.default.removeItem(at: fileURL)
         }
     }
@@ -382,27 +347,18 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
               let handler = pendingReplies.removeValue(forKey: replyToID) else {
             return
         }
-        
-        if let replyHandler = handler as? AnyReplyHandler {
-            replyHandler.handleReply(data: envelope.data)
-        }
+        handler.handleReply(data: envelope.data)
     }
     
     private func handleIncomingMessage(_ envelope: MessageEnvelope) {
-        guard let listener = listeners[envelope.identifier] else {
+        guard let listener = listeners[envelope.identifier] as? AnyMessageListener else {
             return
         }
-        
-        if let messageListener = listener as? AnyMessageListener {
-            messageListener.handleMessage(
-                data: envelope.data,
-                replyHandler: { [weak self] replyData in
-                    guard envelope.requiresReply else { return }
-                    self?.serialQueue.async {
-                        self?.sendReply(to: envelope, replyData: replyData)
-                    }
-                }
-            )
+        listener.handleMessage(data: envelope.data) { [weak self] replyData in
+            guard envelope.requiresReply else { return }
+            self?.serialQueue.async {
+                self?.sendReply(to: envelope, replyData: replyData)
+            }
         }
     }
     
@@ -419,10 +375,6 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
                 replyToID: originalMessage.id,
                 senderID: instanceID
             )
-            
-            // Record sent reply ID
-            sentMessageIDs.insert(replyID)
-            
             try writeMessage(replyEnvelope)
         } catch {
             print("Failed to send reply: \(error)")
@@ -442,7 +394,7 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
     }
 }
 
-// MARK: - Supporting Types
+// MARK: - Private Supporting Types
 
 private struct MessageEnvelope: Codable {
     let id: String
@@ -475,40 +427,27 @@ private struct MessageEnvelope: Codable {
     }
 }
 
-private protocol AnyReplyHandler {
-    func handleReply(data: Data)
-}
-
 private struct ReplyHandler<T: Codable>: AnyReplyHandler {
     let completion: (Result<T, Error>) -> Void
+    var timeoutWorkItem: DispatchWorkItem?
     
-        func handleReply(data: Data) {
-            do {
-                if data.isEmpty {
-                    completion(.failure(IPCWormholeError.emptyResponse))
-                } else {
-                    let response = try JSONDecoder().decode(T.self, from: data)
-                    completion(.success(response))
-                }
-            } catch {
-                completion(.failure(IPCWormholeError.serializationError(error)))
+    func handleReply(data: Data) {
+        timeoutWorkItem?.cancel()
+        do {
+            if data.isEmpty {
+                completion(.failure(IPCWormholeError.emptyResponse))
+            } else {
+                let response = try JSONDecoder().decode(T.self, from: data)
+                completion(.success(response))
             }
+        } catch {
+            completion(.failure(IPCWormholeError.serializationError(error)))
         }
-}
-
-// Protocol for detecting Optional types
-private protocol OptionalProtocol {
-    static var none: Any { get }
-}
-
-extension Optional: OptionalProtocol {
-    static var none: Any {
-        return Optional<Wrapped>.none as Any
     }
-}
-
-private protocol AnyMessageListener {
-    func handleMessage(data: Data, replyHandler: @escaping (Any?) -> Void)
+    
+    func timeout() {
+        completion(.failure(IPCWormholeError.timeout))
+    }
 }
 
 private struct MessageListener<T: Codable>: AnyMessageListener {
@@ -566,59 +505,42 @@ private class IPCFilePresenter: NSObject, NSFilePresenter {
     
     /// Called when subitem appears
     func presentedSubitemDidAppear(at url: URL) {
-        guard isActive else {
-            return
-        }
-        
-        if url.pathExtension == "json" {
-            // Use async delay to avoid issues with files not yet fully written
-            DispatchQueue.global().asyncAfter(deadline: .now() + 0.01) { [weak self] in
-                guard let self = self, self.isActive else { return }
-                self.changeHandler()
-            }
+        guard isActive, url.pathExtension == "json" else { return }
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.01) { [weak self] in
+            guard let self = self, self.isActive else { return }
+            self.changeHandler()
         }
     }
     
     /// Called when subitem changes
     func presentedSubitemDidChange(at url: URL) {
-        guard isActive else { return }
-        
-        if url.pathExtension == "json" {
-            changeHandler()
-        }
+        guard isActive, url.pathExtension == "json" else { return }
+        changeHandler()
     }
     
-    /// Directory content changes
     func presentedItemDidChange() {
         guard isActive else { return }
         changeHandler()
     }
     
-    /// Called when subitem is removed
     func presentedSubitemDidDisappear(at url: URL) {
-        // No special handling needed when files are deleted, as we delete files after processing
+        // no-op
     }
     
-    /// Handle file coordinator errors
     func presentedItemDidMove(to newURL: URL) {
-        // Handle directory move, but unlikely to happen for our use case
+        // no-op
     }
     
-    /// Handle error cases
     func presentedItemDidLose(_ version: NSFileVersion) {
-        // File version lost, can handle recovery logic here
+        // no-op
     }
     
-    /// Handle file coordinator read errors
     func presentedItemDidGain(_ version: NSFileVersion) {
-        // Got new version, may need to reprocess
         guard isActive else { return }
         changeHandler()
     }
     
-    /// Handle file coordinator conflicts
     func presentedItemDidResolveConflict(_ version: NSFileVersion) {
-        // Reprocess after resolving conflicts
         guard isActive else { return }
         changeHandler()
     }
@@ -688,9 +610,9 @@ public extension IPCWormhole {
     /// - Parameter completion: Completion callback, returns identifier list
     func getListeningIdentifiers(completion: @escaping ([String]) -> Void) {
         serialQueue.async { [weak self] in
-            let identifiers = Array(self?.listeners.keys ?? Dictionary<String, Any>().keys)
+            let ids = Array(self?.listeners.keys as? [String] ?? [])
             DispatchQueue.main.async {
-                completion(identifiers)
+                completion(ids)
             }
         }
     }
@@ -707,14 +629,12 @@ public extension IPCWormhole {
     func getStatistics(completion: @escaping (IPCWormholeStatistics) -> Void) {
         serialQueue.async { [weak self] in
             guard let self = self else { return }
-            
             let stats = IPCWormholeStatistics(
                 listeningIdentifiersCount: self.listeners.count,
                 pendingRepliesCount: self.pendingReplies.count,
                 processedFilesCount: self.processedFiles.count,
                 isMonitoring: self.filePresenter != nil
             )
-            
             DispatchQueue.main.async {
                 completion(stats)
             }
