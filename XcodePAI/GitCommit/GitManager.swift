@@ -380,13 +380,47 @@ class GitManager: ObservableObject {
     func unstageHunk(_ hunk: DiffHunk) async {
         await applyPatch(for: hunk, reverse: true)
     }
+        
+    /// Discard changes in a specific hunk
+    func discardHunk(_ hunk: DiffHunk) async {
+        if hunk.file.isStaged {
+            // For staged hunks, first unstage them
+            await unstageHunk(hunk)
+        }
+        
+        // Apply reverse patch to working directory (discard changes)
+        await applyPatch(for: hunk, reverse: true, cached: false)
+    }
     
-    private func applyPatch(for hunk: DiffHunk, reverse: Bool) async {
+    /// Discard all changes in a file
+    func discardFile(_ file: GitFile) async {
+        if file.changeType == .untracked {
+            // For untracked files, simply remove them
+            let filePath = (gitRepoPath as NSString).appendingPathComponent(file.path)
+            try? fileManager.removeItem(atPath: filePath)
+        } else {
+            // For tracked files, use git checkout to discard changes
+            // This handles both unstaged and staged changes
+            _ = await runGitCommand(["checkout", "HEAD", "--", file.path])
+        }
+        
+        await refreshGitStatus()
+        
+        // If this file is currently selected, reload its diff (which should now be empty)
+        if let selectedFile = selectedFile, selectedFile == file {
+            await loadDiff(for: file)
+        }
+    }
+    
+    private func applyPatch(for hunk: DiffHunk, reverse: Bool, cached: Bool = true) async {
         let patch = createPatch(for: hunk)
         let tempFile = createTemporaryPatchFile(patch: patch)
         defer { removeTemporaryFile(at: tempFile) }
         
-        var args = ["apply", "--cached"]
+        var args = ["apply"]
+        if cached {
+            args.append("--cached")
+        }
         if reverse {
             args.append("--reverse")
         }

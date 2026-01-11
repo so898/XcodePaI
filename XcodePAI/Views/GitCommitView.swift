@@ -177,6 +177,7 @@ struct FileListView<Files: RandomAccessCollection>: View where Files.Element == 
     let primaryAction: () -> Void
     let fileAction: (GitFile) -> Void
     let fileTapAction: (GitFile) -> Void
+    let fileDiscardAction: (GitFile) -> Void
     let selectedFile: GitFile?
     
     var body: some View {
@@ -193,6 +194,7 @@ struct FileListView<Files: RandomAccessCollection>: View where Files.Element == 
                     file: file,
                     actionIcon: actionIcon(for: file),
                     onAction: { fileAction(file) },
+                    onDiscard: { fileDiscardAction(file) },
                     onTap: { fileTapAction(file) },
                     isSelected: selectedFile?.id == file.id
                 )
@@ -217,7 +219,9 @@ struct UnstagedFilesView: View {
             primaryActionTitle: "Stage All".localizedString,
             primaryAction: { Task { await gitManager.stageAll() } },
             fileAction: { file in Task { await gitManager.stageFile(file) } },
-            fileTapAction: { file in Task { await gitManager.loadDiff(for: file) } },
+            fileTapAction: { file in Task { await gitManager.loadDiff(for: file) } }, fileDiscardAction: { file in 
+                Task { await gitManager.discardFile(file) }
+            },
             selectedFile: gitManager.selectedFile
         )
     }
@@ -234,7 +238,9 @@ struct StagedFilesView: View {
             primaryActionTitle: "Unstage All".localizedString,
             primaryAction: { Task { await gitManager.unstageAll() } },
             fileAction: { file in Task { await gitManager.unstageFile(file) } },
-            fileTapAction: { file in Task { await gitManager.loadDiff(for: file) } },
+            fileTapAction: { file in Task { await gitManager.loadDiff(for: file) } }, fileDiscardAction: { file in 
+                Task { await gitManager.discardFile(file) }
+            },
             selectedFile: gitManager.selectedFile
         )
     }
@@ -265,6 +271,7 @@ struct FileRowView: View {
     let file: GitFile
     let actionIcon: String
     let onAction: () -> Void
+    let onDiscard: () -> Void
     let onTap: () -> Void
     let isSelected: Bool
     
@@ -282,6 +289,15 @@ struct FileRowView: View {
             
             Spacer()
             
+            // Discard file button
+            Button(action: onDiscard) {
+                Image(systemName: "trash")
+                    .foregroundColor(.red)
+            }
+            .buttonStyle(.plain)
+            .help("Discard file changes".localizedString)
+            
+            // Stage/Unstage button
             Button(action: onAction) {
                 Image(systemName: actionIcon)
                     .foregroundColor(.accentColor)
@@ -362,11 +378,11 @@ struct DiffHunkView: View {
     let hunk: DiffHunk
     @ObservedObject var gitManager: GitManager
     
-    private var buttonTitle: String {
+    private var stageButtonTitle: String {
         hunk.file.isStaged ? "Unstage".localizedString : "Stage".localizedString
     }
     
-    private var buttonAction: () -> Void {
+    private var stageButtonAction: () -> Void {
         {
             Task {
                 if hunk.file.isStaged {
@@ -382,12 +398,21 @@ struct DiffHunkView: View {
         }
     }
     
+    private var discardButtonAction: () -> Void {
+        {
+            Task {
+                await gitManager.discardHunk(hunk)
+            }
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HunkHeaderView(
                 header: hunk.header,
-                buttonTitle: buttonTitle,
-                buttonAction: buttonAction
+                stageButtonTitle: stageButtonTitle,
+                stageButtonAction: stageButtonAction,
+                discardButtonAction: discardButtonAction
             )
             
             HunkContentView(lines: hunk.lines)
@@ -402,8 +427,9 @@ struct DiffHunkView: View {
 
 struct HunkHeaderView: View {
     let header: String
-    let buttonTitle: String
-    let buttonAction: () -> Void
+    let stageButtonTitle: String
+    let stageButtonAction: () -> Void
+    let discardButtonAction: () -> Void
     
     var body: some View {
         HStack {
@@ -413,9 +439,19 @@ struct HunkHeaderView: View {
             
             Spacer()
             
-            Button(buttonTitle, action: buttonAction)
-                .buttonStyle(.bordered)
-                .controlSize(.small)
+            HStack(spacing: 8) {
+                // Discard button
+                Button("Discard".localizedString, action: discardButtonAction)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .foregroundColor(.red)
+                    .help("Discard this hunk".localizedString)
+                
+                // Stage/Unstage button
+                Button(stageButtonTitle, action: stageButtonAction)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+            }
         }
         .padding(8)
         .background(Color.gray.opacity(0.15))
