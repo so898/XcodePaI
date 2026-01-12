@@ -414,7 +414,7 @@ struct DiffHunkView: View {
                 header: hunk.header,
                 stageButtonTitle: stageButtonTitle,
                 stageButtonAction: stageButtonAction,
-                discardButtonAction: discardButtonAction
+                discardButtonAction: hunk.file.isStaged ? nil : discardButtonAction
             )
             
             HunkContentView(lines: hunk.lines)
@@ -431,7 +431,7 @@ struct HunkHeaderView: View {
     let header: String
     let stageButtonTitle: String
     let stageButtonAction: () -> Void
-    let discardButtonAction: () -> Void
+    let discardButtonAction: (() -> Void)?
     
     var body: some View {
         HStack {
@@ -442,12 +442,14 @@ struct HunkHeaderView: View {
             Spacer()
             
             HStack(spacing: 8) {
-                // Discard button
-                Button("Discard".localizedString, action: discardButtonAction)
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .foregroundColor(.red)
-                    .help("Discard this hunk".localizedString)
+                if let discardButtonAction {
+                    // Discard button
+                    Button("Discard".localizedString, action: discardButtonAction)
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .foregroundColor(.red)
+                        .help("Discard this hunk".localizedString)
+                }
                 
                 // Stage/Unstage button
                 Button(stageButtonTitle, action: stageButtonAction)
