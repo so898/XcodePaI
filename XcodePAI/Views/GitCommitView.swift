@@ -177,7 +177,7 @@ struct FileListView<Files: RandomAccessCollection>: View where Files.Element == 
     let primaryAction: () -> Void
     let fileAction: (GitFile) -> Void
     let fileTapAction: (GitFile) -> Void
-    let fileDiscardAction: (GitFile) -> Void
+    let fileDiscardAction: ((GitFile) -> Void)?
     let selectedFile: GitFile?
     
     var body: some View {
@@ -194,7 +194,7 @@ struct FileListView<Files: RandomAccessCollection>: View where Files.Element == 
                     file: file,
                     actionIcon: actionIcon(for: file),
                     onAction: { fileAction(file) },
-                    onDiscard: { fileDiscardAction(file) },
+                    onDiscard: fileDiscardAction == nil ? nil : { fileDiscardAction?(file) },
                     onTap: { fileTapAction(file) },
                     isSelected: selectedFile?.id == file.id
                 )
@@ -219,7 +219,8 @@ struct UnstagedFilesView: View {
             primaryActionTitle: "Stage All".localizedString,
             primaryAction: { Task { await gitManager.stageAll() } },
             fileAction: { file in Task { await gitManager.stageFile(file) } },
-            fileTapAction: { file in Task { await gitManager.loadDiff(for: file) } }, fileDiscardAction: { file in 
+            fileTapAction: { file in Task { await gitManager.loadDiff(for: file) } },
+            fileDiscardAction: { file in
                 Task { await gitManager.discardFile(file) }
             },
             selectedFile: gitManager.selectedFile
@@ -238,9 +239,8 @@ struct StagedFilesView: View {
             primaryActionTitle: "Unstage All".localizedString,
             primaryAction: { Task { await gitManager.unstageAll() } },
             fileAction: { file in Task { await gitManager.unstageFile(file) } },
-            fileTapAction: { file in Task { await gitManager.loadDiff(for: file) } }, fileDiscardAction: { file in 
-                Task { await gitManager.discardFile(file) }
-            },
+            fileTapAction: { file in Task { await gitManager.loadDiff(for: file) } },
+            fileDiscardAction: nil,
             selectedFile: gitManager.selectedFile
         )
     }
@@ -271,7 +271,7 @@ struct FileRowView: View {
     let file: GitFile
     let actionIcon: String
     let onAction: () -> Void
-    let onDiscard: () -> Void
+    let onDiscard: (() -> Void)?
     let onTap: () -> Void
     let isSelected: Bool
     
@@ -290,12 +290,14 @@ struct FileRowView: View {
             Spacer()
             
             // Discard file button
-            Button(action: onDiscard) {
-                Image(systemName: "trash")
-                    .foregroundColor(.red)
+            if let onDiscard {
+                Button(action: onDiscard) {
+                    Image(systemName: "trash")
+                        .foregroundColor(.red)
+                }
+                .buttonStyle(.plain)
+                .help("Discard file changes".localizedString)
             }
-            .buttonStyle(.plain)
-            .help("Discard file changes".localizedString)
             
             // Stage/Unstage button
             Button(action: onAction) {
