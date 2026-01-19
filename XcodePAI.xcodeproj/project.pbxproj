@@ -73,6 +73,7 @@
 		795A74472E6F4DDE00F4BA1E /* PluginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74462E6F4DDA00F4BA1E /* PluginManager.swift */; };
 		795A744A2E6F53A300F4BA1E /* PluginSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74492E6F539C00F4BA1E /* PluginSettingSectionView.swift */; };
 		795A744C2E6F5A4000F4BA1E /* PluginDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A744B2E6F5A3600F4BA1E /* PluginDetailView.swift */; };
+		796DC5252F1E987D009DBE96 /* CommendRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796DC5242F1E9877009DBE96 /* CommendRunner.swift */; };
 		7975BF8C2EEB30CA00821BBF /* CommandFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7975BF8B2EEB30C900821BBF /* CommandFinder.swift */; };
 		799F5F702EA521AC00868D0E /* TokenUsageRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */; };
 		799F5F732EA521E500868D0E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 799F5F722EA521E500868D0E /* SQLite */; };
@@ -216,6 +217,7 @@
 		795A74462E6F4DDA00F4BA1E /* PluginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginManager.swift; sourceTree = "<group>"; };
 		795A74492E6F539C00F4BA1E /* PluginSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginSettingSectionView.swift; sourceTree = "<group>"; };
 		795A744B2E6F5A3600F4BA1E /* PluginDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginDetailView.swift; sourceTree = "<group>"; };
+		796DC5242F1E9877009DBE96 /* CommendRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommendRunner.swift; sourceTree = "<group>"; };
 		7975BF8B2EEB30C900821BBF /* CommandFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandFinder.swift; sourceTree = "<group>"; };
 		7983E1CD2E6DFB800067CFA6 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsageRecord.swift; sourceTree = "<group>"; };
@@ -372,6 +374,7 @@
 				790799EC2E4B94B4004D9D1A /* LocalStorage.swift */,
 				795A74412E6F43D200F4BA1E /* LanguageManager.swift */,
 				799F5F7F2EAF9F7A00868D0E /* ToolCallExtractor.swift */,
+				796DC5242F1E9877009DBE96 /* CommendRunner.swift */,
 				7975BF8B2EEB30C900821BBF /* CommandFinder.swift */,
 				79F006992EFBE4B9005728D9 /* WindowManager.swift */,
 			);
@@ -737,6 +740,7 @@
 				7940DF2F2EF8184B00565AE6 /* QuickWindowView.swift in Sources */,
 				790799EB2E4A5868004D9D1A /* AppDelegate.swift in Sources */,
 				79CFC6FE2E6DCF8900367E78 /* CompletionDisabledLanguageList.swift in Sources */,
+				796DC5252F1E987D009DBE96 /* CommendRunner.swift in Sources */,
 				79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */,
 				790799C42E48D914004D9D1A /* LLMResponse.swift in Sources */,
 				79CFC6B42E6B3EE900367E78 /* LLMCompletionClient.swift in Sources */,

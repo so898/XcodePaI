@@ -72,23 +72,15 @@ class CommandFinder {
     
     /// Executes a shell command and returns its output.
     private static func runShellCommand(_ command: String, arguments: [String]) -> String? {
-        let process = Process()
-        let pipe = Pipe()
-        
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-        process.arguments = [command] + arguments
-        process.standardOutput = pipe
-        process.standardError = Pipe() // Ignore error output
-        
         do {
-            try process.run()
-            process.waitUntilExit()
+            let result = try CommandRunner.runWithEnv(
+                command: command,
+                arguments: arguments
+            )
             
-            if process.terminationStatus == 0 {
-                let data = pipe.fileHandleForReading.readDataToEndOfFile()
-                if let output = String(data: data, encoding: .utf8) {
-                    return output.isEmpty ? nil : output
-                }
+            if result.isSuccess {
+                let output = result.output
+                return output.isEmpty ? nil : output
             }
         } catch {
             print("Error executing command: \(error)")

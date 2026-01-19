@@ -482,39 +482,15 @@ class GitManager: ObservableObject {
     private func runGitCommand(_ args: [String]) async -> String {
         guard !gitRepoPath.isEmpty else { return "" }
         
-        return await withCheckedContinuation { continuation in
-            Task.detached(priority: .userInitiated) {
-                let process = Process()
-                process.executableURL = URL(fileURLWithPath: GitConstants.gitBinaryPath)
-                process.arguments = args
-                process.currentDirectoryURL = await URL(fileURLWithPath: self.gitRepoPath)
-                
-                let pipe = Pipe()
-                process.standardOutput = pipe
-                process.standardError = pipe
-                
-                do {
-                    try process.run()
-                    process.waitUntilExit()
-                    
-                    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-                    let output = String(data: data, encoding: GitConstants.utf8Encoding) ?? ""
-                    
-                    await MainActor.run {
-                        if process.terminationStatus != 0 && !output.isEmpty {
-                            self.errorMessage = "Git command failed: \(output)"
-                        }
-                    }
-                    
-                    continuation.resume(returning: output)
-                } catch {
-                    await MainActor.run {
-                        self.errorMessage = "Git command execution failed: \(error.localizedDescription)"
-                    }
-                    continuation.resume(returning: "")
-                }
+        let result = await CommandRunner.runGitCommand(args, in: gitRepoPath)
+        
+        await MainActor.run {
+            if !result.isSuccess && !result.output.isEmpty {
+                self.errorMessage = "Git command failed: \(result.output)"
             }
         }
+        
+        return result.output
     }
 }
 
