@@ -74,15 +74,7 @@ class CoroutineHTTPClient {
         //        }
         
         // Add headers
-        headers?.forEach { key, value in
-            if let value = value as? String {
-                request.addValue(value, forHTTPHeaderField: key)
-            } else if let value = value as? Int {
-                request.addValue(String(value), forHTTPHeaderField: key)
-            } else if let value = value as? Double {
-                request.addValue(String(value), forHTTPHeaderField: key)
-            }
-        }
+        request.addHeaders(headers)
         
         // Set default Content-Type for non-GET requests with body
         if method != .get, body != nil {
@@ -136,15 +128,7 @@ class CoroutineHTTPClient {
         }
         
         // Add headers
-        headers?.forEach { key, value in
-            if let value = value as? String {
-                request.addValue(value, forHTTPHeaderField: key)
-            } else if let value = value as? Int {
-                request.addValue(String(value), forHTTPHeaderField: key)
-            } else if let value = value as? Double {
-                request.addValue(String(value), forHTTPHeaderField: key)
-            }
-        }
+        request.addHeaders(headers)
         
         // Set default Content-Type for non-GET requests with body
         if body != nil {

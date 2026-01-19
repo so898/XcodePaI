@@ -17,15 +17,7 @@ class HTTPClient {
         }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        headers?.forEach { key, value in
-            if let value = value as? String {
-                request.addValue(value, forHTTPHeaderField: key)
-            } else if let value = value as? Int {
-                request.addValue(String(value), forHTTPHeaderField: key)
-            } else if let value = value as? Double {
-                request.addValue(String(value), forHTTPHeaderField: key)
-            }
-        }
+        request.addHeaders(headers)
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
@@ -57,15 +49,7 @@ class HTTPClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = body
-        headers?.forEach { key, value in
-            if let value = value as? String {
-                request.addValue(value, forHTTPHeaderField: key)
-            } else if let value = value as? Int {
-                request.addValue(String(value), forHTTPHeaderField: key)
-            } else if let value = value as? Double {
-                request.addValue(String(value), forHTTPHeaderField: key)
-            }
-        }
+        request.addHeaders(headers)
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
