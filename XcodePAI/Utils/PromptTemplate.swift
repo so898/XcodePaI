@@ -12,6 +12,7 @@ let ThinkInContentWithCodeSnippetEndMark = "\n\n~~EOT~~\n\n```\n\n"
 
 // Tools
 let ToolUseInContentStartMark = "\n\n```tool_use\n\n"
+let ToolUseInContentStartMarkWithFix = "```tool_use: ToolUse\n\n"
 let ToolUseInContentEndMark = "\n\n~~EOTU~~\n\n```\n\n"
 
 // Xcode Search

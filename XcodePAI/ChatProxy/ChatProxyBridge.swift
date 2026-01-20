@@ -315,6 +315,17 @@ extension ChatProxyBridge {
             }
         }
         
+        // Remove all tool use parts in assistant message with fix
+        while returnContent.contains(ToolUseInContentStartMarkWithFix) {
+            let firstComponents = returnContent.split(separator: ToolUseInContentStartMarkWithFix, maxSplits: 1)
+            if firstComponents.count == 2 {
+                let secondComponents = String(firstComponents[1]).split(separator: ToolUseInContentEndMark, maxSplits: 1)
+                if secondComponents.count == 2 {
+                    returnContent = String(firstComponents[0]) + "\n\n" + String(secondComponents[1])
+                }
+            }
+        }
+        
         return returnContent
     }
         
@@ -530,8 +541,7 @@ extension ChatProxyBridge {
             // Use Cherry Studio format
             recordAssistantMessages.append(contentsOf: [
                 LLMMessage(role: "user", contents: [
-                    LLMMessageContent(text: recordMessageDescriptionTitle),
-                    LLMMessageContent(text: content ?? "")
+                    LLMMessageContent(text: recordMessageDescriptionTitle + "\n" + (content ?? "")),
                 ])
             ])
         }
