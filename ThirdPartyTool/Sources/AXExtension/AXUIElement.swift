@@ -174,25 +174,44 @@ public extension AXUIElement {
     func child(
         identifier: String? = nil,
         title: String? = nil,
-        role: String? = nil
+        role: String? = nil,
+        maxDepth: Int = 50
     ) -> AXUIElement? {
-        for child in children {
-            let match = {
-                if let identifier, child.identifier != identifier { return false }
-                if let title, child.title != title { return false }
-                if let role, child.role != role { return false }
-                return true
-            }()
-            if match { return child }
+        var visited = Set<UnsafeRawPointer>()
+        
+        func _child(element: AXUIElement, depth: Int) -> AXUIElement? {
+            // Check depth limit
+            guard depth < maxDepth else { return nil }
+            
+            // Check for circular reference
+            let pointer = UnsafeRawPointer(Unmanaged.passUnretained(element).toOpaque())
+            if visited.contains(pointer) {
+                return nil
+            }
+            visited.insert(pointer)
+            
+            // First check direct children
+            for child in element.children {
+                let match = {
+                    if let identifier, child.identifier != identifier { return false }
+                    if let title, child.title != title { return false }
+                    if let role, child.role != role { return false }
+                    return true
+                }()
+                if match { return child }
+            }
+            
+            // Then recursively check descendants
+            for child in element.children {
+                if let target = _child(element: child, depth: depth + 1) {
+                    return target
+                }
+            }
+            
+            return nil
         }
-        for child in children {
-            if let target = child.child(
-                identifier: identifier,
-                title: title,
-                role: role
-            ) { return target }
-        }
-        return nil
+        
+        return _child(element: self, depth: 0)
     }
 
     /// Get children that match the requirement
@@ -215,33 +234,89 @@ public extension AXUIElement {
         }
         return all
     }
-
-    func firstParent(where match: (AXUIElement) -> Bool) -> AXUIElement? {
-        guard let parent = parent else { return nil }
-        if match(parent) { return parent }
-        return parent.firstParent(where: match)
-    }
-
-    func firstChild(where match: (AXUIElement) -> Bool) -> AXUIElement? {
-        for child in children {
-            if match(child) { return child }
-        }
-        for child in children {
-            if let target = child.firstChild(where: match) {
-                return target
+    
+    func firstParent(where match: (AXUIElement) -> Bool, maxDepth: Int = 50) -> AXUIElement? {
+        var visited = Set<UnsafeRawPointer>()
+        var current: AXUIElement? = self
+        var depth = 0
+        
+        while let element = current, depth < maxDepth {
+            guard let parent = element.parent else { return nil }
+            
+            // Check for circular reference on the parent element
+            let parentPointer = UnsafeRawPointer(Unmanaged.passUnretained(parent).toOpaque())
+            if visited.contains(parentPointer) {
+                // Circular reference detected in parent chain
+                return nil
             }
+            visited.insert(parentPointer)
+            
+            if match(parent) { return parent }
+            current = parent
+            depth += 1
         }
+        
         return nil
     }
-
-    func visibleChild(identifier: String) -> AXUIElement? {
-        for child in visibleChildren {
-            if child.identifier == identifier { return child }
-            if let target = child.visibleChild(identifier: identifier) { return target }
+    
+    func firstChild(where match: (AXUIElement) -> Bool, maxDepth: Int = 50) -> AXUIElement? {
+        var visited = Set<UnsafeRawPointer>()
+        
+        func _firstChild(element: AXUIElement, depth: Int) -> AXUIElement? {
+            // Check depth limit
+            guard depth < maxDepth else { return nil }
+            
+            // Check for circular reference
+            let pointer = UnsafeRawPointer(Unmanaged.passUnretained(element).toOpaque())
+            if visited.contains(pointer) {
+                return nil
+            }
+            visited.insert(pointer)
+            
+            // First check direct children
+            for child in element.children {
+                if match(child) { return child }
+            }
+            
+            // Then recursively check descendants
+            for child in element.children {
+                if let target = _firstChild(element: child, depth: depth + 1) {
+                    return target
+                }
+            }
+            
+            return nil
         }
-        return nil
+        
+        return _firstChild(element: self, depth: 0)
     }
-
+    
+    func visibleChild(identifier: String, maxDepth: Int = 50) -> AXUIElement? {
+        var visited = Set<UnsafeRawPointer>()
+        
+        func _visibleChild(element: AXUIElement, depth: Int) -> AXUIElement? {
+            // Check depth limit
+            guard depth < maxDepth else { return nil }
+            
+            // Check for circular reference
+            let pointer = UnsafeRawPointer(Unmanaged.passUnretained(element).toOpaque())
+            if visited.contains(pointer) {
+                return nil
+            }
+            visited.insert(pointer)
+            
+            for child in element.visibleChildren {
+                if child.identifier == identifier { return child }
+                if let target = _visibleChild(element: child, depth: depth + 1) {
+                    return target
+                }
+            }
+            return nil
+        }
+        
+        return _visibleChild(element: self, depth: 0)
+    }
+    
     var verticalScrollBar: AXUIElement? {
         try? copyValue(key: kAXVerticalScrollBarAttribute)
     }
