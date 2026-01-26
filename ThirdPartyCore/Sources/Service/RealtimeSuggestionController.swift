@@ -37,7 +37,7 @@ public actor RealtimeSuggestionController {
             .sink { [weak self] editor in
                 guard let self else { return }
                 Task {
-                    guard let editor else { return }
+                    guard let editor, !editor.isChatTextField else { return }
                     await self.handleFocusElementChange(editor)
                 }
             }.store(in: &cancellable)

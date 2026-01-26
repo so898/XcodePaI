@@ -58,7 +58,7 @@ actor WidgetWindowsController: NSObject {
         }.store(in: &cancellable)
 
         xcodeInspector.$focusedEditor.sink { [weak self] editor in
-            guard let editor else { return }
+            guard let editor, !editor.isChatTextField else { return }
             Task { [weak self] in await self?.observe(toEditor: editor) }
         }.store(in: &cancellable)
 
@@ -247,6 +247,7 @@ extension WidgetWindowsController {
         
         if let application = xcodeInspector.latestActiveXcode?.appElement {
             if let focusElement = xcodeInspector.focusedEditor?.element,
+               !focusElement.isChatTextField,
                let parent = focusElement.parent,
                let frame = parent.rect,
                let screen = NSScreen.screens.first(where: { $0.frame.origin == .zero }),

@@ -28,6 +28,12 @@ public class SourceEditor {
 
     let runningApplication: NSRunningApplication
     public let element: AXUIElement
+    
+    // If the source editor is Xcode chat text field
+    public var isChatTextField: Bool {
+        return element.isChatTextField
+    }
+    
     var observeAXNotificationsTask: Task<Void, Never>?
     public let axNotifications = AsyncPassthroughSubject<AXNotification>()
 

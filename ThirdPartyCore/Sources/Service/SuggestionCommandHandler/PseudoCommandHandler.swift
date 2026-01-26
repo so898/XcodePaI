@@ -300,7 +300,8 @@ extension PseudoCommandHandler {
               let sourceEditor = await {
                   if let sourceEditor { sourceEditor }
                   else { await XcodeInspector.shared.safe.focusedEditor }
-              }()
+              }(),
+              !sourceEditor.isChatTextField
         else { return nil }
         if Task.isCancelled { return nil }
         let content = sourceEditor.getContent()

@@ -278,7 +278,7 @@ extension MenuBarManager: NSMenuDelegate {
                 subMenu.addItem(item)
             }
             
-            if let sourceEditor = inspector.focusedEditor {
+            if let sourceEditor = inspector.focusedEditor, !sourceEditor.isChatTextField {
                 let label = sourceEditor.element.description
                 item = NSMenuItem(title: "Active Source Editor: \(label.isEmpty ? "Unknown" : label)".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = false

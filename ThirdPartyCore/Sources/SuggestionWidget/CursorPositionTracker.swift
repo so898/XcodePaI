@@ -24,7 +24,7 @@ final class CursorPositionTracker {
         editorObservationTask = []
         Task {
             await XcodeInspector.shared.safe.$focusedEditor.sink { [weak self] editor in
-                guard let editor, let self else { return }
+                guard let editor, !editor.isChatTextField, let self else { return }
                 Task { @MainActor in
                     self.observeAXNotifications(editor)
                 }

@@ -60,6 +60,14 @@ public extension AXUIElement {
         description == "Source Editor"
     }
     
+    // If the source editor is Xcode chat text field
+    var isChatTextField: Bool {
+        if let navigator = parent?.parent?.parent, navigator.description == "navigator" {
+            return true
+        }
+        return false
+    }
+    
     var isEditorArea: Bool {
         description == "editor area"
     }
