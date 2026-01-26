@@ -441,6 +441,16 @@
         }
       }
     },
+    "Are you sure you want to discard changes in \"%@\"?\n\nThis action cannot be undone." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您确定要放弃在“%@”中所做的更改吗？\n\n此操作无法撤销。"
+          }
+        }
+      }
+    },
     "Argument" : {
       "extractionState" : "manual",
       "localizations" : {

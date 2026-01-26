@@ -211,6 +211,8 @@ struct FileListView<Files: RandomAccessCollection>: View where Files.Element == 
 // MARK: - Unstaged Files View
 struct UnstagedFilesView: View {
     @ObservedObject var gitManager: GitManager
+    @State private var fileToDiscard: GitFile?
+    @State private var showDiscardConfirmation = false
     
     var body: some View {
         FileListView(
@@ -221,10 +223,28 @@ struct UnstagedFilesView: View {
             fileAction: { file in Task { await gitManager.stageFile(file) } },
             fileTapAction: { file in Task { await gitManager.loadDiff(for: file) } },
             fileDiscardAction: { file in
-                Task { await gitManager.discardFile(file) }
+                fileToDiscard = file
+                showDiscardConfirmation = true
             },
             selectedFile: gitManager.selectedFile
         )
+        .alert("Discard Changes".localizedString, isPresented: $showDiscardConfirmation) {
+            Button("Cancel".localizedString, role: .cancel) {
+                fileToDiscard = nil
+            }
+            Button("Discard".localizedString, role: .destructive) {
+                if let file = fileToDiscard {
+                    Task {
+                        await gitManager.discardFile(file)
+                    }
+                }
+                fileToDiscard = nil
+            }
+        } message: {
+            if let file = fileToDiscard {
+                Text("Are you sure you want to discard changes in \"\(file.path)\"?\n\nThis action cannot be undone.")
+            }
+        }
     }
 }
 
