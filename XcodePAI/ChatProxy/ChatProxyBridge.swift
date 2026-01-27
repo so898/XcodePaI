@@ -265,12 +265,12 @@ extension ChatProxyBridge {
         
         // Remove think part in assistant message
         // Process simple because think could only be at the start of content
-        if returnContent.substring(to: ThinkInContentWithCodeSnippetStartMark.count) == ThinkInContentWithCodeSnippetStartMark {
+        if returnContent.count > ThinkInContentWithCodeSnippetStartMark.count, returnContent.substring(to: ThinkInContentWithCodeSnippetStartMark.count) == ThinkInContentWithCodeSnippetStartMark {
             let components = returnContent.split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
             if components.count == 2 {
                 returnContent = String(components[1])
             }
-        } else if returnContent.substring(to: ThinkInContentWithCodeSnippetStartMarkWithFix.count) == ThinkInContentWithCodeSnippetStartMarkWithFix {
+        } else if returnContent.count > ThinkInContentWithCodeSnippetStartMarkWithFix.count, returnContent.substring(to: ThinkInContentWithCodeSnippetStartMarkWithFix.count) == ThinkInContentWithCodeSnippetStartMarkWithFix {
             let components = returnContent.split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
             if components.count == 2 {
                 returnContent = String(components[1])
