@@ -1,5 +1,5 @@
 //
-//  CommendRunner.swift
+//  CommandRunner.swift
 //  XcodePAI
 //
 //  Created by Bill Cheng on 2026/1/20.
