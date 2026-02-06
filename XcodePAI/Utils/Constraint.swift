@@ -31,4 +31,6 @@ class Constraint {
     static let mcpToolStorageKeyPrefix = "LLMMCPToolStorage_"
     static let llmConfigStorageKey = "LLMConfigStorage"
     static let completionConfigStorageKey = "LLMCompletionConfigStorage"
+    
+    static let InternalModelName = "XcodePaI"
 }

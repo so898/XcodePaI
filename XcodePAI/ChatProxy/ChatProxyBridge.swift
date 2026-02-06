@@ -503,7 +503,7 @@ extension ChatProxyBridge {
                     """
         let response = LLMResponse(
             id: id,
-            model: "XcodePaI",
+            model: Constraint.InternalModelName,
             object: "chat.completion.chunk",
             choices: [
                 LLMResponseChoice(
@@ -589,7 +589,7 @@ extension ChatProxyBridge: LLMClientDelegate {
         if thinkParser == .inReasoningContent {
             response = LLMResponse(
                 id: id,
-                model: "XcodePaI",
+                model: Constraint.InternalModelName,
                 object: "chat.completion.chunk",
                 choices: [
                     LLMResponseChoice(
@@ -619,7 +619,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                     let processedReason = reason.replacingOccurrences(of: "```", with: "'''")
                     response = LLMResponse(
                         id: id,
-                        model: "XcodePaI",
+                        model: Constraint.InternalModelName,
                         object: "chat.completion.chunk",
                         choices: [
                             LLMResponseChoice(
@@ -636,7 +636,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                     let processedReason = reason.replacingOccurrences(of: "```", with: "'''")
                     response = LLMResponse(
                         id: id,
-                        model: "XcodePaI",
+                        model: Constraint.InternalModelName,
                         object: "chat.completion.chunk",
                         choices: [
                             LLMResponseChoice(
@@ -668,7 +668,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                     }()
                     response = LLMResponse(
                         id: id,
-                        model: "XcodePaI",
+                        model: Constraint.InternalModelName,
                         object: "chat.completion.chunk",
                         choices: [
                             LLMResponseChoice(
@@ -684,7 +684,7 @@ extension ChatProxyBridge: LLMClientDelegate {
                 } else {
                     response = LLMResponse(
                         id: id,
-                        model: "XcodePaI",
+                        model: Constraint.InternalModelName,
                         object: "chat.completion.chunk",
                         choices: [
                             LLMResponseChoice(
@@ -707,7 +707,7 @@ extension ChatProxyBridge: LLMClientDelegate {
             // Write finish reason
             writeResponse(LLMResponse(
                 id: id,
-                model: "XcodePaI",
+                model: Constraint.InternalModelName,
                 object: "chat.completion.chunk",
                 choices: [
                     LLMResponseChoice(
