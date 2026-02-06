@@ -238,4 +238,96 @@ struct CommandRunner {
             workingDirectory: repositoryPath
         )
     }
+    
+    // MARK: - Process Management
+    
+    /// Check if a process with the given name is currently running
+    /// - Parameter name: The name of the process to check
+    /// - Returns: true if the process is running, false otherwise
+    static func isProcessRunning(name: String) -> Bool {
+        do {
+            let result = try run(
+                executablePath: "/usr/bin/pgrep",
+                arguments: ["-x", name]
+            )
+            // pgrep returns 0 if the process is found
+            return result.exitCode == 0
+        } catch {
+            return false
+        }
+    }
+    
+    /// Check if a process with the given name is currently running asynchronously
+    /// - Parameter name: The name of the process to check
+    /// - Returns: true if the process is running, false otherwise
+    static func isProcessRunningAsync(name: String) async -> Bool {
+        let result = await runAsync(
+            executablePath: "/usr/bin/pgrep",
+            arguments: ["-x", name]
+        )
+        // pgrep returns 0 if the process is found
+        return result.exitCode == 0
+    }
+    
+    /// Terminate a process by name
+    /// - Parameters:
+    ///   - name: The name of the process to terminate
+    ///   - force: If true, sends SIGKILL (-9) for forceful termination. If false, sends SIGTERM (-15) for graceful termination.
+    static func killProcess(byName name: String, force: Bool = true) {
+        // Check if the process is running first
+        guard isProcessRunning(name: name) else {
+            print("Process \(name) is not running")
+            return
+        }
+        
+        // -9 for SIGKILL (force), -15 for SIGTERM (graceful)
+        let signal = force ? "-9" : "-15"
+        
+        do {
+            let result = try run(
+                executablePath: "/usr/bin/killall",
+                arguments: [signal, name]
+            )
+            
+            if result.isSuccess {
+                print("Successfully terminated process: \(name)")
+            } else {
+                print("Failed to terminate process, exit code: \(result.exitCode)")
+                if !result.errorOutput.isEmpty {
+                    print("Error: \(result.errorOutput)")
+                }
+            }
+        } catch {
+            print("Failed to execute killall: \(error)")
+        }
+    }
+    
+    /// Terminate a process by name asynchronously
+    /// - Parameters:
+    ///   - name: The name of the process to terminate
+    ///   - force: If true, sends SIGKILL (-9) for forceful termination. If false, sends SIGTERM (-15) for graceful termination.
+    static func killProcessAsync(byName name: String, force: Bool = true) async {
+        // Check if the process is running first
+        guard await isProcessRunningAsync(name: name) else {
+            print("Process \(name) is not running")
+            return
+        }
+        
+        // -9 for SIGKILL (force), -15 for SIGTERM (graceful)
+        let signal = force ? "-9" : "-15"
+        
+        let result = await runAsync(
+            executablePath: "/usr/bin/killall",
+            arguments: [signal, name]
+        )
+        
+        if result.isSuccess {
+            print("Successfully terminated process: \(name)")
+        } else {
+            print("Failed to terminate process, exit code: \(result.exitCode)")
+            if !result.errorOutput.isEmpty {
+                print("Error: \(result.errorOutput)")
+            }
+        }
+    }
 }
