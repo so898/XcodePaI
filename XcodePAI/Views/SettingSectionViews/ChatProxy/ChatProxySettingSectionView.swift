@@ -10,6 +10,7 @@ import Combine
 
 struct ChatProxySettingSectionView: View {
     @State private var portNumber = "\(Configer.chatProxyPort)"
+    @State private var codeProxyConfigState = AgenticConfiger.checkCodexConfigState()
     @State private var thinkStyle: Int = Configer.chatProxyThinkStyle.rawValue
     @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
     @State private var cutSourceInSearchRequest = Configer.chatProxyCutSourceInSearchRequest
@@ -52,6 +53,29 @@ struct ChatProxySettingSectionView: View {
                     }
                 }
                 
+                GridRow(alignment: .center) {
+                    Text("Xcode Codex Proxy")
+                    VStack(alignment: .leading, spacing: 8) {
+                        if codeProxyConfigState == .configured {
+                            Text(codeProxyConfigState.rawValue.localizedString)
+                                .foregroundColor(.green)
+                        } else if codeProxyConfigState == .notInstalled {
+                            Text(codeProxyConfigState.rawValue.localizedString)
+                                .foregroundColor(.gray)
+                        } else {
+                            if codeProxyConfigState == .notConfigured || codeProxyConfigState == .misconfigured {
+                                Text(codeProxyConfigState.rawValue.localizedString)
+                                    .foregroundColor(.red)
+                            }
+                            Button("Configure Codex Proxy") {
+                                AgenticConfiger.setupProxyConfig()
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.large)
+                        }
+                    }
+                }
+                
                 GridRow {
                     Divider().gridCellColumns(2)
                 }
@@ -73,7 +97,7 @@ struct ChatProxySettingSectionView: View {
                     Text("Tool Use")
                     VStack(alignment: .leading, spacing: 8) {
                         Picker("", selection: $toolUseType) {
-                            Text("In Reqeust").tag(0)
+                            Text("In Request").tag(0)
                             Text("In System Prompt").tag(1)
                         }
                         .pickerStyle(.radioGroup)
@@ -82,15 +106,15 @@ struct ChatProxySettingSectionView: View {
                             Configer.chatProxyToolUseInRequest = (tag == 0)
                         }
                         
-                        Text("Some provider support use tool with request parameters.")
+                        Text("Some providers support tool use via request parameters.")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                     }
                 }
                 
                 GridRow {
-                    Text("Cut source code in Xcode search result")
-                        .help("To avoid exceeding the model's token limit with irrelevant code from Xcode's full-file search results, this feature intelligently condenses the source code around the search keyword.")
+                    Text("Truncate source code in Xcode search results")
+                        .help("To avoid exceeding the model's token limit with irrelevant code from Xcode's full-file search results, this feature intelligently condenses the source code surrounding the search keyword.")
                     Toggle("Enable", isOn: $cutSourceInSearchRequest)
                         .toggleStyle(.checkbox)
                         .onChange(of: cutSourceInSearchRequest) { _, newValue in
@@ -111,7 +135,7 @@ struct ChatProxySettingSectionView: View {
                 GridRow {
                     HStack(spacing: 3) {
                         Text("Quick Window")
-                            .help("The Quick Window is a floating panel that appears below the text input field in Xcode's code assistant. It allows users to switch the model used by ChatProxy or to enable/disable MCP during an ongoing/new conversation. This feature require Accessibility Permission.")
+                            .help("The Quick Window is a floating panel that appears below the text input field in Xcode's code assistant. It allows users to switch the model used by ChatProxy or to enable/disable MCP during an ongoing or new conversation. This feature requires Accessibility permissions.")
                         Image(systemName: "flask.fill")
                             .foregroundStyle(.blue)
                             .help("Experimental Feature")
@@ -221,7 +245,7 @@ struct CustomChatProxyConfigRow: View {
     }
 }
 
-struct  CustomChatProxyConfigIconView: View {
+struct CustomChatProxyConfigIconView: View {
     @ObservedObject var config: LLMConfig
     let size: CGFloat
     

@@ -73,6 +73,7 @@
 		795A74472E6F4DDE00F4BA1E /* PluginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74462E6F4DDA00F4BA1E /* PluginManager.swift */; };
 		795A744A2E6F53A300F4BA1E /* PluginSettingSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A74492E6F539C00F4BA1E /* PluginSettingSectionView.swift */; };
 		795A744C2E6F5A4000F4BA1E /* PluginDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A744B2E6F5A3600F4BA1E /* PluginDetailView.swift */; };
+		796AF44B2F3614510017AAB8 /* AgenticConfiger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796AF44A2F3614460017AAB8 /* AgenticConfiger.swift */; };
 		796AF44E2F3617410017AAB8 /* TOML.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796AF44D2F36173F0017AAB8 /* TOML.swift */; };
 		796DC5252F1E987D009DBE96 /* CommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796DC5242F1E9877009DBE96 /* CommandRunner.swift */; };
 		796DC5272F1E9A01009DBE96 /* HTTPClientExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796DC5262F1E99FC009DBE96 /* HTTPClientExtension.swift */; };
@@ -219,6 +220,7 @@
 		795A74462E6F4DDA00F4BA1E /* PluginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginManager.swift; sourceTree = "<group>"; };
 		795A74492E6F539C00F4BA1E /* PluginSettingSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginSettingSectionView.swift; sourceTree = "<group>"; };
 		795A744B2E6F5A3600F4BA1E /* PluginDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginDetailView.swift; sourceTree = "<group>"; };
+		796AF44A2F3614460017AAB8 /* AgenticConfiger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgenticConfiger.swift; sourceTree = "<group>"; };
 		796AF44D2F36173F0017AAB8 /* TOML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOML.swift; sourceTree = "<group>"; };
 		796DC5242F1E9877009DBE96 /* CommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandRunner.swift; sourceTree = "<group>"; };
 		796DC5262F1E99FC009DBE96 /* HTTPClientExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClientExtension.swift; sourceTree = "<group>"; };
@@ -323,6 +325,7 @@
 				7907999D2E471FEA004D9D1A /* ChatProxy.swift */,
 				790799B72E4890FC004D9D1A /* ChatProxyTunnel.swift */,
 				790799FF2E4CFE31004D9D1A /* ChatProxyBridge.swift */,
+				796AF44C2F3616310017AAB8 /* Agentic */,
 			);
 			path = ChatProxy;
 			sourceTree = "<group>";
@@ -548,6 +551,14 @@
 			path = Plugin;
 			sourceTree = "<group>";
 		};
+		796AF44C2F3616310017AAB8 /* Agentic */ = {
+			isa = PBXGroup;
+			children = (
+				796AF44A2F3614460017AAB8 /* AgenticConfiger.swift */,
+			);
+			path = Agentic;
+			sourceTree = "<group>";
+		};
 		799F5F6E2EA5218E00868D0E /* Record */ = {
 			isa = PBXGroup;
 			children = (
@@ -745,6 +756,7 @@
 			files = (
 				7940DF2F2EF8184B00565AE6 /* QuickWindowView.swift in Sources */,
 				790799EB2E4A5868004D9D1A /* AppDelegate.swift in Sources */,
+				796AF44B2F3614510017AAB8 /* AgenticConfiger.swift in Sources */,
 				79CFC6FE2E6DCF8900367E78 /* CompletionDisabledLanguageList.swift in Sources */,
 				796DC5252F1E987D009DBE96 /* CommandRunner.swift in Sources */,
 				79079A1C2E50D146004D9D1A /* PromptTemplate.swift in Sources */,

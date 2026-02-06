@@ -690,6 +690,38 @@
         }
       }
     },
+    "Configure Codex Proxy" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置 Codex 代理"
+          }
+        }
+      }
+    },
+    "Configured" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已配置"
+          }
+        }
+      }
+    },
+    "Configured with other provider" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已配置其他代理"
+          }
+        }
+      }
+    },
     "Custom Code Suggestion" : {
       "localizations" : {
         "zh-Hans" : {
@@ -717,16 +749,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自定义 URL"
-          }
-        }
-      }
-    },
-    "Cut source code in Xcode search result" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "裁剪 Xcode 搜索出的源码内容"
           }
         }
       }
@@ -1230,7 +1252,7 @@
         }
       }
     },
-    "In Reqeust" : {
+    "In Request" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1399,6 +1421,17 @@
         }
       }
     },
+    "Misconfigured" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "错误配置"
+          }
+        }
+      }
+    },
     "Model" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1501,6 +1534,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无暂存文件"
+          }
+        }
+      }
+    },
+    "Not configured" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未配置"
+          }
+        }
+      }
+    },
+    "Not installed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未安装"
           }
         }
       }
@@ -2014,7 +2069,7 @@
         }
       }
     },
-    "Some provider support use tool with request parameters." : {
+    "Some providers support tool use via request parameters." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -2202,7 +2257,7 @@
         }
       }
     },
-    "The Quick Window is a floating panel that appears below the text input field in Xcode's code assistant. It allows users to switch the model used by ChatProxy or to enable/disable MCP during an ongoing/new conversation. This feature require Accessibility Permission." : {
+    "The Quick Window is a floating panel that appears below the text input field in Xcode's code assistant. It allows users to switch the model used by ChatProxy or to enable/disable MCP during an ongoing or new conversation. This feature requires Accessibility permissions." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -2265,7 +2320,7 @@
         }
       }
     },
-    "To avoid exceeding the model's token limit with irrelevant code from Xcode's full-file search results, this feature intelligently condenses the source code around the search keyword." : {
+    "To avoid exceeding the model's token limit with irrelevant code from Xcode's full-file search results, this feature intelligently condenses the source code surrounding the search keyword." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -2401,6 +2456,27 @@
         }
       }
     },
+    "Truncate source code in Xcode search results" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "裁剪 Xcode 搜索出的源码内容"
+          }
+        }
+      }
+    },
+    "Unknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知"
+          }
+        }
+      }
+    },
     "Unstage" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2494,6 +2570,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用模型"
+          }
+        }
+      }
+    },
+    "Xcode Codex Proxy" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xcode 内置 Codex 代理"
           }
         }
       }
