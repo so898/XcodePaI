@@ -182,6 +182,17 @@
         }
       }
     },
+    "Acceptance Count" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接受数"
+          }
+        }
+      }
+    },
     "Acceptance Rate" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -199,17 +210,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "辅助功能权限"
-          }
-        }
-      }
-    },
-    "Accpetance Count" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "接受数"
           }
         }
       }

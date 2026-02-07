@@ -123,8 +123,8 @@ class LLMResponseChoice {
         
         self.finishReason = dict["finish_reason"] as? String
         
-        // Some API return this value with `message` key
-        // maybe compatible with it later
+        // Some APIs return this value with `message` key
+        // Maybe compatible with it later
         if let delta = dict["delta"] as? [String: Any] {
             self.isFullMessage = false
             self.message = try LLMResponseChoiceMessage(dict: delta)

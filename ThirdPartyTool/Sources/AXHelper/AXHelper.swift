@@ -28,7 +28,7 @@ public struct AXHelper {
             }
         }
 
-        // recover selection range
+        // Recover selection range
         if let selection = result.newSelection {
             var range = SourceEditor.convertCursorRangeToRange(selection, in: result.content)
             if let value = AXValueCreate(.cfRange, &range) {
@@ -52,7 +52,7 @@ public struct AXHelper {
             }
         }
 
-        // recover scroll position
+        // Recover scroll position
         if let oldScrollPosition,
            let scrollBar = focusElement.parent?.verticalScrollBar
         {

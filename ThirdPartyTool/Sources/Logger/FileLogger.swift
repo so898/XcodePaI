@@ -188,7 +188,7 @@ actor BaseFileLoggerImplementation {
     ///
     /// If a process hangs or crashes while rotating logs, the lock file will
     /// be left behind, preventing other processes from rotating logs. To
-    /// prevent this, an lock file older than the lock limit (1 hour) is
+    /// prevent this, a lock file older than the lock limit (1 hour) is
     /// considered stale and removed.
     ///
     /// The pending log entry will still be written to the existing log, but

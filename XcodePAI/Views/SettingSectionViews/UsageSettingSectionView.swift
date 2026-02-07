@@ -23,7 +23,7 @@ struct UsageSettingSectionView: View {
     @State private var selectedDate: Date?
     @State private var hoveredBarData: BarChartData?
     
-    // Get records by time rage
+    // Get records by time range
     private var filteredRecords: [TokenUsageRecord] {
         switch selectedTimeRange {
         case .today:
@@ -39,7 +39,7 @@ struct UsageSettingSectionView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center) {
                 Spacer()
-                // time selecter
+                // time selector
                 Picker("Time Period", selection: $selectedTimeRange) {
                     ForEach(TimeRange.allCases) { range in
                         Text(range.rawValue.localizedString).tag(range)
@@ -107,7 +107,7 @@ struct StatsOverviewView: View {
         Set(records.map { $0.modelName }).count
     }
     
-    // Compeltions
+    // Completions
     private var completionStats: (total: Int, accepted: Int) {
         let completionRecords = records.filter { $0.isCompletion }
         let total = completionRecords.count
@@ -131,7 +131,7 @@ struct StatsOverviewView: View {
         // Code Completion
         HStack(spacing: 8) {
             StatCard(title: "Total Count".localizedString, value: "\(completionStats.total)", color: .indigo)
-            StatCard(title: "Accpetance Count".localizedString, value: "\(completionStats.accepted)", color: completionStats.total > 0 ? .green : .gray)
+            StatCard(title: "Acceptance Count".localizedString, value: "\(completionStats.accepted)", color: completionStats.total > 0 ? .green : .gray)
             StatCard(title: "Acceptance Rate".localizedString, value: completionStats.total > 0 ? "\(Int(Double(completionStats.accepted) / Double(completionStats.total) * 100))%" : "0%", color: .purple)
         }
         .padding(.horizontal)
@@ -301,7 +301,7 @@ struct TokenUsageBarChart: View {
     let records: [TokenUsageRecord]
     @Binding var hoveredBarData: BarChartData?
     
-    // Seperate via provider and model name
+    // Separate via provider and model name
     private var groupedData: [BarChartData] {
         let groupedByProviderAndModel = Dictionary(grouping: records) { record in
             "\(record.provider)%%\(record.modelName)"
@@ -380,15 +380,15 @@ struct TokenUsageBarChart: View {
                                             if let provider: String = proxy.value(atX: xPosition),
                                                let totalTokens: Int = proxy.value(atY: yPosition) {
                                                                                                 
-                                                var datas = groupedData.filter { $0.provider == provider }
+                                                var dataItems = groupedData.filter { $0.provider == provider }
                                                 
-                                                if !datas.isEmpty {
-                                                    datas = datas.sorted{ $0.totalTokens > $1.totalTokens}
+                                                if !dataItems.isEmpty {
+                                                    dataItems = dataItems.sorted{ $0.totalTokens > $1.totalTokens}
                                                 }
                                                 
                                                 var maxTokens = 0
                                                 var maxData: BarChartData?
-                                                datas.forEach { data in
+                                                dataItems.forEach { data in
                                                     maxTokens += data.totalTokens
                                                     if maxData == nil, maxTokens > totalTokens {
                                                         maxData = data
