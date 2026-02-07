@@ -429,8 +429,8 @@ extension XcodeAppInstanceInspector {
                 } else if next {
                     next = false
                     if let origin, let rect = childElement.rect {
-                        // When there is error shown in the bottom of code assistants, no AX notificaiton received
-                        // So the area width must -20 to make a safe are for error button and number
+                        // When there is error shown in the bottom of code assistants, no AX notification received
+                        // So the area width must -20 to make a safe area for error button and number
                         let safeWidthForError: CGFloat = {
                             if childElement.description == "Error" {
                                 return 0
