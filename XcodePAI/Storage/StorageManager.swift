@@ -93,13 +93,12 @@ extension StorageManager {
     
     func availableModels() -> [LLMModel] {
         var ret = [LLMModel]()
-        for model in models {
-            let provider = modelProviders.first { provider in
-                provider.name == model.provider
+        for provider in modelProviders {
+            guard provider.enabled else { continue }
+            let models = modelsWithProvider(name: provider.name).sorted { a, b in
+                a.id < b.id
             }
-            if model.enabled, let provider, provider.enabled {
-                ret.append(model)
-            }
+            ret.append(contentsOf: models)
         }
         return ret
     }
