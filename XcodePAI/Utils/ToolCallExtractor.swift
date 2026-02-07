@@ -84,11 +84,11 @@ class ToolCallExtractor {
             }
         }
         
-        if before.count > 0 {
+        if !before.isEmpty {
             ret.append(ContentAndToolUse(before: before, toolUse: nil))
         }
         
-        if blockContent.count > 0 {
+        if !blockContent.isEmpty {
             buffer = blockContent
         } else {
             buffer = ""

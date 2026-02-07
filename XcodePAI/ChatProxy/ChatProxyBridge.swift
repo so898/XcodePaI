@@ -489,24 +489,9 @@ extension ChatProxyBridge {
                     RET: \(content ?? "NULL")
                     \(ToolUseInContentEndMark)
                     """
-        let response = LLMResponse(
-            id: id,
-            model: Constraint.InternalModelName,
-            object: "chat.completion.chunk",
-            choices: [
-                LLMResponseChoice(
-                    index: 0,
-                    isFullMessage: false,
-                    message: LLMResponseChoiceMessage(
-                        role: roleReturned ? nil : "assistant",
-                        content: respContent
-                    )
-                )
-            ]
-        )
         
-        writeResponse(response)
-        
+        sendContentChunk(respContent)
+                
         let recordMessageDescriptionTitle: String = {
             var ret = PromptTemplate.toolUseResultTemplate.replacingOccurrences(of: "{{TOOL_NAME}}", with: tool.toolName)
             if let content, !content.isEmpty {
@@ -571,122 +556,9 @@ extension ChatProxyBridge: LLMClientDelegate {
     
     func client(_ client: LLMClient, receivePart part: LLMAssistantMessage) {
         
-        var response: LLMResponse?
+        sendReasonChunk(part.reason)
         
-        if thinkParser == .inReasoningContent {
-            response = LLMResponse(
-                id: id,
-                model: Constraint.InternalModelName,
-                object: "chat.completion.chunk",
-                choices: [
-                    LLMResponseChoice(
-                        index: 0,
-                        isFullMessage: false,
-                        message: LLMResponseChoiceMessage(
-                            role: roleReturned ? nil : "assistant",
-                            content: part.content ?? "",
-                            reasoningContent: part.reason
-                        )
-                    )
-                ]
-            )
-        } else {
-            if let reason = part.reason {
-                switch thinkState {
-                case .notStarted:
-                    thinkState = .inProgress
-                    let startThinkMark: String = {
-                        switch thinkParser {
-                        case .inContentWithCodeSnippet:
-                            return Configer.chatProxyCodeSnippetPreviewFix ? ThinkInContentWithCodeSnippetStartMarkWithFix : ThinkInContentWithCodeSnippetStartMark
-                        default:
-                            return ""
-                        }
-                    }()
-                    let processedReason = reason.replacingOccurrences(of: "```", with: "'''")
-                    response = LLMResponse(
-                        id: id,
-                        model: Constraint.InternalModelName,
-                        object: "chat.completion.chunk",
-                        choices: [
-                            LLMResponseChoice(
-                                index: 0,
-                                isFullMessage: false,
-                                message: LLMResponseChoiceMessage(
-                                    role: roleReturned ? nil : "assistant",
-                                    content: startThinkMark + processedReason
-                                )
-                            )
-                        ]
-                    )
-                case .inProgress:
-                    let processedReason = reason.replacingOccurrences(of: "```", with: "'''")
-                    response = LLMResponse(
-                        id: id,
-                        model: Constraint.InternalModelName,
-                        object: "chat.completion.chunk",
-                        choices: [
-                            LLMResponseChoice(
-                                index: 0,
-                                isFullMessage: false,
-                                message: LLMResponseChoiceMessage(
-                                    role: roleReturned ? nil : "assistant",
-                                    content: processedReason
-                                )
-                            )
-                        ]
-                    )
-                case .completed:
-                    // No reason in this state
-                    break
-                }
-            } else if let content = part.content {
-                if thinkState == .inProgress {
-                    thinkState = .completed
-                    let endThinkMark: String = {
-                        switch thinkParser {
-                        case .inContentWithEOT:
-                            return ThinkInContentWithEOTEndMark
-                        case .inContentWithCodeSnippet:
-                            return ThinkInContentWithCodeSnippetEndMark
-                        default:
-                            return ""
-                        }
-                    }()
-                    response = LLMResponse(
-                        id: id,
-                        model: Constraint.InternalModelName,
-                        object: "chat.completion.chunk",
-                        choices: [
-                            LLMResponseChoice(
-                                index: 0,
-                                isFullMessage: false,
-                                message: LLMResponseChoiceMessage(
-                                    role: roleReturned ? nil : "assistant",
-                                    content: endThinkMark + content
-                                )
-                            )
-                        ]
-                    )
-                } else {
-                    response = LLMResponse(
-                        id: id,
-                        model: Constraint.InternalModelName,
-                        object: "chat.completion.chunk",
-                        choices: [
-                            LLMResponseChoice(
-                                index: 0,
-                                isFullMessage: false,
-                                message: LLMResponseChoiceMessage(
-                                    role: roleReturned ? nil : "assistant",
-                                    content: Configer.chatProxyCodeSnippetPreviewFix ? responseFixer.processMessage(content) : content
-                                )
-                            )
-                        ]
-                    )
-                }
-            }
-        }
+        sendContentChunk(part.content)
         
         if let tools = part.tools {
             for tool in tools {
@@ -695,23 +567,10 @@ extension ChatProxyBridge: LLMClientDelegate {
                 }
             }
         }
-
-        writeResponse(response)
         
         if let finishReason = part.finishReason, finishReason != "tool_calls" {
             // Write finish reason
-            writeResponse(LLMResponse(
-                id: id,
-                model: Constraint.InternalModelName,
-                object: "chat.completion.chunk",
-                choices: [
-                    LLMResponseChoice(
-                        index: 0,
-                        finishReason: finishReason,
-                        isFullMessage: false
-                    )
-                ]
-            ))
+            sendFinishReason(finishReason)
         }
     }
     
@@ -761,6 +620,110 @@ extension ChatProxyBridge: LLMClientDelegate {
         llmClient = nil
         
         MenuBarManager.shared.stopLoading()
+    }
+    
+}
+
+extension ChatProxyBridge {
+    
+    private func sendReasonChunk(_ chunk: String?) {
+        guard let chunk else { return }
+        if thinkParser == .inReasoningContent {
+            sendReason(chunk)
+        } else {
+            switch thinkState {
+            case .notStarted:
+                thinkState = .inProgress
+                let startThinkMark: String = {
+                    switch thinkParser {
+                    case .inContentWithCodeSnippet:
+                        return Configer.chatProxyCodeSnippetPreviewFix ? ThinkInContentWithCodeSnippetStartMarkWithFix : ThinkInContentWithCodeSnippetStartMark
+                    default:
+                        return ""
+                    }
+                }()
+                let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
+                sendContent(startThinkMark + processedChunk)
+            case .inProgress:
+                let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
+                sendContent(processedChunk)
+            case .completed:
+                // No reason in this state
+                break
+            }
+        }
+    }
+    
+    private func sendContentChunk(_ chunk: String?) {
+        guard let chunk else { return }
+        
+        if thinkState == .inProgress {
+            thinkState = .completed
+            let endThinkMark: String = {
+                switch thinkParser {
+                case .inContentWithEOT:
+                    return ThinkInContentWithEOTEndMark
+                case .inContentWithCodeSnippet:
+                    return ThinkInContentWithCodeSnippetEndMark
+                default:
+                    return ""
+                }
+            }()
+            sendContent(endThinkMark + chunk)
+        } else {
+            sendContent(Configer.chatProxyCodeSnippetPreviewFix ? responseFixer.processMessage(chunk) : chunk)
+        }
+    }
+    
+    private func sendReason(_ reason: String) {
+        writeResponse(LLMResponse(
+            id: id,
+            model: Constraint.InternalModelName,
+            object: "chat.completion.chunk",
+            choices: [
+                LLMResponseChoice(
+                    index: 0,
+                    isFullMessage: false,
+                    message: LLMResponseChoiceMessage(
+                        role: roleReturned ? nil : "assistant",
+                        reasoningContent: reason
+                    )
+                )
+            ]
+        ))
+    }
+    
+    private func sendContent(_ content: String) {
+        writeResponse(LLMResponse(
+            id: id,
+            model: Constraint.InternalModelName,
+            object: "chat.completion.chunk",
+            choices: [
+                LLMResponseChoice(
+                    index: 0,
+                    isFullMessage: false,
+                    message: LLMResponseChoiceMessage(
+                        role: roleReturned ? nil : "assistant",
+                        content: content
+                    )
+                )
+            ]
+        ))
+    }
+    
+    private func sendFinishReason(_ finishReason: String) {
+        writeResponse(LLMResponse(
+            id: id,
+            model: Constraint.InternalModelName,
+            object: "chat.completion.chunk",
+            choices: [
+                LLMResponseChoice(
+                    index: 0,
+                    finishReason: finishReason,
+                    isFullMessage: false
+                )
+            ]
+        ))
     }
     
 }
