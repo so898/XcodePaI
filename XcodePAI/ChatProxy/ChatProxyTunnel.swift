@@ -11,6 +11,13 @@ protocol ChatProxyTunnelDelegate {
     func tunnelStoped(_ tunnel: ChatProxyTunnel)
 }
 
+protocol ChatProxyBridgeDelegate {
+    func bridge(connected success: Bool)
+    func bridge(write dict: [String: Any])
+    func bridge(write string: String)
+    func bridgeWriteEndChunk()
+}
+
 enum ChatProxyTunnelResponeType {
     case unknown
     case models
@@ -60,6 +67,11 @@ class ChatProxyTunnel {
         let bridge = ChatProxyBridge(id: id, delegate: self)
         return bridge
     }()
+    
+    private lazy var agenticBridge: ChatProxyAgenticBridge = {
+        let bridge = ChatProxyAgenticBridge(id: id, delegate: self)
+        return bridge
+    }()
 }
 
 // MARK: Models List Response
@@ -84,6 +96,18 @@ extension ChatProxyTunnel{
     }
 }
 
+// MARK: Responses
+extension ChatProxyTunnel{
+    func receiveResponsesRequest(body: Data) {
+        guard let originalRequest = try? JSONDecoder().decode(LLMAgenticRequest.self, from: body) else {
+            writeServerErrorResponse()
+            return
+        }
+        
+        agenticBridge.receiveRequest(originalRequest)
+    }
+}
+
 // MARK: HTTPConnectionDelegate
 extension ChatProxyTunnel: HTTPConnectionDelegate {
     func connection(_ connection: HTTPConnection, didReceiveRequest request: HTTPRequest) {
@@ -98,6 +122,8 @@ extension ChatProxyTunnel: HTTPConnectionDelegate {
             connection.writeResponse(response)
         } else if request.method == "POST", request.path.contains("/v1/chat/completion"), let bodyData = request.body {
             receiveCompletionsRequest(body: bodyData)
+        } else if request.method == "POST", request.path.contains("/v1/responses"), let bodyData = request.body {
+            receiveResponsesRequest(body: bodyData)
         } else {
             writeServerErrorResponse()
         }
@@ -142,7 +168,7 @@ extension ChatProxyTunnel: HTTPConnectionDelegate {
 
 extension ChatProxyTunnel: ChatProxyBridgeDelegate {
     
-    func bridge(_ bridge: ChatProxyBridge, connected success: Bool) {
+    func bridge(connected success: Bool) {
         if success {
             responseType = .completions
             var response = HTTPResponse()
@@ -156,11 +182,15 @@ extension ChatProxyTunnel: ChatProxyBridgeDelegate {
         }
     }
     
-    func bridge(_ bridge: ChatProxyBridge, write dict: [String : Any]) {
+    func bridge(write dict: [String : Any]) {
         connection?.writeSSEDict(dict)
     }
     
-    func bridgeWriteEndChunk(_ bridge: ChatProxyBridge) {
+    func bridge(write string: String) {
+        connection?.writeSSEString(string)
+    }
+    
+    func bridgeWriteEndChunk() {
         connection?.writeSSEComplete()
     }
     

@@ -7,6 +7,7 @@
 
 let ThinkInContentWithCodeSnippetStartMark = "```think\n\n"
 let ThinkInContentWithCodeSnippetStartMarkWithFix = "```think: ThinkContent\n\n"
+let ThinkInContentWithCodeSnippetStartMarkForAgentic = "\n```think\n\n"
 let ThinkInContentWithEOTEndMark = "\n\n~~EOT~~\n\n"
 let ThinkInContentWithCodeSnippetEndMark = "\n\n~~EOT~~\n\n```\n\n"
 

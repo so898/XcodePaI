@@ -75,6 +75,23 @@ class AgenticConfiger {
         return .notConfigured
     }
     
+    static func codexDefaultModelName() -> String? {
+        guard checkCodexInstall(), let content = try? String(contentsOf: CodexFolderURL.appendingPathComponent(CodexConfigFileName), encoding: .utf8) else {
+            return nil
+        }
+        
+        do {
+            let doc = try TOMLDocument(content: content)
+            
+            if let modelValue = doc["model"] {
+                return modelValue.stringValue
+            }
+        } catch _ {
+            return nil
+        }
+        return nil
+    }
+    
     static func setupProxyConfig() {
         guard checkCodexInstall(), let content = try? String(contentsOf: CodexFolderURL.appendingPathComponent(CodexConfigFileName), encoding: .utf8) else {
             return

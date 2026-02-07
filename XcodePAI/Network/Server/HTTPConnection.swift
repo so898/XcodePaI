@@ -230,6 +230,10 @@ extension HTTPConnection {
         }
     }
     
+    func writeSSEString(_ string: String, tag: Int? = nil) {
+        writeSSE(string, tag: tag)
+    }
+    
     func writeSSE(_ value: String, tag: Int? = nil) {
         writeChunk("data: " + value + Constraint.DoubleLFString, tag: tag)
     }

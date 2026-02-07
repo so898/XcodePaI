@@ -7,12 +7,6 @@
 
 import Foundation
 
-protocol ChatProxyBridgeDelegate {
-    func bridge(_ bridge: ChatProxyBridge, connected success: Bool)
-    func bridge(_ bridge: ChatProxyBridge, write dict: [String: Any])
-    func bridgeWriteEndChunk(_ bridge: ChatProxyBridge)
-}
-
 // Think
 enum ThinkState {
     case notStarted
@@ -64,7 +58,7 @@ class ChatProxyBridge {
     func receiveRequest(_ request: LLMRequest) {
         MenuBarManager.shared.startLoading()
         guard let config = StorageManager.shared.getConfig(request.model), let modelProvider = config.getModelProvider() else {
-            delegate.bridge(self, connected: false)
+            delegate.bridge(connected: false)
             return
         }
         self.config = config
@@ -339,9 +333,10 @@ extension ChatProxyBridge {
             returnContent = cutAndReplaceSourceIn(returnContent, with: sourceCodes)
         }
         
-        // Force return in language, only for last message
-        let forceLanguage = Configer.forceLanguage
-        if isLastUserMessage, forceLanguage != .english {
+        if isLastUserMessage {
+            // Force return in language, only for last message
+            let forceLanguage = Configer.forceLanguage
+            
             // Language
             let languageContent: String = {
                 switch forceLanguage {
@@ -540,7 +535,7 @@ extension ChatProxyBridge {
 extension ChatProxyBridge {
     private func writeResponse(_ response: LLMResponse?) {
         if let response = response {
-            delegate.bridge(self, write: response.toDictionary())
+            delegate.bridge(write: response.toDictionary())
             
             roleReturned = true
         }
@@ -551,7 +546,7 @@ extension ChatProxyBridge {
 extension ChatProxyBridge: LLMClientDelegate {
     func clientConnected(_ client: LLMClient) {
         isConnected = true
-        delegate.bridge(self, connected: true)
+        delegate.bridge(connected: true)
     }
     
     func client(_ client: LLMClient, receivePart part: LLMAssistantMessage) {
@@ -596,13 +591,13 @@ extension ChatProxyBridge: LLMClientDelegate {
     func client(_ client: LLMClient, receiveError error: Error?) {
         if !isConnected {
             MenuBarManager.shared.stopLoading()
-            delegate.bridge(self, connected: false)
+            delegate.bridge(connected: false)
             return
         }
         
         if let _ = error {
             // Error
-            delegate.bridge(self, write: ["internal_error": "Server error"])
+            delegate.bridge(write: ["internal_error": "Server error"])
         } else if mcpToolUses.count > 0 {
             // Tool calling
             callToolUses()
@@ -614,7 +609,7 @@ extension ChatProxyBridge: LLMClientDelegate {
             return
         }
         
-        delegate.bridgeWriteEndChunk(self)
+        delegate.bridgeWriteEndChunk()
         
         llmClient?.stop()
         llmClient = nil
