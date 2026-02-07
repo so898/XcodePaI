@@ -467,19 +467,13 @@ extension ChatProxyBridge {
                     do {
                         let content = try await MCPRunner.shared.run(mcpName: tool.mcp, toolName: tool.name, arguments: toolUse.arguments)
                         self.sendCallToolResult(toolUse: toolUse, content: content, isError: false)
-                        
-//                        print("Tool Result[S]: \(content)")
                     } catch _ {
                         self.sendCallToolResult(toolUse: toolUse, content: nil, isError: true)
-                        
-//                        print("Tool Result[E]: \(error)")
                     }
                 }
             }
-            
             completeToolUseCalls()
         }
-        
     }
     
     private func sendCallToolResult(toolUse: LLMMCPToolUse, content: String?, isError: Bool = false) {
@@ -514,12 +508,12 @@ extension ChatProxyBridge {
         writeResponse(response)
         
         let recordMessageDescriptionTitle: String = {
-            var ret = PromptTemplate.userPromptToolUseResultDescriptionTemplate.replacingOccurrences(of: "{{TOOL_NAME}}", with: tool.toolName)
-            if let arguments = toolUse.arguments, !arguments.isEmpty {
-                ret = ret.replacingOccurrences(of: "{{ARGUMENTS}}",
-                                             with: PromptTemplate.userPromptToolUseResultDescriptionArgumentsTemplate.replacingOccurrences(of: "{{ARGS_STR}}", with: arguments))
+            var ret = PromptTemplate.toolUseResultTemplate.replacingOccurrences(of: "{{TOOL_NAME}}", with: tool.toolName)
+            if let content, !content.isEmpty {
+                ret = ret.replacingOccurrences(of: "{{RESULT}}",
+                                             with: content)
             } else {
-                ret = ret.replacingOccurrences(of: "{{ARGUMENTS}}", with: "")
+                ret = ret.replacingOccurrences(of: "{{RESULT}}", with: "")
             }
             return ret
         }()
@@ -535,7 +529,7 @@ extension ChatProxyBridge {
             // Use Cherry Studio format
             recordAssistantMessages.append(contentsOf: [
                 LLMMessage(role: "user", contents: [
-                    LLMMessageContent(text: recordMessageDescriptionTitle + "\n" + (content ?? "")),
+                    LLMMessageContent(text: recordMessageDescriptionTitle),
                 ])
             ])
         }

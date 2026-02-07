@@ -44,13 +44,19 @@ You are a coding assistant—with access to tools—specializing in analyzing co
     
     static let userPromptToolUseResultDescriptionTemplatePrefix = "Here is the result of mcp tool use"
     
-    static let userPromptToolUseResultDescriptionTemplate = """
-        \(userPromptToolUseResultDescriptionTemplatePrefix) `{{TOOL_NAME}}`{{ARGUMENTS}}:
-        """
+    static let toolUseTemplate = """
+        <tool_use>
+        <name>{{TOOL_NAME}}</name>
+        <arguments>{{ARGUMENTS}}</arguments>
+        </tool_use>
+    """
     
-    static let userPromptToolUseResultDescriptionArgumentsTemplate = """
-         with arguments: {{ARGS_STR}}
-        """
+    static let toolUseResultTemplate = """
+        <tool_use_result>
+        <name>{{TOOL_NAME}}</name>
+        <result>{{RESULT}}</result>
+        </tool_use_result>
+    """
 }
 
 // MARK: Chat completion with fim code completion
