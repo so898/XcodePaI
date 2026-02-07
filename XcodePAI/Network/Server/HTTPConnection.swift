@@ -118,7 +118,7 @@ class HTTPConnection {
             // Remove header data
             accumulatedData.removeSubrange(0..<headerEndRange.upperBound)
             
-            // Process reqeust
+            // Process request
             if accumulatedData.count > 0 {
                 processRequestBody()
             } else if expectedBodyLength == 0, let currentRequest = currentRequest {

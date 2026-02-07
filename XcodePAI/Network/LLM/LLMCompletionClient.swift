@@ -158,7 +158,7 @@ class LLMCompletionClient {
         return (id, response.choices.first?.message.content)
     }
     
-    static func doChatReqeust(_ request: LLMRequest, provider: LLMModelProvider, messages: [LLMMessage], timeout: TimeInterval? = nil) async throws -> String {
+    static func doChatRequest(_ request: LLMRequest, provider: LLMModelProvider, messages: [LLMMessage], timeout: TimeInterval? = nil) async throws -> String {
         guard let data = try? JSONSerialization.data(withJSONObject: request.toDictionary()) else {
             throw CoroutineHTTPClientError.encodingError
         }

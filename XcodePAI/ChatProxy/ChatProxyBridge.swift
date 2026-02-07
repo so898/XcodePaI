@@ -133,7 +133,7 @@ extension ChatProxyBridge {
         if useToolInRequest, let mcpTools = mcpTools {
             var tools = newRequest.tools ?? [LLMTool]()
             for mcpTool in mcpTools {
-                tools.append(mcpTool.toReqeustTool())
+                tools.append(mcpTool.toRequestTool())
             }
             newRequest.tools = tools
         }

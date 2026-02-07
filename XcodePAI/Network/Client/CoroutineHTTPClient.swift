@@ -96,7 +96,7 @@ class CoroutineHTTPClient {
         // Check for successful status codes (200-299)
         guard (200...299).contains(httpResponse.statusCode) else {
             let content: String? = String(data: data, encoding: .utf8)
-            Logger.service.error("Coroutine Reqeust: \(method.rawValue) \(url.absoluteString)\nReturn: \(httpResponse.statusCode)\nContent: \(content ?? "")")
+            Logger.service.error("Coroutine Request: \(method.rawValue) \(url.absoluteString)\nReturn: \(httpResponse.statusCode)\nContent: \(content ?? "")")
             throw CoroutineHTTPClientError.httpError(statusCode: httpResponse.statusCode, content: content)
         }
         

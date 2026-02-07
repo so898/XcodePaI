@@ -543,7 +543,7 @@ extension GitManager {
             prompt = prompt.replacingOccurrences(of: "<USER_DRAFT>", with: "")
         }
         
-        let message = try await doLLMReqeust(with: prompt)
+        let message = try await doLLMRequest(with: prompt)
         
         let (hasBlock, contents) = Utils.extractMarkdownCodeBlocks(from: message)
         if hasBlock {
@@ -553,7 +553,7 @@ extension GitManager {
         return message
     }
     
-    private func doLLMReqeust(with prompt: String) async throws -> String {
+    private func doLLMRequest(with prompt: String) async throws -> String {
         guard let config = StorageManager.shared.defaultConfig(), let model = config.getModel(), let modelProvider = config.getModelProvider() else {
             return ""
         }
@@ -563,7 +563,7 @@ extension GitManager {
         
         let request = LLMRequest(model: model.id, messages:messages, stream: false, enableThinking: Configer.gitCommitGenerateUseThink)
         
-        return try await LLMCompletionClient.doChatReqeust(request, provider: modelProvider, messages: messages, timeout: Configer.gitCommitGenerateTimeout)
+        return try await LLMCompletionClient.doChatRequest(request, provider: modelProvider, messages: messages, timeout: Configer.gitCommitGenerateTimeout)
     }
     
     private func stagedFileInfos() async -> String {

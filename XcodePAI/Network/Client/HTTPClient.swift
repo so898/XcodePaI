@@ -33,7 +33,7 @@ class HTTPClient {
                     }
                     return nil
                 }()
-                Logger.service.error("Client Reqeust: GET \(url.absoluteString)\nReturn: \((response as? HTTPURLResponse)?.statusCode ?? -1)\nContent: \(content ?? "")")
+                Logger.service.error("Client Request: GET \(url.absoluteString)\nReturn: \((response as? HTTPURLResponse)?.statusCode ?? -1)\nContent: \(content ?? "")")
                 completion(.failure(NSError(domain: "NetworkError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response or no data"])))
                 return
             }
@@ -65,7 +65,7 @@ class HTTPClient {
                     }
                     return nil
                 }()
-                Logger.service.error("Client Reqeust: POST \(url.absoluteString)\nReturn: \((response as? HTTPURLResponse)?.statusCode ?? -1)\nContent: \(content ?? "")")
+                Logger.service.error("Client Request: POST \(url.absoluteString)\nReturn: \((response as? HTTPURLResponse)?.statusCode ?? -1)\nContent: \(content ?? "")")
                 completion(.failure(NSError(domain: "NetworkError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid response or no data"])))
                 return
             }

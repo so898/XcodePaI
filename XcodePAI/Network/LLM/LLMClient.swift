@@ -101,7 +101,7 @@ class LLMClient {
             guard let `self` = self else { return }
             
             if let error {
-                Logger.service.error("LLMCLient Reqeust: POST \(url.absoluteString)\nError: \(error.localizedDescription)")
+                Logger.service.error("LLMCLient Request: POST \(url.absoluteString)\nError: \(error.localizedDescription)")
             } else {
                 // No error means request completed
                 self.sendFullMessage()
