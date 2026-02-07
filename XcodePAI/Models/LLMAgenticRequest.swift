@@ -156,17 +156,14 @@ struct LLMAgenticToolModel: Codable {
     }
     
     func toPrompt() -> String {
-        var ret = """
-            <tool>
-            <name>\(name)</name>
-            """
+        var ret = "<tool><name>\(name)</name>"
         if let description {
-            ret += "\n<description>\(description)</description>"
+            ret += "<description>\(description)</description>"
         }
         if let data = try? JSONEncoder().encode(parameters), let schema = String(data: data, encoding: .utf8) {
-            ret += "\n<arguments>\(schema)</arguments>"
+            ret += "<arguments>\(schema)</arguments>"
         }
-        ret += "\n</tool>\n"
+        ret += "</tool>"
         
         return ret
     }
