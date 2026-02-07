@@ -132,13 +132,14 @@ class LLMClient {
     private var content: String?
     
     private let toolCallExtractor = ToolCallExtractor()
-    private var tools: [LLMMessageToolCall]?
+    private var toolCallParts: [LLMMessageToolCall]?
+    private var toolCalls: [LLMMessageToolCall]?
     
     private func sendFullMessage() {
         delegate?.client(self, receiveMessage: LLMAssistantMessage(reason: reason,
                                                                   isReasonComplete: true,
                                                                   content: content,
-                                                                  tools: tools))
+                                                                  tools: toolCalls))
         
         
         if let request, let tokenUsage {
@@ -149,7 +150,7 @@ class LLMClient {
                 return ""
             }()
             let toolString = {
-                if let tools, let data = try? JSONSerialization.data(withJSONObject: tools.map({$0.toDictionary()})) {
+                if let toolCalls, let data = try? JSONSerialization.data(withJSONObject: toolCalls.map({$0.toDictionary()})) {
                     return String(data: data, encoding: .utf8) ?? ""
                 }
                 return ""
@@ -172,6 +173,9 @@ class LLMClient {
     }
     
     private func processReasonAndContentWithMessage(_ message: LLMResponseChoiceMessage) -> (String?, String?) {
+        if let reasoningContent = message.reasoningContent, !reasoningContent.isEmpty {
+            isReasonComplete = false
+        }
         var chunkReason: String?
         var chunkContent: String?
         
@@ -218,6 +222,50 @@ class LLMClient {
         
         return (chunkReason, chunkContent)
     }
+    
+    private func processToolCallPart() {
+        guard let toolCallParts else {
+            return
+        }
+        var id: String?
+        var type: String?
+        var functionName: String?
+        var arguments: String?
+        for toolCallPart in toolCallParts {
+            if let name = toolCallPart.function.name, !name.isEmpty {
+                if let functionName = functionName {
+                    sendToolCall(LLMMessageToolCall(id: id ?? "", type: type ?? "function", function: LLMFunction(name: functionName, arguments: arguments)))
+                }
+                id = nil
+                type = nil
+                functionName = name
+                arguments = nil
+            }
+            if !toolCallPart.id.isEmpty {
+                if id == nil {
+                    id = toolCallPart.id
+                } else if id != toolCallPart.id {
+                    id?.append(toolCallPart.id)
+                }
+            }
+            if let args = toolCallPart.function.arguments {
+                if arguments == nil {
+                    arguments = args
+                } else {
+                    arguments?.append(args)
+                }
+            }
+            if type == nil, !toolCallPart.type.isEmpty {
+                type = toolCallPart.type
+            }
+        }
+        
+        if let functionName = functionName {
+            sendToolCall(LLMMessageToolCall(id: id ?? "", type: type ?? "function", function: LLMFunction(name: functionName, arguments: arguments)))
+        }
+        
+        self.toolCallParts?.removeAll()
+    }
 }
 
 // MARK:  Event Source Functions
@@ -241,19 +289,34 @@ extension LLMClient {
                 content = chunkRet.1
                 isReasonComplete = true
                 
-                if let thisChunkContent = chunkContent {
-                    chunkContent = toolCallExtractor.processChunk(thisChunkContent)
-                    let finalizeContent = toolCallExtractor.finalize()
-                    
-                    var toolCalls = finalizeContent.toolCalls
-                    if !toolCalls.isEmpty {
-                        if let chunkTools {
-                            toolCalls.append(contentsOf: chunkTools)
+                if let reason {
+                    sendReason(reason)
+                }
+                
+                var toolCallsInsideContent = [LLMMessageToolCall]()
+                if let content {
+                    for contentAndToolCall in toolCallExtractor.processChunk(content) {
+                        if let content = contentAndToolCall.before {
+                            sendContent(content)
                         }
-                        chunkTools = toolCalls
+                        if let toolUse = contentAndToolCall.toolUse {
+                            toolCallsInsideContent.append(toolUse)
+                            sendToolCall(toolUse)
+                        }
+                    }
+                    
+                    if let finalizeContent = toolCallExtractor.resetBuffer(), !finalizeContent.isEmpty {
+                        sendContent(finalizeContent)
                     }
                 }
-                tools = chunkTools
+                
+                if let chunkTools {
+                    toolCallsInsideContent.append(contentsOf: chunkTools)
+                    for toolCall in chunkTools {
+                        sendToolCall(toolCall)
+                    }
+                }
+                toolCalls = toolCallsInsideContent
                 
                 // Close client when full message received
                 self.stop()
@@ -279,63 +342,78 @@ extension LLMClient {
             }
         }
         
-        if let chunkReason = chunkReason {
+        if let chunkReason = chunkReason, !chunkReason.isEmpty {
             if let reason = reason {
                 self.reason = reason + chunkReason
             } else {
                 reason = chunkReason
             }
+            
+            processToolCallPart()
+            
+            sendReason(chunkReason)
         }
         
-        if let thisChunkContent = chunkContent {
+        if let thisChunkContent = chunkContent, !thisChunkContent.isEmpty {
             if let content = content {
                 self.content = content + thisChunkContent
             } else {
                 content = thisChunkContent
             }
             
-            chunkContent = toolCallExtractor.processChunk(thisChunkContent)
+            processToolCallPart()
+            
+            for contentAndToolCall in toolCallExtractor.processChunk(thisChunkContent) {
+                if let content = contentAndToolCall.before {
+                    sendContent(content)
+                }
+                if let toolUse = contentAndToolCall.toolUse {
+                    sendToolCall(toolUse)
+                }
+            }
         }
         
         if let chunkTools = chunkTools {
-            if var tools = tools {
+            if var tools = toolCallParts {
                 tools.append(contentsOf: chunkTools)
-                self.tools = tools
+                self.toolCallParts = tools
             } else {
-                tools = chunkTools
+                toolCallParts = chunkTools
             }
         }
         
-        if nil != chunkFinishReason {
-            let finalizeContent = toolCallExtractor.finalize()
-            if var thisChunkContent = chunkContent {
-                thisChunkContent += finalizeContent.remainingContent
-                chunkContent = thisChunkContent
-            } else {
-                chunkContent = finalizeContent.remainingContent
+        if var chunkFinishReason {
+            processToolCallPart()
+            
+            if let finalizeContent = toolCallExtractor.resetBuffer(), !finalizeContent.isEmpty {
+                sendContent(finalizeContent)
             }
             
-            var toolCalls = finalizeContent.toolCalls
-            if let chunkTools {
-                toolCalls.append(contentsOf: chunkTools)
-            }
-            
-            chunkTools = toolCalls
-            tools = toolCalls
-            
-            if !toolCalls.isEmpty {
+            if let toolCalls, !toolCalls.isEmpty {
                 chunkFinishReason = "tool_calls"
             }
+            
+            sendFinishReason(chunkFinishReason)
         }
-        
-        delegate?.client(self, receivePart: LLMAssistantMessage(reason: chunkReason,
-                                                               isReasonComplete: isReasonComplete,
-                                                               content: chunkContent,
-                                                               tools: chunkTools,
-                                                               finishReason: chunkFinishReason))
         
         if let tokenUsage = response.usage {
             self.tokenUsage = tokenUsage
         }
+    }
+    
+    private func sendReason(_ reason: String) {
+        delegate?.client(self, receivePart: LLMAssistantMessage(reason: reason))
+    }
+    
+    private func sendContent(_ content: String) {
+        delegate?.client(self, receivePart: LLMAssistantMessage(content: content))
+    }
+    
+    private func sendToolCall(_ toolCall: LLMMessageToolCall) {
+        delegate?.client(self, receivePart: LLMAssistantMessage(tools: [toolCall]))
+    }
+    
+    private func sendFinishReason(_ finishReason: String) {
+        delegate?.client(self, receivePart: LLMAssistantMessage(finishReason: finishReason))
     }
 }

@@ -7,122 +7,107 @@
 
 import Foundation
 
+/// A streaming parser that extracts tool call XML blocks from LLM response chunks.
+///
+/// This class processes text chunks incrementally, identifying `<tool_use>` XML blocks
+/// and separating them from regular content. It maintains an internal buffer to handle
+/// cases where XML tags span across multiple chunks.
 class ToolCallExtractor {
-    // Stores accumulated content
+    /// Internal buffer to store incomplete XML data between chunks.
+    /// Used when XML tags are split across multiple processChunk calls.
     private var buffer = ""
-    // Stores the length of content that has already been returned
-    private var lastReturnedIndex = 0
-    // Stores extracted tool call code blocks
-    private var extractedToolCalls: [LLMMessageToolCall] = []
-    // Flag indicating whether currently inside a tool_use block
-    private var insideToolBlock = false
-    // Starting position of the current tool code block
-    private var currentToolBlockStart = 0
     
-    /// Processes streaming content
-    /// - Parameter chunk: Newly received content fragment
-    /// - Returns: Normal content that should be returned to the user (excluding tool_use code blocks)
-    func processChunk(_ chunk: String) -> String {
-        // Append new content to buffer
-        buffer += chunk
+    /// Represents a segment of content and an optional associated tool call.
+    ///
+    /// This struct pairs regular text content (that appears before a tool call)
+    /// with the parsed tool call data, if present.
+    struct ContentAndToolUse {
+        /// The text content that appeared before the tool call, if any.
+        /// Nil if the segment starts with a tool call.
+        let before: String?
         
-        var result = ""
-        // Retain some characters to prevent tag truncation (<tool_use> is 11 chars max, keeping 20 chars is safer)
-        let lookbackSize = 20
-        var searchStartIndex = buffer.index(buffer.startIndex, offsetBy: max(0, lastReturnedIndex - lookbackSize))
+        /// The parsed tool call extracted from the XML block, if found.
+        /// Nil for segments containing only regular text.
+        let toolUse: LLMMessageToolCall?
+    }
+    
+    /// Processes a new chunk of text from the LLM response stream.
+    ///
+    /// This method appends the new chunk to any buffered data from previous calls,
+    /// scans for complete `<tool_use>` XML blocks, and returns an array of content
+    /// segments paired with any tool calls found.
+    ///
+    /// - Parameter chunk: A string chunk from the LLM response stream.
+    /// - Returns: An array of `ContentAndToolUse` objects representing parsed segments.
+    ///            Each element contains either regular text, a tool call, or both.
+    func processChunk(_ chunk: String) -> [ContentAndToolUse] {
+        var processingBuffer = buffer
+        processingBuffer += chunk
         
-        while searchStartIndex < buffer.endIndex {
-            if !insideToolBlock {
-                // Look for the start tag of tool_use block
-                if let toolStartRange = buffer.range(of: "<tool_use>", range: searchStartIndex..<buffer.endIndex) {
-                    let toolStartOffset = buffer.distance(from: buffer.startIndex, to: toolStartRange.lowerBound)
+        var ret = [ContentAndToolUse]()
+        
+        var before = ""
+        var foundLeftBlock = false
+        var foundToolUse = false
+        var blockContent = ""
+        for char in processingBuffer {
+            if char == "<" {
+                foundLeftBlock = true
+            }
+            
+            if foundToolUse {
+                blockContent += String(char)
+                
+                if blockContent.suffix(11) == "</tool_use>" {
+                    let toolUse = parseToolCall(from: blockContent)
+                    blockContent = ""
                     
-                    // Return content before the tool block
-                    if lastReturnedIndex < toolStartOffset {
-                        let startIdx = buffer.index(buffer.startIndex, offsetBy: lastReturnedIndex)
-                        let endIdx = buffer.index(buffer.startIndex, offsetBy: toolStartOffset)
-                        result += String(buffer[startIdx..<endIdx])
-                        lastReturnedIndex = toolStartOffset
-                    }
-                    
-                    // Enter tool block
-                    insideToolBlock = true
-                    currentToolBlockStart = toolStartOffset
-                    searchStartIndex = toolStartRange.upperBound
-                } else {
-                    // No tool block start tag found, return safe content (keep last 20 chars to prevent tag truncation)
-                    let safeEndOffset = max(lastReturnedIndex, buffer.count - lookbackSize)
-                    if lastReturnedIndex < safeEndOffset {
-                        let startIdx = buffer.index(buffer.startIndex, offsetBy: lastReturnedIndex)
-                        let endIdx = buffer.index(buffer.startIndex, offsetBy: safeEndOffset)
-                        result += String(buffer[startIdx..<endIdx])
-                        lastReturnedIndex = safeEndOffset
-                    }
-                    break
+                    ret.append(ContentAndToolUse(before: before, toolUse: toolUse))
+                    before = ""
                 }
             } else {
-                // Inside tool block, look for end tag
-                if let toolEndRange = buffer.range(of: "</tool_use>", range: searchStartIndex..<buffer.endIndex) {
-                    let toolEndOffset = buffer.distance(from: buffer.startIndex, to: toolEndRange.upperBound)
-                    
-                    // Extract complete tool_use code block
-                    let startIdx = buffer.index(buffer.startIndex, offsetBy: currentToolBlockStart)
-                    let endIdx = buffer.index(buffer.startIndex, offsetBy: toolEndOffset)
-                    let toolBlock = String(buffer[startIdx..<endIdx])
-                    
-                    // Parse tool call
-                    if let toolCall = parseToolCall(from: toolBlock) {
-                        extractedToolCalls.append(toolCall)
-                    }
-                    
-                    // Update state
-                    insideToolBlock = false
-                    lastReturnedIndex = toolEndOffset
-                    searchStartIndex = endIdx
+                if !foundLeftBlock {
+                    before += String(char)
                 } else {
-                    // End tag not found yet, wait for more content
-                    break
+                    blockContent += String(char)
+                    
+                    if blockContent.last == ">" {
+                        if blockContent.lowercased() == "<tool_use>" {
+                            foundToolUse = true
+                        } else {
+                            foundLeftBlock = false
+                            before += blockContent
+                            blockContent = ""
+                        }
+                    }
                 }
             }
         }
         
-        return result
-    }
-    
-    /// Finalizes processing, returns remaining content and all extracted tool calls
-    /// - Returns: Tuple (remaining normal content, all tool calls)
-    func finalize() -> (remainingContent: String, toolCalls: [LLMMessageToolCall]) {
-        var remainingContent = ""
-        
-        if insideToolBlock {
-            // If still inside tool block, content is incomplete, return as normal content
-            if lastReturnedIndex < buffer.count {
-                let startIdx = buffer.index(buffer.startIndex, offsetBy: lastReturnedIndex)
-                remainingContent = String(buffer[startIdx...])
-            }
-        } else {
-            // Return remaining normal content in buffer
-            if lastReturnedIndex < buffer.count {
-                let startIdx = buffer.index(buffer.startIndex, offsetBy: lastReturnedIndex)
-                remainingContent = String(buffer[startIdx...])
-            }
+        if before.count > 0 {
+            ret.append(ContentAndToolUse(before: before, toolUse: nil))
         }
         
-        return (remainingContent, extractedToolCalls)
+        if blockContent.count > 0 {
+            buffer = blockContent
+        } else {
+            buffer = ""
+        }
+        
+        return ret
     }
     
-    /// Resets extractor state
-    func reset() {
-        buffer = ""
-        lastReturnedIndex = 0
-        extractedToolCalls = []
-        insideToolBlock = false
-        currentToolBlockStart = 0
-    }
-    
-    /// Gets current count of extracted tool calls
-    var toolCallCount: Int {
-        return extractedToolCalls.count
+    /// Resets the internal buffer and returns its current contents.
+    ///
+    /// Call this method when the stream ends or when switching to a new context
+    /// to ensure any remaining buffered data is captured and the parser state is cleared.
+    ///
+    /// - Returns: The remaining content in the buffer before clearing.
+    func resetBuffer() -> String? {
+        defer {
+            buffer = ""
+        }
+        return buffer.isEmpty ? nil : buffer
     }
 }
 

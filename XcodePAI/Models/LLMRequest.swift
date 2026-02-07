@@ -398,6 +398,7 @@ class LLMMessageToolCall {
     let id: String
     let type: String
     let function: LLMFunction
+    let index: Int?
     
     var raw: String?
     
@@ -405,12 +406,14 @@ class LLMMessageToolCall {
         self.id = id
         self.type = type
         self.function = function
+        self.index = 0
     }
     
     init(name: String? = nil, arguments: String? = nil, raw: String? = nil) {
         self.id = ""
         self.type = ""
         self.function = LLMFunction(name: name, arguments: arguments)
+        self.index = 0
         self.raw = raw
     }
     
@@ -428,6 +431,13 @@ class LLMMessageToolCall {
         guard let function = dict["function"] as? [String: Any] else {
             throw LLMRequestError.invalidToolCallFunction
         }
+        
+        if let index = dict["index"] as? Int {
+            self.index = index
+        } else {
+            self.index = nil
+        }
+        
         self.function = LLMFunction(
             name: function["name"] as? String,
             description: function["description"] as? String,
@@ -437,7 +447,7 @@ class LLMMessageToolCall {
     }
     
     func toDictionary() -> [String: Any] {
-        return ["id": id, "type": type, "function": function.toDictionary()]
+        return ["id": id, "type": type, "function": function.toDictionary(), "index": index ?? 0]
     }
 }
 

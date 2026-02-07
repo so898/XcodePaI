@@ -49,7 +49,6 @@ class ChatProxyBridge {
     
     private var mcpTools: [LLMMCPTool]?
     private var useToolInRequest = Configer.chatProxyToolUseInRequest
-    private var toolProcesser = ResponseToolProcesser()
     private var mcpToolUses = [LLMMCPToolUse]()
     
     private var currentRequest: LLMRequest?
@@ -60,11 +59,6 @@ class ChatProxyBridge {
     init(id: String, delegate: ChatProxyBridgeDelegate) {
         self.id = id
         self.delegate = delegate
-
-        toolProcesser.getMCPToolUseCall = {[weak self] toolUse in
-            guard let `self` = self else { return }
-            self.processToolUse(toolUse)
-        }
     }
     
     func receiveRequest(_ request: LLMRequest) {
@@ -555,7 +549,6 @@ extension ChatProxyBridge {
                 guard let `self` = self else {
                     return
                 }
-                toolProcesser.reset()
                 mcpToolUses.removeAll()
                 recordAssistantMessages.removeAll()
                 receiveRequest(request)
@@ -700,10 +693,18 @@ extension ChatProxyBridge: LLMClientDelegate {
                 }
             }
         }
+        
+        if let tools = part.tools {
+            for tool in tools {
+                if let toolName = tool.function.name {
+                    processToolUse(LLMMCPToolUse(toolName: toolName, arguments: tool.function.arguments))
+                }
+            }
+        }
 
         writeResponse(response)
         
-        if !toolProcesser.processMessage(part), let finishReason = part.finishReason {
+        if let finishReason = part.finishReason, finishReason != "tool_calls" {
             // Write finish reason
             writeResponse(LLMResponse(
                 id: id,
@@ -857,66 +858,4 @@ fileprivate class ResponseCodeSnippetFixer {
         "objective-c": "m",
         "text": "txt",
     ]
-}
-
-fileprivate class ResponseToolProcesser {
-    
-    private var messageToolCalls = [LLMMessageToolCall]()
-    
-    var getMCPToolUseCall: ((LLMMCPToolUse) -> Void)?
-    
-    func processMessage(_ message: LLMAssistantMessage) -> Bool {
-        if let tools = message.tools, tools.count > 0 {
-            messageToolCalls.append(contentsOf: tools)
-        }
-        if let finishReason = message.finishReason, finishReason == "tool_calls" {
-            processToolCalls()
-            return true
-        }
-        
-        return false
-    }
-    
-    private func processToolCalls() {
-        var id: String?
-        var type: String?
-        var functionName: String?
-        var arguments: String?
-        for toolUse in messageToolCalls {
-            if let name = toolUse.function.name {
-                if let functionName = functionName {
-                    getMCPToolUseCall?(LLMMCPToolUse(toolName: functionName, arguments: arguments, tid: id, type: type))
-                }
-                id = nil
-                type = nil
-                functionName = name
-                arguments = nil
-            }
-            if !toolUse.id.isEmpty {
-                if id == nil {
-                    id = toolUse.id
-                } else {
-                    id?.append(toolUse.id)
-                }
-            }
-            if let args = toolUse.function.arguments {
-                if arguments == nil {
-                    arguments = args
-                } else {
-                    arguments?.append(args)
-                }
-            }
-            if type == nil, !toolUse.type.isEmpty {
-                type = toolUse.type
-            }
-        }
-        
-        if let functionName = functionName {
-            getMCPToolUseCall?(LLMMCPToolUse(toolName: functionName, arguments: arguments, tid: id, type: type))
-        }
-    }
-    
-    func reset() {
-        messageToolCalls.removeAll()
-    }
 }

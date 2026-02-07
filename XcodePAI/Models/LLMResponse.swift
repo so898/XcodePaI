@@ -158,9 +158,7 @@ enum LLMResponseChoiceMessageType {
 
 class LLMResponseChoiceMessage {
     let role: String?
-    
-    let type: LLMResponseChoiceMessageType
-    
+        
     let content: String?
     let reasoningContent: String?
     let toolCallId: String?
@@ -169,7 +167,6 @@ class LLMResponseChoiceMessage {
     
     init(role: String?, type: LLMResponseChoiceMessageType = .content, content: String? = nil, reasoningContent: String? = nil, toolCallId: String? = nil, toolCalls: [LLMMessageToolCall]? = nil) {
         self.role = role
-        self.type = type
         self.content = content
         self.reasoningContent = reasoningContent
         self.toolCallId = toolCallId
@@ -178,7 +175,6 @@ class LLMResponseChoiceMessage {
     
     init(role: String, content: String? = nil, reasoningContent: String? = nil, toolCallId: String? = nil) {
         self.role = role
-        self.type = .content
         self.content = content
         self.reasoningContent = reasoningContent
         self.toolCallId = toolCallId
@@ -187,7 +183,6 @@ class LLMResponseChoiceMessage {
     
     init(role: String, content: String, reasoningContent: String? = nil) {
         self.role = role
-        self.type = .content
         self.content = content
         self.reasoningContent = reasoningContent
         self.toolCallId = nil
@@ -196,7 +191,6 @@ class LLMResponseChoiceMessage {
     
     init(role: String, toolCallId: String) {
         self.role = role
-        self.type = .content
         self.content = nil
         self.reasoningContent = nil
         self.toolCallId = toolCallId
@@ -205,7 +199,6 @@ class LLMResponseChoiceMessage {
     
     init(role: String, toolCalls: [LLMMessageToolCall]) {
         self.role = role
-        self.type = .toolCall
         self.content = nil
         self.reasoningContent = nil
         self.toolCallId = nil
@@ -214,7 +207,6 @@ class LLMResponseChoiceMessage {
     
     init(content: String) {
         self.role = nil
-        self.type = .content
         self.content = content
         self.reasoningContent = nil
         self.toolCallId = nil
@@ -224,57 +216,36 @@ class LLMResponseChoiceMessage {
     init(dict: [String: Any]) throws {
         self.role = dict["role"] as? String
         
+        var thisContent: String? = nil
+        var thisReasoningContent: String? = nil
+        var thisToolCallId: String? = nil
+        var thisToolCalls: [LLMMessageToolCall]? = nil
+        
         if let content = dict["content"] as? String {
-            self.type = .content
-            self.content = content
+            thisContent = content
             if let reasoningContent = dict["reasoning_content"] as? String {
-                self.reasoningContent = reasoningContent
-            } else {
-                self.reasoningContent = nil
+                thisReasoningContent = reasoningContent
             }
-            if let toolCallId = dict["tool_call_id"] as? String {
-                self.toolCallId = toolCallId
-            } else {
-                self.toolCallId = nil
-            }
-            self.toolCalls = nil
-        } else if let reasoningContent = dict["reasoning_content"] as? String {
-            self.type = .content
-            self.content = nil
-            self.reasoningContent = reasoningContent
-            if let toolCallId = dict["tool_call_id"] as? String {
-                self.toolCallId = toolCallId
-            } else {
-                self.toolCallId = nil
-            }
-            self.toolCalls = nil
-        } else if let toolCallId = dict["tool_call_id"] as? String {
-            self.type = .content
-            self.toolCallId = toolCallId
-            self.content = nil
-            if let reasoningContent = dict["reasoning_content"] as? String {
-                self.reasoningContent = reasoningContent
-            } else {
-                self.reasoningContent = nil
-            }
-            self.toolCalls = nil
-        } else if let toolCalls = dict["tool_calls"] as? [[String: Any]] {
-            self.type = .toolCall
+        }
+        if let reasoningContent = dict["reasoning_content"] as? String {
+            thisReasoningContent = reasoningContent
+            
+        }
+        if let toolCallId = dict["tool_call_id"] as? String {
+            thisToolCallId = toolCallId
+        }
+        if let toolCalls = dict["tool_calls"] as? [[String: Any]] {
             var parsedToolCalls = [LLMMessageToolCall]()
             for toolCall in toolCalls {
                 try parsedToolCalls.append(LLMMessageToolCall(dict: toolCall))
             }
-            self.toolCalls = parsedToolCalls
-            self.content = nil
-            self.reasoningContent = nil
-            self.toolCallId = nil
-        } else {
-            self.type = .empty
-            self.content = nil
-            self.reasoningContent = nil
-            self.toolCallId = nil
-            self.toolCalls = nil
+            thisToolCalls = parsedToolCalls
         }
+        
+        self.content = thisContent
+        self.reasoningContent = thisReasoningContent
+        self.toolCallId = thisToolCallId
+        self.toolCalls = thisToolCalls
     }
     
     func toDictionary() -> [String: Any] {
@@ -283,27 +254,23 @@ class LLMResponseChoiceMessage {
             dict["role"] = role
         }
 
-        switch type {
-        case .empty: break
-        case .content:
-            if let content {
-                dict["content"] = content
-            }
-            if let reasoningContent {
-                dict["reasoning_content"] = reasoningContent
-            }
-            if let toolCallId {
-                dict["tool_call_id"] = toolCallId
-            }
-        case .toolCall:
-            if let toolCalls {
-                var toolCallsArray = [Any]()
-                for toolCall in toolCalls {
-                    toolCallsArray.append(toolCall.toDictionary())
-                }
-                dict["tool_calls"] = toolCallsArray
-            }
+        if let content {
+            dict["content"] = content
         }
+        if let reasoningContent {
+            dict["reasoning_content"] = reasoningContent
+        }
+        if let toolCallId {
+            dict["tool_call_id"] = toolCallId
+        }
+        if let toolCalls {
+            var toolCallsArray = [Any]()
+            for toolCall in toolCalls {
+                toolCallsArray.append(toolCall.toDictionary())
+            }
+            dict["tool_calls"] = toolCallsArray
+        }
+        
         return dict
     }
 }
