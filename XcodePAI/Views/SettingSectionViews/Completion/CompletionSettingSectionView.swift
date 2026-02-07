@@ -60,7 +60,7 @@ struct CompletionSettingSectionView: View {
                                 NSWorkspace.openXcodeExtensionsPreferences()
                             }
                             Text(
-                                "Extensions \(Image(systemName: "puzzlepiece.extension.fill")) → Xcode Source Editor \(Image(systemName: "info.circle")) → \(Constraint.AppName) for faster and full-featured code completion."
+                                "Go to Extensions \(Image(systemName: "puzzlepiece.extension.fill")) → Xcode Source Editor \(Image(systemName: "info.circle")) → Enable \(Constraint.AppName) for faster and full-featured code completion."
                             )
                             .foregroundColor(.secondary)
                         }
@@ -78,13 +78,13 @@ struct CompletionSettingSectionView: View {
                 }
                 
                 GridRow(alignment: .center) {
-                    Text("Get suggestions in the middle of codes")
+                    Text("Get suggestions in the middle of code")
                     Toggle("Enable", isOn: $isSuggestionTypeInTheMiddleEnabled)
                         .toggleStyle(.checkbox)
                 }
                 
                 GridRow(alignment: .center) {
-                    Text("Suggestion Debounce Time")
+                    Text("Suggestion debounce time")
                     Stepper(value: $realtimeSuggestionDebounce, in: 0.1...5.0, step: 0.1) {
                         Text("\(realtimeSuggestionDebounce, specifier: "%.1f")")
                     }

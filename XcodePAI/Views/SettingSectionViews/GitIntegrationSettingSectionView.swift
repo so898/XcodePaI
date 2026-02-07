@@ -17,7 +17,7 @@ struct GitIntegrationSettingSectionView: View {
             Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 18) {
                 
                 GridRow {
-                    Text("Open Git Commit Window Within Statusbar Menu")
+                    Text("Open Git commit window within status bar menu")
                     Toggle("Enabled", isOn: $showGitCommitInStatusMenu)
                         .toggleStyle(.checkbox)
                         .onChange(of: showGitCommitInStatusMenu) { _, newValue in
@@ -30,7 +30,7 @@ struct GitIntegrationSettingSectionView: View {
                 }
                 
                 GridRow {
-                    Text("Generate Commit Message With Think")
+                    Text("Generate commit message with think")
                     Toggle("Enabled", isOn: $gitCommitGenerateUseThink)
                         .toggleStyle(.checkbox)
                         .onChange(of: gitCommitGenerateUseThink) { _, newValue in
@@ -39,7 +39,7 @@ struct GitIntegrationSettingSectionView: View {
                 }
                 
                 GridRow(alignment: .center) {
-                    Text("Generate Timeout")
+                    Text("Generate timeout")
                     Stepper(value: $gitCommitGenerateTimeout, in: 60...600, step: 30) {
                         Text("\(gitCommitGenerateTimeout, specifier: "%.0f")")
                     }.onChange(of: gitCommitGenerateTimeout) { _, newValue in

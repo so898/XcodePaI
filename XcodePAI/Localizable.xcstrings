@@ -431,7 +431,7 @@
         }
       }
     },
-    "Application restart required for language changed." : {
+    "Application restart required for language change." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1047,22 +1047,6 @@
         }
       }
     },
-    "Extensions %@ → Xcode Source Editor %@ → %@ for faster and full-featured code completion." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Extensions %1$@ → Xcode Source Editor %2$@ → %3$@ for faster and full-featured code completion."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "扩展 %1$@ → Xcode 源代码编辑器 %2$@ → %3$@，实现更快、功能更全的代码补全。"
-          }
-        }
-      }
-    },
     "False" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1084,7 +1068,7 @@
         }
       }
     },
-    "Fix code snippet preview for Xcode 26.1.1+" : {
+    "Fix code snippet preview for Xcode 26.1.1 and later" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1127,7 +1111,7 @@
         }
       }
     },
-    "Generate Commit Message With Think" : {
+    "Generate commit message with think" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1137,7 +1121,7 @@
         }
       }
     },
-    "Generate Timeout" : {
+    "Generate timeout" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1158,7 +1142,7 @@
         }
       }
     },
-    "Get suggestions in the middle of codes" : {
+    "Get suggestions in the middle of code" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1175,6 +1159,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Git 提交信息"
+          }
+        }
+      }
+    },
+    "Go to Extensions %@ → Xcode Source Editor %@ → Enable %@ for faster and full-featured code completion." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Go to Extensions %1$@ → Xcode Source Editor %2$@ → Enable %3$@ for faster and full-featured code completion."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往扩展 %1$@ → Xcode 源代码编辑器 %2$@ → %3$@，启用更快、功能更全的代码补全。"
           }
         }
       }
@@ -1242,7 +1242,7 @@
         }
       }
     },
-    "In Reasoning (Not Display)" : {
+    "In reasoning (not displayed)" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1591,7 +1591,7 @@
         }
       }
     },
-    "Open Git Commit Window Within Statusbar Menu" : {
+    "Open Git commit window within status bar menu" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -2018,7 +2018,7 @@
         }
       }
     },
-    "Show Git Commit In Statusbar Menu" : {
+    "Show Git commit in status bar menu" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -2029,7 +2029,7 @@
         }
       }
     },
-    "Show In Statusbar Icon" : {
+    "Show in status bar icon" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -2039,7 +2039,7 @@
         }
       }
     },
-    "Show In Statusbar Menu" : {
+    "Show in status bar menu" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -2133,7 +2133,7 @@
         }
       }
     },
-    "Suggestion Debounce Time" : {
+    "Suggestion debounce time" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {

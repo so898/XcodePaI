@@ -51,7 +51,7 @@ struct GeneralSettingSectionView: View {
                             }
                         }
                         .frame(maxWidth: 150, alignment: .leading)
-                        Text("Application restart required for language changed.")
+                        Text("Application restart required for language change.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -77,7 +77,7 @@ struct GeneralSettingSectionView: View {
                 
                 GridRow {
                     Text("Show loading when requesting")
-                    Toggle("Show In Statusbar Icon", isOn: $showLoadingWhenRequest)
+                    Toggle("Show in status bar icon", isOn: $showLoadingWhenRequest)
                         .toggleStyle(.checkbox)
                         .onChange(of: showLoadingWhenRequest) { _, newValue in
                             Configer.showLoadingWhenRequest = newValue
@@ -86,7 +86,7 @@ struct GeneralSettingSectionView: View {
                 
                 GridRow {
                     Text("Xcode Inspector Debug")
-                    Toggle("Show In Statusbar Menu", isOn: $showXcodeInspectorDebug)
+                    Toggle("Show in status bar menu", isOn: $showXcodeInspectorDebug)
                         .toggleStyle(.checkbox)
                         .onChange(of: showXcodeInspectorDebug) { _, newValue in
                             Configer.showXcodeInspectorDebug = newValue

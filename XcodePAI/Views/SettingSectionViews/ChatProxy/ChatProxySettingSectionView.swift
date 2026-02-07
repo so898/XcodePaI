@@ -85,7 +85,7 @@ struct ChatProxySettingSectionView: View {
                     Picker("", selection: $thinkStyle) {
                         Text("Code Snippet (Default)").tag(0)
                         Text("Text with EOT Mark").tag(1)
-                        Text("In Reasoning (Not Display)").tag(2)
+                        Text("In reasoning (not displayed)").tag(2)
                     }
                     .frame(maxWidth: 250, alignment: .leading)
                     .onChange(of: thinkStyle, { _, tag in
@@ -123,7 +123,7 @@ struct ChatProxySettingSectionView: View {
                 }
                 
                 GridRow {
-                    Text("Fix code snippet preview for Xcode 26.1.1+")
+                    Text("Fix code snippet preview for Xcode 26.1.1 and later")
                         .help("A regression in Xcode 26.1.1 (and subsequent releases) prevents the code assistant from displaying previews for code snippets. The solution involves generating a virtual file name for each snippet; this name serves as the preview content within the interface.")
                     Toggle("Enable", isOn: $codeSnippetPreviewFix)
                         .toggleStyle(.checkbox)
