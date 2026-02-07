@@ -185,7 +185,7 @@ extension ChatProxyAgenticBridge {
         
         // Remove think part in assistant message
         // Process simple because think could only be at the start of content
-        if returnContent.substring(to: ThinkInContentWithCodeSnippetStartMarkForAgentic.count) == ThinkInContentWithCodeSnippetStartMarkForAgentic {
+        if returnContent.count > ThinkInContentWithCodeSnippetStartMarkForAgentic.count, returnContent.substring(to: ThinkInContentWithCodeSnippetStartMarkForAgentic.count) == ThinkInContentWithCodeSnippetStartMarkForAgentic {
             let components = returnContent.split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
             if components.count == 2 {
                 returnContent = String(components[1])
