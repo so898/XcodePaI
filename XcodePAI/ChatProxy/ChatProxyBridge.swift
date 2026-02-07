@@ -634,19 +634,21 @@ extension ChatProxyBridge {
             switch thinkState {
             case .notStarted:
                 thinkState = .inProgress
-                let startThinkMark: String = {
-                    switch thinkParser {
-                    case .inContentWithCodeSnippet:
-                        return Configer.chatProxyCodeSnippetPreviewFix ? ThinkInContentWithCodeSnippetStartMarkWithFix : ThinkInContentWithCodeSnippetStartMark
-                    default:
-                        return ""
-                    }
-                }()
-                let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
-                sendContent(startThinkMark + processedChunk)
+                
+                if thinkParser == .inContentWithCodeSnippet {
+                    let startThinkMark = Configer.chatProxyCodeSnippetPreviewFix ? ThinkInContentWithCodeSnippetStartMarkWithFix : ThinkInContentWithCodeSnippetStartMark
+                    let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
+                    sendContent(startThinkMark + processedChunk)
+                } else {
+                    sendContent(chunk)
+                }
             case .inProgress:
-                let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
-                sendContent(processedChunk)
+                if thinkParser == .inContentWithCodeSnippet {
+                    let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
+                    sendContent(processedChunk)
+                } else {
+                    sendContent(chunk)
+                }
             case .completed:
                 // No reason in this state
                 break
