@@ -56,10 +56,15 @@ struct ChatProxySettingSectionView: View {
                 
                 GridRow(alignment: .center) {
                     Text("Xcode Codex Proxy")
-                    VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 10) {
                         if codeProxyConfigState == .configured {
                             Text(codeProxyConfigState.rawValue.localizedString)
                                 .foregroundColor(.green)
+                            Button("Open Codex Folder") {
+                                NSWorkspace.shared.open(AgenticConfiger.CodexFolderURL)
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.large)
                         } else if codeProxyConfigState == .notInstalled {
                             Text(codeProxyConfigState.rawValue.localizedString)
                                 .foregroundColor(.gray)

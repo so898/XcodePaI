@@ -100,7 +100,7 @@ extension StorageManager {
             }
             for model in models {
                 if model.enabled {
-                    ret.append(contentsOf: models)
+                    ret.append(model)
                 }
             }
         }

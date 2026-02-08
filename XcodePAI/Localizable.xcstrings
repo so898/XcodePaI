@@ -1602,6 +1602,16 @@
         }
       }
     },
+    "Open Codex Folder" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Codex 文件夹"
+          }
+        }
+      }
+    },
     "Open Configuration" : {
       "localizations" : {
         "zh-Hans" : {
