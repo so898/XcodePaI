@@ -1,5 +1,5 @@
 //
-//  LLMAgenticResponse.swift
+//  LLMCodexResponse.swift
 //  XcodePAI
 //
 //  Created by Bill Cheng on 2026/2/7.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum LLMAgenticResponseEvent: Codable {
+enum LLMCodexResponseEvent: Codable {
     case responseCreated(ResponseCreatedEvent)
     case responseInProgress(ResponseInProgressEvent)
     case responseCompleted(ResponseCompletedEvent)
@@ -1789,7 +1789,7 @@ enum LLMAgenticResponseEvent: Codable {
 }
 
 // MARK: - CustomDebugStringConvertible
-extension LLMAgenticResponseEvent: CustomDebugStringConvertible {
+extension LLMCodexResponseEvent: CustomDebugStringConvertible {
     var debugDescription: String {
         switch self {
         case .responseCreated(let event):

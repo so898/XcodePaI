@@ -1,5 +1,5 @@
 //
-//  LLMAgenticRequest.swift
+//  LLMCodexRequest.swift
 //  XcodePAI
 //
 //  Created by Bill Cheng on 2026/2/7.
@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct LLMAgenticRequest: Codable {
+struct LLMCodexRequest: Codable {
     let model: String
     let instructions: String?
-    let input: [LLMAgenticInputModel]?
-    let tools: [LLMAgenticToolModel]?
+    let input: [LLMCodexInputModel]?
+    let tools: [LLMCodexToolModel]?
     let toolChoice: String?
     let parallelToolCalls: Bool?
     let promptCacheKey: String?
@@ -31,8 +31,8 @@ struct LLMAgenticRequest: Codable {
     init(
         model: String,
         instructions: String? = nil,
-        input: [LLMAgenticInputModel]? = nil,
-        tools: [LLMAgenticToolModel]? = nil,
+        input: [LLMCodexInputModel]? = nil,
+        tools: [LLMCodexToolModel]? = nil,
         toolChoice: String? = nil,
         parallelToolCalls: Bool? = nil,
         promptCacheKey: String? = nil,
@@ -52,8 +52,8 @@ struct LLMAgenticRequest: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.model = try container.decode(String.self, forKey: .model)
         self.instructions = try container.decodeIfPresent(String.self, forKey: .instructions)
-        self.input = try container.decodeIfPresent([LLMAgenticInputModel].self, forKey: .input)
-        self.tools = try container.decodeIfPresent([LLMAgenticToolModel].self, forKey: .tools)
+        self.input = try container.decodeIfPresent([LLMCodexInputModel].self, forKey: .input)
+        self.tools = try container.decodeIfPresent([LLMCodexToolModel].self, forKey: .tools)
         self.toolChoice = try container.decodeIfPresent(String.self, forKey: .toolChoice)
         self.parallelToolCalls = try container.decodeIfPresent(Bool.self, forKey: .parallelToolCalls)
         self.promptCacheKey = try container.decodeIfPresent(String.self, forKey: .promptCacheKey)
@@ -61,11 +61,11 @@ struct LLMAgenticRequest: Codable {
     }
 }
 
-struct LLMAgenticInputModel: Codable {
+struct LLMCodexInputModel: Codable {
     let id: String?
     let type: String?
     let role: String?
-    let content: [LLMAgenticInputContentModel]?
+    let content: [LLMCodexInputContentModel]?
     
     // Funciton Call
     let name: String?
@@ -82,7 +82,7 @@ struct LLMAgenticInputModel: Codable {
         id: String? = nil,
         type: String? = nil,
         role: String? = nil,
-        content: [LLMAgenticInputContentModel]? = nil
+        content: [LLMCodexInputContentModel]? = nil
     ) {
         self.id = id
         self.type = type
@@ -115,7 +115,7 @@ struct LLMAgenticInputModel: Codable {
     }
 }
 
-struct LLMAgenticInputContentModel: Codable {
+struct LLMCodexInputContentModel: Codable {
     let type: String?
     let text: String?
     
@@ -125,16 +125,16 @@ struct LLMAgenticInputContentModel: Codable {
     }
 }
 
-struct LLMAgenticToolModel: Codable {
+struct LLMCodexToolModel: Codable {
     let name: String
-    let parameters: LLMAgenticToolParameterModel
+    let parameters: LLMCodexToolParameterModel
     let type: String
     let strict: Bool
     let description: String?
     
     init(
         name: String,
-        parameters: LLMAgenticToolParameterModel,
+        parameters: LLMCodexToolParameterModel,
         type: String = "function",
         strict: Bool = false,
         description: String? = nil
@@ -149,7 +149,7 @@ struct LLMAgenticToolModel: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? "unknown"
-        self.parameters = try container.decodeIfPresent(LLMAgenticToolParameterModel.self, forKey: .parameters) ?? LLMAgenticToolParameterModel()
+        self.parameters = try container.decodeIfPresent(LLMCodexToolParameterModel.self, forKey: .parameters) ?? LLMCodexToolParameterModel()
         self.type = try container.decodeIfPresent(String.self, forKey: .type) ?? "function"
         self.strict = try container.decodeIfPresent(Bool.self, forKey: .strict) ?? false
         self.description = try container.decodeIfPresent(String.self, forKey: .description)
@@ -169,9 +169,9 @@ struct LLMAgenticToolModel: Codable {
     }
 }
 
-struct LLMAgenticToolParameterModel: Codable {
+struct LLMCodexToolParameterModel: Codable {
     let type: String?
-    let properties: [String: LLMAgenticToolParameterPropertyInfoModel]?
+    let properties: [String: LLMCodexToolParameterPropertyInfoModel]?
     let required: [String]?
     let additionalProperties: Bool?
     
@@ -184,7 +184,7 @@ struct LLMAgenticToolParameterModel: Codable {
     
     init(
         type: String? = nil,
-        properties: [String: LLMAgenticToolParameterPropertyInfoModel]? = nil,
+        properties: [String: LLMCodexToolParameterPropertyInfoModel]? = nil,
         required: [String]? = nil,
         additionalProperties: Bool? = nil
     ) {
@@ -195,7 +195,7 @@ struct LLMAgenticToolParameterModel: Codable {
     }
 }
 
-struct LLMAgenticToolParameterPropertyInfoModel: Codable {
+struct LLMCodexToolParameterPropertyInfoModel: Codable {
     let type: String?
     let description: String?
     

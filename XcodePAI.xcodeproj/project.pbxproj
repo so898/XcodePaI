@@ -75,9 +75,9 @@
 		795A744C2E6F5A4000F4BA1E /* PluginDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795A744B2E6F5A3600F4BA1E /* PluginDetailView.swift */; };
 		796AF44B2F3614510017AAB8 /* AgenticConfiger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796AF44A2F3614460017AAB8 /* AgenticConfiger.swift */; };
 		796AF44E2F3617410017AAB8 /* TOML.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796AF44D2F36173F0017AAB8 /* TOML.swift */; };
-		796AF4502F372B130017AAB8 /* LLMAgenticRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796AF44F2F372B0C0017AAB8 /* LLMAgenticRequest.swift */; };
-		796AF4522F372B450017AAB8 /* LLMAgenticResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796AF4512F372B3F0017AAB8 /* LLMAgenticResponse.swift */; };
-		796AF4542F372E4F0017AAB8 /* ChatProxyAgenticBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796AF4532F372E460017AAB8 /* ChatProxyAgenticBridge.swift */; };
+		796AF4502F372B130017AAB8 /* LLMCodexRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796AF44F2F372B0C0017AAB8 /* LLMCodexRequest.swift */; };
+		796AF4522F372B450017AAB8 /* LLMCodexResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796AF4512F372B3F0017AAB8 /* LLMCodexResponse.swift */; };
+		796AF4542F372E4F0017AAB8 /* ChatProxyCodexBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796AF4532F372E460017AAB8 /* ChatProxyCodexBridge.swift */; };
 		796DC5252F1E987D009DBE96 /* CommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796DC5242F1E9877009DBE96 /* CommandRunner.swift */; };
 		796DC5272F1E9A01009DBE96 /* HTTPClientExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796DC5262F1E99FC009DBE96 /* HTTPClientExtension.swift */; };
 		7975BF8C2EEB30CA00821BBF /* CommandFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7975BF8B2EEB30C900821BBF /* CommandFinder.swift */; };
@@ -225,9 +225,9 @@
 		795A744B2E6F5A3600F4BA1E /* PluginDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginDetailView.swift; sourceTree = "<group>"; };
 		796AF44A2F3614460017AAB8 /* AgenticConfiger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgenticConfiger.swift; sourceTree = "<group>"; };
 		796AF44D2F36173F0017AAB8 /* TOML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOML.swift; sourceTree = "<group>"; };
-		796AF44F2F372B0C0017AAB8 /* LLMAgenticRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMAgenticRequest.swift; sourceTree = "<group>"; };
-		796AF4512F372B3F0017AAB8 /* LLMAgenticResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMAgenticResponse.swift; sourceTree = "<group>"; };
-		796AF4532F372E460017AAB8 /* ChatProxyAgenticBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyAgenticBridge.swift; sourceTree = "<group>"; };
+		796AF44F2F372B0C0017AAB8 /* LLMCodexRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCodexRequest.swift; sourceTree = "<group>"; };
+		796AF4512F372B3F0017AAB8 /* LLMCodexResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMCodexResponse.swift; sourceTree = "<group>"; };
+		796AF4532F372E460017AAB8 /* ChatProxyCodexBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyCodexBridge.swift; sourceTree = "<group>"; };
 		796DC5242F1E9877009DBE96 /* CommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandRunner.swift; sourceTree = "<group>"; };
 		796DC5262F1E99FC009DBE96 /* HTTPClientExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClientExtension.swift; sourceTree = "<group>"; };
 		7975BF8B2EEB30C900821BBF /* CommandFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandFinder.swift; sourceTree = "<group>"; };
@@ -343,8 +343,8 @@
 				790799AB2E471FF8004D9D1A /* LLMModel.swift */,
 				790799C12E48BC71004D9D1A /* LLMRequest.swift */,
 				790799C32E48D911004D9D1A /* LLMResponse.swift */,
-				796AF44F2F372B0C0017AAB8 /* LLMAgenticRequest.swift */,
-				796AF4512F372B3F0017AAB8 /* LLMAgenticResponse.swift */,
+				796AF44F2F372B0C0017AAB8 /* LLMCodexRequest.swift */,
+				796AF4512F372B3F0017AAB8 /* LLMCodexResponse.swift */,
 				79079A052E4F9449004D9D1A /* LLMMCP.swift */,
 				79079A062E4F9449004D9D1A /* LLMMCPTool.swift */,
 				79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */,
@@ -563,7 +563,7 @@
 			isa = PBXGroup;
 			children = (
 				796AF44A2F3614460017AAB8 /* AgenticConfiger.swift */,
-				796AF4532F372E460017AAB8 /* ChatProxyAgenticBridge.swift */,
+				796AF4532F372E460017AAB8 /* ChatProxyCodexBridge.swift */,
 			);
 			path = Agentic;
 			sourceTree = "<group>";
@@ -794,7 +794,7 @@
 				79CFC6AE2E69FCD400367E78 /* CoroutineHTTPClient.swift in Sources */,
 				799F5F7E2EA9217500868D0E /* UsageSettingSectionView.swift in Sources */,
 				79079A112E4FB78C004D9D1A /* MCPDetailView.swift in Sources */,
-				796AF4502F372B130017AAB8 /* LLMAgenticRequest.swift in Sources */,
+				796AF4502F372B130017AAB8 /* LLMCodexRequest.swift in Sources */,
 				790799F42E4CD21D004D9D1A /* ModelProviderSettingView.swift in Sources */,
 				790799B82E489106004D9D1A /* ChatProxyTunnel.swift in Sources */,
 				795A74472E6F4DDE00F4BA1E /* PluginManager.swift in Sources */,
@@ -813,7 +813,7 @@
 				79CFC6E62E6D73CA00367E78 /* LLMCompletionConfigManager.swift in Sources */,
 				79F743072E65E8E800C35D1B /* LLMConfigManager.swift in Sources */,
 				790799BA2E48932C004D9D1A /* Extensions.swift in Sources */,
-				796AF4522F372B450017AAB8 /* LLMAgenticResponse.swift in Sources */,
+				796AF4522F372B450017AAB8 /* LLMCodexResponse.swift in Sources */,
 				795A74452E6F4ACF00F4BA1E /* PluginProtocol.swift in Sources */,
 				795A74422E6F43D300F4BA1E /* LanguageManager.swift in Sources */,
 				79079A142E4FBD7E004D9D1A /* ModelProviderManager.swift in Sources */,
@@ -844,7 +844,7 @@
 				79BB484A2E9E9F12002F2255 /* SourceCutter.swift in Sources */,
 				79CFC6E42E6D548900367E78 /* LLMCompletionConfig.swift in Sources */,
 				79079A0F2E4F9B27004D9D1A /* MCPEditView.swift in Sources */,
-				796AF4542F372E4F0017AAB8 /* ChatProxyAgenticBridge.swift in Sources */,
+				796AF4542F372E4F0017AAB8 /* ChatProxyCodexBridge.swift in Sources */,
 				79BB48462E9E9EC5002F2255 /* SourceAnalysisShared.swift in Sources */,
 				790799AF2E47204C004D9D1A /* Constraint.swift in Sources */,
 				79079A0D2E4F95E8004D9D1A /* MCPSettingView.swift in Sources */,

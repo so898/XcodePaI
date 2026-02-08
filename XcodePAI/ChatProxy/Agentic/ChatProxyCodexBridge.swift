@@ -1,5 +1,5 @@
 //
-//  ChatProxyAgenticBridge.swift
+//  ChatProxyCodexBridge.swift
 //  XcodePAI
 //
 //  Created by Bill Cheng on 2026/2/7.
@@ -10,7 +10,7 @@ import Foundation
 /// Bridge between chat proxy and Agentic API
 /// Responsible for processing Agentic format requests, converting them to LLM requests,
 /// handling LLM responses, and converting them back to Agentic format event streams
-class ChatProxyAgenticBridge {
+class ChatProxyCodexBridge {
     /// Unique identifier for the current request
     let id: String
     /// Delegate object for the bridge, used for external communication
@@ -49,7 +49,7 @@ class ChatProxyAgenticBridge {
     
     /// Receive and process Agentic format requests
     /// - Parameter request: Agentic format request object
-    func receiveRequest(_ request: LLMAgenticRequest) {
+    func receiveRequest(_ request: LLMCodexRequest) {
         // Get default configuration and model provider from storage manager
         guard let config = StorageManager.shared.defaultConfig(), let modelProvider = config.getModelProvider() else {
             // Configuration incomplete or error, notify delegate of connection failure
@@ -92,7 +92,7 @@ class ChatProxyAgenticBridge {
     /// Unique identifier for current output item
     private var itemId = ""
     /// Array storing all output items
-    private var outputs = [LLMAgenticResponseEvent.OutputItem]()
+    private var outputs = [LLMCodexResponseEvent.OutputItem]()
     
     /// Output type enumeration, used to track current output content type
     enum OutputType {
@@ -109,7 +109,7 @@ class ChatProxyAgenticBridge {
     
     /// Send multiple events
     /// - Parameter events: Array of events to send
-    private func sendEvents(_ events: [LLMAgenticResponseEvent]) {
+    private func sendEvents(_ events: [LLMCodexResponseEvent]) {
         for event in events {
             sendEvent(event)
         }
@@ -117,7 +117,7 @@ class ChatProxyAgenticBridge {
     
     /// Send single event
     /// - Parameter event: Event object to send
-    private func sendEvent(_ event: LLMAgenticResponseEvent?) {
+    private func sendEvent(_ event: LLMCodexResponseEvent?) {
         guard let event else {
             return
         }
@@ -132,11 +132,11 @@ class ChatProxyAgenticBridge {
 }
 
 // MARK: Request - Request processing extension
-extension ChatProxyAgenticBridge {
+extension ChatProxyCodexBridge {
     /// Process Agentic request, convert to LLM request format
     /// - Parameter request: Agentic format request
     /// - Returns: Converted LLM request
-    private func processRequest(_ request: LLMAgenticRequest) -> LLMRequest {
+    private func processRequest(_ request: LLMCodexRequest) -> LLMRequest {
         // If configuration doesn't exist, return empty LLM request
         guard let config = config else {
             return LLMRequest(model: "", messages: [], stream: request.stream, usage: true, tools: nil, seed: nil, maxTokens: nil, temperature: nil, topP: nil, enableThinking: nil)
@@ -239,7 +239,7 @@ extension ChatProxyAgenticBridge {
 }
 
 // MARK: - Message content processing extension
-extension ChatProxyAgenticBridge {
+extension ChatProxyCodexBridge {
     /// Process assistant message content, remove thinking part
     /// - Parameter content: Original assistant message content
     /// - Returns: Processed message content
@@ -302,7 +302,7 @@ extension ChatProxyAgenticBridge {
 }
 
 // MARK: - LLMClientDelegate - LLM client delegate implementation
-extension ChatProxyAgenticBridge: LLMClientDelegate {
+extension ChatProxyCodexBridge: LLMClientDelegate {
     /// LLM client connection successful callback
     /// - Parameter client: Connected LLM client
     func clientConnected(_ client: LLMClient) {
@@ -311,8 +311,8 @@ extension ChatProxyAgenticBridge: LLMClientDelegate {
         
         // Send response created and response in progress events
         sendEvents([
-            LLMAgenticResponseEvent.responseCreated(.init(response: .init(id: id, object: "response", createdAt: createTime, status: "queued", model: "XcodePaI"), sequenceNumber: sequenceNumber)),
-            LLMAgenticResponseEvent.responseInProgress(.init(response: .init(id: id, object: "response", createdAt: createTime, status: "in_progress", model: "XcodePaI"), sequenceNumber: sequenceNumber))
+            LLMCodexResponseEvent.responseCreated(.init(response: .init(id: id, object: "response", createdAt: createTime, status: "queued", model: "XcodePaI"), sequenceNumber: sequenceNumber)),
+            LLMCodexResponseEvent.responseInProgress(.init(response: .init(id: id, object: "response", createdAt: createTime, status: "in_progress", model: "XcodePaI"), sequenceNumber: sequenceNumber))
         ])
     }
     
@@ -371,7 +371,7 @@ extension ChatProxyAgenticBridge: LLMClientDelegate {
         // If there's an error, send error event
         if let error = error {
             // Send error event
-            let errorEvent = LLMAgenticResponseEvent.error(.init(
+            let errorEvent = LLMCodexResponseEvent.error(.init(
                 code: "internal_error",
                 message: error.localizedDescription,
                 param: nil,
@@ -381,7 +381,7 @@ extension ChatProxyAgenticBridge: LLMClientDelegate {
         }
         
         // Send response completed event
-        sendEvent(LLMAgenticResponseEvent.responseCompleted(.init(response: .init(id: id, createdAt: createTime, status: "completed", model: "XcodePaI", output: outputs), sequenceNumber: sequenceNumber)))
+        sendEvent(LLMCodexResponseEvent.responseCompleted(.init(response: .init(id: id, createdAt: createTime, status: "completed", model: "XcodePaI", output: outputs), sequenceNumber: sequenceNumber)))
         
         // Notify delegate to write end chunk
         delegate.bridgeWriteEndChunk()
@@ -396,7 +396,7 @@ extension ChatProxyAgenticBridge: LLMClientDelegate {
 }
 
 // MARK: - Response event sending extension
-extension ChatProxyAgenticBridge {
+extension ChatProxyCodexBridge {
     /// Send thinking content chunk
     /// - Parameter chunk: Thinking content chunk
     private func sendReasonChunk(_ chunk: String?) {
@@ -412,13 +412,13 @@ extension ChatProxyAgenticBridge {
                 
                 // Send output item added and reasoning summary part added events
                 sendEvents([
-                    LLMAgenticResponseEvent.outputItemAdded(.init(outputIndex: outputs.count, item: .reasoning(.init(id: itemId)), sequenceNumber: sequenceNumber)),
-                    LLMAgenticResponseEvent.reasoningSummaryPartAdded(.init(itemId: itemId, outputIndex: 0, summaryIndex: 0, part: .init(text: ""), sequenceNumber: sequenceNumber))
+                    LLMCodexResponseEvent.outputItemAdded(.init(outputIndex: outputs.count, item: .reasoning(.init(id: itemId)), sequenceNumber: sequenceNumber)),
+                    LLMCodexResponseEvent.reasoningSummaryPartAdded(.init(itemId: itemId, outputIndex: 0, summaryIndex: 0, part: .init(text: ""), sequenceNumber: sequenceNumber))
                 ])
             }
             
             // Send reasoning summary text delta event
-            sendEvent(LLMAgenticResponseEvent.reasoningSummaryTextDelta(.init(itemId: itemId, outputIndex: 0, summaryIndex: 0, delta: chunk, sequenceNumber: sequenceNumber)))
+            sendEvent(LLMCodexResponseEvent.reasoningSummaryTextDelta(.init(itemId: itemId, outputIndex: 0, summaryIndex: 0, delta: chunk, sequenceNumber: sequenceNumber)))
             lastContent += chunk
         } else {
             // Other thinking parsing modes (thinking embedded in content)
@@ -464,7 +464,7 @@ extension ChatProxyAgenticBridge {
                 }
             }()
             lastContent += endThinkMark
-            sendEvent(LLMAgenticResponseEvent.outputTextDelta(.init(itemId: itemId, outputIndex: outputs.count, contentIndex: 0, delta: endThinkMark, sequenceNumber: sequenceNumber)))
+            sendEvent(LLMCodexResponseEvent.outputTextDelta(.init(itemId: itemId, outputIndex: outputs.count, contentIndex: 0, delta: endThinkMark, sequenceNumber: sequenceNumber)))
         }
     }
     
@@ -488,13 +488,13 @@ extension ChatProxyAgenticBridge {
             
             // Send output item added and content part added events
             sendEvents([
-                LLMAgenticResponseEvent.outputItemAdded(.init(outputIndex: outputs.count, item: .message(.init(id: itemId, content: [], status: "in_progress")), sequenceNumber: sequenceNumber)),
-                LLMAgenticResponseEvent.contentPartAdded(.init(itemId: itemId, outputIndex: outputs.count, contentIndex: 0, part: .outputText(.init(text: "")), sequenceNumber: sequenceNumber))
+                LLMCodexResponseEvent.outputItemAdded(.init(outputIndex: outputs.count, item: .message(.init(id: itemId, content: [], status: "in_progress")), sequenceNumber: sequenceNumber)),
+                LLMCodexResponseEvent.contentPartAdded(.init(itemId: itemId, outputIndex: outputs.count, contentIndex: 0, part: .outputText(.init(text: "")), sequenceNumber: sequenceNumber))
             ])
         }
         
         // Send output text delta event
-        sendEvent(LLMAgenticResponseEvent.outputTextDelta(.init(itemId: itemId, outputIndex: outputs.count, contentIndex: 0, delta: chunk, sequenceNumber: sequenceNumber)))
+        sendEvent(LLMCodexResponseEvent.outputTextDelta(.init(itemId: itemId, outputIndex: outputs.count, contentIndex: 0, delta: chunk, sequenceNumber: sequenceNumber)))
         lastContent += chunk
     }
     
@@ -520,10 +520,10 @@ extension ChatProxyAgenticBridge {
         
         // Send function call related events
         sendEvents([
-            LLMAgenticResponseEvent.outputItemAdded(.init(outputIndex: outputs.count, item: .functionCall(.init(id: itemId, callId: callId, name: name)), sequenceNumber: sequenceNumber)),
-            LLMAgenticResponseEvent.functionCallArgumentsDelta(.init(itemId: itemId, outputIndex: outputs.count, delta: arguments, sequenceNumber: sequenceNumber)),
-            LLMAgenticResponseEvent.functionCallArgumentsDone(.init(itemId: itemId, name: name, outputIndex: outputs.count, arguments: arguments, sequenceNumber: sequenceNumber)),
-            LLMAgenticResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .functionCall(.init(id: itemId, callId: callId, name: name, arguments: arguments)), sequenceNumber: sequenceNumber))
+            LLMCodexResponseEvent.outputItemAdded(.init(outputIndex: outputs.count, item: .functionCall(.init(id: itemId, callId: callId, name: name)), sequenceNumber: sequenceNumber)),
+            LLMCodexResponseEvent.functionCallArgumentsDelta(.init(itemId: itemId, outputIndex: outputs.count, delta: arguments, sequenceNumber: sequenceNumber)),
+            LLMCodexResponseEvent.functionCallArgumentsDone(.init(itemId: itemId, name: name, outputIndex: outputs.count, arguments: arguments, sequenceNumber: sequenceNumber)),
+            LLMCodexResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .functionCall(.init(id: itemId, callId: callId, name: name, arguments: arguments)), sequenceNumber: sequenceNumber))
         ])
         
         // Add function call to output array
@@ -542,17 +542,17 @@ extension ChatProxyAgenticBridge {
             return
         case .reasoning:
             sendEvents([
-                LLMAgenticResponseEvent.reasoningSummaryTextDone(.init(itemId: itemId, outputIndex: outputs.count, summaryIndex: 0, text: lastContent, sequenceNumber: sequenceNumber)),
-                LLMAgenticResponseEvent.reasoningSummaryPartDone(.init(itemId: itemId, outputIndex: outputs.count, summaryIndex: 0, part: .init(text: lastContent), sequenceNumber: sequenceNumber)),
-                LLMAgenticResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .reasoning(.init(id: itemId, content: [.init(text: lastContent)])), sequenceNumber: sequenceNumber))
+                LLMCodexResponseEvent.reasoningSummaryTextDone(.init(itemId: itemId, outputIndex: outputs.count, summaryIndex: 0, text: lastContent, sequenceNumber: sequenceNumber)),
+                LLMCodexResponseEvent.reasoningSummaryPartDone(.init(itemId: itemId, outputIndex: outputs.count, summaryIndex: 0, part: .init(text: lastContent), sequenceNumber: sequenceNumber)),
+                LLMCodexResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .reasoning(.init(id: itemId, content: [.init(text: lastContent)])), sequenceNumber: sequenceNumber))
             ])
             outputs.append(.reasoning(.init(id: itemId, content: [.init(text: lastContent)])))
             lastContent = ""
             lastOutputPart = .none
         case .text:
             sendEvents([
-                LLMAgenticResponseEvent.contentPartDone(.init(itemId: itemId, outputIndex: outputs.count, contentIndex: 0, part: .outputText(.init(text: lastContent)), sequenceNumber: sequenceNumber)),
-                LLMAgenticResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .message(.init(id: itemId, content: [.outputText(.init(text: lastContent))])), sequenceNumber: sequenceNumber))
+                LLMCodexResponseEvent.contentPartDone(.init(itemId: itemId, outputIndex: outputs.count, contentIndex: 0, part: .outputText(.init(text: lastContent)), sequenceNumber: sequenceNumber)),
+                LLMCodexResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .message(.init(id: itemId, content: [.outputText(.init(text: lastContent))])), sequenceNumber: sequenceNumber))
             ])
             outputs.append(.message(.init(id: itemId, content: [.outputText(.init(text: lastContent))])))
             lastContent = ""

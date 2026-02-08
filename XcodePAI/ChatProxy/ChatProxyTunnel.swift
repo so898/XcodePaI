@@ -68,8 +68,8 @@ class ChatProxyTunnel {
         return bridge
     }()
     
-    private lazy var agenticBridge: ChatProxyAgenticBridge = {
-        let bridge = ChatProxyAgenticBridge(id: id, delegate: self)
+    private lazy var agenticBridge: ChatProxyCodexBridge = {
+        let bridge = ChatProxyCodexBridge(id: id, delegate: self)
         return bridge
     }()
 }
@@ -99,7 +99,7 @@ extension ChatProxyTunnel{
 // MARK: Responses
 extension ChatProxyTunnel{
     func receiveResponsesRequest(body: Data) {
-        guard let originalRequest = try? JSONDecoder().decode(LLMAgenticRequest.self, from: body) else {
+        guard let originalRequest = try? JSONDecoder().decode(LLMCodexRequest.self, from: body) else {
             writeServerErrorResponse()
             return
         }
