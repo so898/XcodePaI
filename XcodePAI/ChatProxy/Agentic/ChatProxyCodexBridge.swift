@@ -10,46 +10,20 @@ import Foundation
 /// Bridge between chat proxy and Agentic API
 /// Responsible for processing Agentic format requests, converting them to LLM requests,
 /// handling LLM responses, and converting them back to Agentic format event streams
-class ChatProxyCodexBridge {
-    /// Unique identifier for the current request
-    let id: String
-    /// Delegate object for the bridge, used for external communication
-    let delegate: ChatProxyBridgeDelegate
+class ChatProxyCodexBridge: ChatProxyBridgeBase {
     
-    /// LLM client instance for sending requests and receiving responses
-    private var llmClient: LLMClient?
-    /// Indicates whether connected to LLM service
-    private var isConnected = false
-    
-    /// LLM configuration information
-    var config: LLMConfig?
-    
-    /// Thinking content parsing method (in content, with code snippets, with EOT markers, etc.)
-    private var thinkParser: ThinkParser = Configer.chatProxyThinkStyle
-    /// Thinking state, used to track whether currently processing thinking content
-    private var thinkState: ThinkState = .notStarted
-    
-    /// Whether to use tools (function calls) in requests
-    private var useToolInRequest = Configer.chatProxyToolUseInRequest
-    
-    /// Initialize the proxy bridge
-    /// - Parameters:
-    ///   - id: Unique identifier for the request
-    ///   - delegate: Delegate object for the proxy bridge
-    init(id: String, delegate: ChatProxyBridgeDelegate) {
-        self.id = id
-        self.delegate = delegate
-    }
-    
-    /// Destructor, ensures LLM client is stopped when deallocated
-    deinit {
-        llmClient?.stop()
-        llmClient = nil
+    override func receiveRequestData(_ data: Data) {
+        guard let request = try? JSONDecoder().decode(LLMCodexRequest.self, from: data) else {
+            delegate.bridge(connected: false)
+            return
+        }
+        
+        receiveRequest(request)
     }
     
     /// Receive and process Agentic format requests
     /// - Parameter request: Agentic format request object
-    func receiveRequest(_ request: LLMCodexRequest) {
+    private func receiveRequest(_ request: LLMCodexRequest) {
         // Get default configuration and model provider from storage manager
         guard let config = StorageManager.shared.defaultConfig(), let modelProvider = config.getModelProvider() else {
             // Configuration incomplete or error, notify delegate of connection failure
@@ -64,75 +38,12 @@ class ChatProxyCodexBridge {
         // Reset thinking state
         thinkState = .notStarted
         
-        // If LLM client already exists, stop it first
-        if let llmClient = llmClient {
-            llmClient.stop()
-        }
-        
         // Create new LLM client and send request
-        llmClient = LLMClient(modelProvider, delegate: self)
-        llmClient?.request(newRequest)
+        createLLMClient(with: config, modelProvider: modelProvider).request(newRequest)
     }
     
-    /// Response creation time (Unix timestamp)
-    private let createTime = Int(Date.now.timeIntervalSince1970)
-    /// Internal sequence number counter
-    private var _sequenceNumber = 0
-    /// Sequence number lock for thread safety
-    private let sequenceNumberLock = NSLock()
-    /// Sequence number computed property, increments and returns each time accessed
-    private var sequenceNumber: Int {
-        sequenceNumberLock.lock()
-        defer {
-            _sequenceNumber += 1
-            sequenceNumberLock.unlock()
-        }
-        return _sequenceNumber
-    }
-    /// Unique identifier for current output item
-    private var itemId = ""
-    /// Array storing all output items
-    private var outputs = [LLMCodexResponseEvent.OutputItem]()
+    // MARK: Request - Request processing extension
     
-    /// Output type enumeration, used to track current output content type
-    enum OutputType {
-        case none          // No output
-        case reasoning     // Thinking content
-        case text         // Text content
-        case functionCall  // Function call
-    }
-    
-    /// Type of previous output part
-    var lastOutputPart = OutputType.none
-    /// Content of previous output part (accumulated)
-    var lastContent = ""
-    
-    /// Send multiple events
-    /// - Parameter events: Array of events to send
-    private func sendEvents(_ events: [LLMCodexResponseEvent]) {
-        for event in events {
-            sendEvent(event)
-        }
-    }
-    
-    /// Send single event
-    /// - Parameter event: Event object to send
-    private func sendEvent(_ event: LLMCodexResponseEvent?) {
-        guard let event else {
-            return
-        }
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        // Encode event to JSON string and send through delegate
-        if let jsonData = try? encoder.encode(event), let jsonString = String(data: jsonData, encoding: .utf8) {
-            delegate.bridge(write: jsonString)
-        }
-    }
-    
-}
-
-// MARK: Request - Request processing extension
-extension ChatProxyCodexBridge {
     /// Process Agentic request, convert to LLM request format
     /// - Parameter request: Agentic format request
     /// - Returns: Converted LLM request
@@ -236,78 +147,68 @@ extension ChatProxyCodexBridge {
         // Return complete LLM request
         return LLMRequest(model: config.modelName, messages: messages, stream: request.stream, usage: true, tools: tools, seed: nil, maxTokens: nil, temperature: nil, topP: nil, enableThinking: nil)
     }
-}
-
-// MARK: - Message content processing extension
-extension ChatProxyCodexBridge {
-    /// Process assistant message content, remove thinking part
-    /// - Parameter content: Original assistant message content
-    /// - Returns: Processed message content
-    private func processAssistantMessageContent(_ content: String) -> String {
-        var returnContent = content
-        
-        // Remove thinking part in assistant message
-        // Simple processing because thinking part can only appear at the start of content
-        if returnContent.count > ThinkInContentWithCodeSnippetStartMarkForAgentic.count, returnContent.substring(to: ThinkInContentWithCodeSnippetStartMarkForAgentic.count) == ThinkInContentWithCodeSnippetStartMarkForAgentic {
-            let components = returnContent.split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
-            if components.count == 2 {
-                returnContent = String(components[1])
-            }
-        } else if returnContent.contains(ThinkInContentWithEOTEndMark) {
-            let components = returnContent.components(separatedBy: ThinkInContentWithEOTEndMark)
-            if components.count == 2 {
-                returnContent = components[1]
-            }
+    
+    /// Response creation time (Unix timestamp)
+    private let createTime = Int(Date.now.timeIntervalSince1970)
+    /// Internal sequence number counter
+    private var _sequenceNumber = 0
+    /// Sequence number lock for thread safety
+    private let sequenceNumberLock = NSLock()
+    /// Sequence number computed property, increments and returns each time accessed
+    private var sequenceNumber: Int {
+        sequenceNumberLock.lock()
+        defer {
+            _sequenceNumber += 1
+            sequenceNumberLock.unlock()
         }
-        
-        return returnContent
+        return _sequenceNumber
+    }
+    /// Unique identifier for current output item
+    private var itemId = ""
+    /// Array storing all output items
+    private var outputs = [LLMCodexResponseEvent.OutputItem]()
+    
+    /// Output type enumeration, used to track current output content type
+    enum OutputType {
+        case none          // No output
+        case reasoning     // Thinking content
+        case text         // Text content
+        case functionCall  // Function call
     }
     
-    /// Process user message content, add language force prompt if needed
-    /// - Parameters:
-    ///   - content: Original user message content
-    ///   - isLastMessage: Whether it's the last message
-    /// - Returns: Processed message content
-    private func processUserMessageContent(_ content: String, isLastMessage: Bool = false) -> String {
-        let returnContent = content
-        if isLastMessage {
-            // Add language force prompt only for last message
-            let forceLanguage = Configer.forceLanguage
-            
-            let languageContent: String = {
-                switch forceLanguage {
-                case .english:
-                    return PromptTemplate.FLEnglish
-                case .chinese:
-                    return PromptTemplate.FLChinese
-                case .french:
-                    return PromptTemplate.FLFrance
-                case .russian:
-                    return PromptTemplate.FLRussian
-                case .japanese:
-                    return PromptTemplate.FLJapanese
-                case .korean:
-                    return PromptTemplate.FLKorean
-                }
-            }()
-            
-            if !languageContent.isEmpty {
-                return returnContent + "\n" + languageContent
-            }
-            
-            return returnContent
+    /// Type of previous output part
+    var lastOutputPart = OutputType.none
+    /// Content of previous output part (accumulated)
+    var lastContent = ""
+    
+    /// Send multiple events
+    /// - Parameter events: Array of events to send
+    private func sendEvents(_ events: [LLMCodexResponseEvent]) {
+        for event in events {
+            sendEvent(event)
         }
-        return returnContent
     }
-}
-
-// MARK: - LLMClientDelegate - LLM client delegate implementation
-extension ChatProxyCodexBridge: LLMClientDelegate {
+    
+    /// Send single event
+    /// - Parameter event: Event object to send
+    private func sendEvent(_ event: LLMCodexResponseEvent?) {
+        guard let event else {
+            return
+        }
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        // Encode event to JSON string and send through delegate
+        if let jsonData = try? encoder.encode(event), let jsonString = String(data: jsonData, encoding: .utf8) {
+            delegate.bridge(write: jsonString)
+        }
+    }
+    
+    // MARK: - LLMClientDelegate - LLM client delegate implementation
+    
     /// LLM client connection successful callback
     /// - Parameter client: Connected LLM client
-    func clientConnected(_ client: LLMClient) {
-        isConnected = true
-        delegate.bridge(connected: true)
+    override func clientConnected(_ client: LLMClient) {
+        super.clientConnected(client)
         
         // Send response created and response in progress events
         sendEvents([
@@ -316,57 +217,12 @@ extension ChatProxyCodexBridge: LLMClientDelegate {
         ])
     }
     
-    /// Received LLM response part callback
-    /// - Parameters:
-    ///   - client: LLM client
-    ///   - part: Received partial response
-    func client(_ client: LLMClient, receivePart part: LLMAssistantMessage) {
-        // Send thinking chunk
-        sendReasonChunk(part.reason)
-        // Send text chunk
-        if let content = part.content {
-            sendTextChunk(content)
-        }
-        // Send function calls
-        if let tools = part.tools {
-            for tool in tools {
-                sendFunctionCall(tool)
-            }
-        }
-        
-        // If finish reason received, complete last output
-        if part.finishReason != nil {
-            completeLastOutput()
-            lastOutputPart = .none
-        }
-    }
-    
-    /// Received complete LLM message callback (for debugging)
-    /// - Parameters:
-    ///   - client: LLM client
-    ///   - message: Received complete message
-    func client(_ client: LLMClient, receiveMessage message: LLMAssistantMessage) {
-        // Print thinking content and text content for debugging
-        if let reason = message.reason {
-            print("[R] \(reason)")
-        }
-        
-        if let content = message.content {
-            print("[C] \(content)")
-        }
-    }
-    
     /// LLM client error reception callback
     /// - Parameters:
     ///   - client: LLM client
     ///   - error: Error information
-    func client(_ client: LLMClient, receiveError error: (any Error)?) {
-        // If not connected, stop loading and notify delegate
-        if !isConnected {
-            MenuBarManager.shared.stopLoading()
-            delegate.bridge(connected: false)
-            return
-        }
+    override func client(_ client: LLMClient, receiveError error: (any Error)?) {
+        super.client(client, receiveError: error)
         
         // If there's an error, send error event
         if let error = error {
@@ -387,19 +243,14 @@ extension ChatProxyCodexBridge: LLMClientDelegate {
         delegate.bridgeWriteEndChunk()
         
         // Stop and release LLM client
-        llmClient?.stop()
-        llmClient = nil
-        
-        // Stop menu bar loading indicator
-        MenuBarManager.shared.stopLoading()
+        stopLLMClient()
     }
-}
-
-// MARK: - Response event sending extension
-extension ChatProxyCodexBridge {
+    
+    // MARK: - Response event sending
+    
     /// Send thinking content chunk
     /// - Parameter chunk: Thinking content chunk
-    private func sendReasonChunk(_ chunk: String?) {
+    override func sendReasonChunk(_ chunk: String?) {
         guard let chunk, !chunk.isEmpty else { return }
         
         // Process thinking content based on thinking parsing method
@@ -445,7 +296,7 @@ extension ChatProxyCodexBridge {
             }
             
             // Send thinking content as text chunk
-            sendTextChunk(textContent, true)
+            sendContentChunk(textContent, true)
         }
     }
     
@@ -472,7 +323,7 @@ extension ChatProxyCodexBridge {
     /// - Parameters:
     ///   - chunk: Text content chunk
     ///   - fromReasoning: Whether coming from thinking content
-    private func sendTextChunk(_ chunk: String?, _ fromReasoning: Bool = false) {
+    override func sendContentChunk(_ chunk: String?, _ fromReasoning: Bool = false) {
         guard let chunk, !chunk.isEmpty else { return }
         
         // If not from thinking content, send thinking end marker
@@ -500,7 +351,7 @@ extension ChatProxyCodexBridge {
     
     /// Send function call
     /// - Parameter toolUse: Tool call object
-    private func sendFunctionCall(_ toolUse: LLMMessageToolCall) {
+    override func sendFunctionCall(_ toolUse: LLMMessageToolCall) {
         sendReasonEndMarkIfNeed()
         
         guard let name = toolUse.function.name else {
@@ -528,6 +379,11 @@ extension ChatProxyCodexBridge {
         
         // Add function call to output array
         outputs.append(.functionCall(.init(id: itemId, callId: callId, name: name, arguments: arguments)))
+    }
+    
+    override func sendFinishReason(_ finishReason: String) {
+        completeLastOutput()
+        lastOutputPart = .none
     }
     
     /// Complete previous output, send corresponding completion events

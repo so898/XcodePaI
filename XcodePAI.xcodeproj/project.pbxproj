@@ -81,6 +81,9 @@
 		796DC5252F1E987D009DBE96 /* CommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796DC5242F1E9877009DBE96 /* CommandRunner.swift */; };
 		796DC5272F1E9A01009DBE96 /* HTTPClientExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796DC5262F1E99FC009DBE96 /* HTTPClientExtension.swift */; };
 		7975BF8C2EEB30CA00821BBF /* CommandFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7975BF8B2EEB30C900821BBF /* CommandFinder.swift */; };
+		799F50BD2F38FE72006383A1 /* ResponseCodeSnippetFixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50BC2F38FE71006383A1 /* ResponseCodeSnippetFixer.swift */; };
+		799F50BF2F38FEC1006383A1 /* ChatProxyBridgeDefines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50BE2F38FEA0006383A1 /* ChatProxyBridgeDefines.swift */; };
+		799F50C12F38FEE2006383A1 /* ChatProxyBaseBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50C02F38FED1006383A1 /* ChatProxyBaseBridge.swift */; };
 		799F5F702EA521AC00868D0E /* TokenUsageRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */; };
 		799F5F732EA521E500868D0E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 799F5F722EA521E500868D0E /* SQLite */; };
 		799F5F752EA524E300868D0E /* RecordStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F742EA524DF00868D0E /* RecordStorage.swift */; };
@@ -232,6 +235,9 @@
 		796DC5262F1E99FC009DBE96 /* HTTPClientExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClientExtension.swift; sourceTree = "<group>"; };
 		7975BF8B2EEB30C900821BBF /* CommandFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandFinder.swift; sourceTree = "<group>"; };
 		7983E1CD2E6DFB800067CFA6 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		799F50BC2F38FE71006383A1 /* ResponseCodeSnippetFixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCodeSnippetFixer.swift; sourceTree = "<group>"; };
+		799F50BE2F38FEA0006383A1 /* ChatProxyBridgeDefines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyBridgeDefines.swift; sourceTree = "<group>"; };
+		799F50C02F38FED1006383A1 /* ChatProxyBaseBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyBaseBridge.swift; sourceTree = "<group>"; };
 		799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsageRecord.swift; sourceTree = "<group>"; };
 		799F5F742EA524DF00868D0E /* RecordStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordStorage.swift; sourceTree = "<group>"; };
 		799F5F762EA5252900868D0E /* RecordTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTracker.swift; sourceTree = "<group>"; };
@@ -327,9 +333,10 @@
 		7907999F2E471FEA004D9D1A /* ChatProxy */ = {
 			isa = PBXGroup;
 			children = (
-				79BB48422E9E9E86002F2255 /* SourceAnalysis */,
+				799F50BB2F38FE4B006383A1 /* Helpers */,
 				7907999D2E471FEA004D9D1A /* ChatProxy.swift */,
 				790799B72E4890FC004D9D1A /* ChatProxyTunnel.swift */,
+				799F50BA2F38FE45006383A1 /* Base */,
 				790799FF2E4CFE31004D9D1A /* ChatProxyBridge.swift */,
 				796AF44C2F3616310017AAB8 /* Agentic */,
 			);
@@ -568,6 +575,24 @@
 			path = Agentic;
 			sourceTree = "<group>";
 		};
+		799F50BA2F38FE45006383A1 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				799F50BE2F38FEA0006383A1 /* ChatProxyBridgeDefines.swift */,
+				799F50C02F38FED1006383A1 /* ChatProxyBaseBridge.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		799F50BB2F38FE4B006383A1 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				799F50BC2F38FE71006383A1 /* ResponseCodeSnippetFixer.swift */,
+				79BB48422E9E9E86002F2255 /* SourceAnalysis */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		799F5F6E2EA5218E00868D0E /* Record */ = {
 			isa = PBXGroup;
 			children = (
@@ -784,6 +809,7 @@
 				79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */,
 				799F5F772EA5252D00868D0E /* RecordTracker.swift in Sources */,
 				796DC5272F1E9A01009DBE96 /* HTTPClientExtension.swift in Sources */,
+				799F50BD2F38FE72006383A1 /* ResponseCodeSnippetFixer.swift in Sources */,
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
 				79F28F342E5E187100F71A28 /* Configer.swift in Sources */,
 				7940DF372EFAC47100565AE6 /* GitCommitView.swift in Sources */,
@@ -817,8 +843,10 @@
 				795A74452E6F4ACF00F4BA1E /* PluginProtocol.swift in Sources */,
 				795A74422E6F43D300F4BA1E /* LanguageManager.swift in Sources */,
 				79079A142E4FBD7E004D9D1A /* ModelProviderManager.swift in Sources */,
+				799F50BF2F38FEC1006383A1 /* ChatProxyBridgeDefines.swift in Sources */,
 				79079A202E51C116004D9D1A /* MCPRunner.swift in Sources */,
 				790799F22E4BB5E2004D9D1A /* ModelProviderIconListView.swift in Sources */,
+				799F50C12F38FEE2006383A1 /* ChatProxyBaseBridge.swift in Sources */,
 				790799BE2E48B6BD004D9D1A /* HTTPClient.swift in Sources */,
 				795A744A2E6F53A300F4BA1E /* PluginSettingSectionView.swift in Sources */,
 				79F0069A2EFBE4BD005728D9 /* WindowManager.swift in Sources */,

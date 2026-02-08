@@ -31,6 +31,7 @@ public final class Logger: Sendable {
     public static let command = Logger(category: "Command")
     public static let storage = Logger(category: "Storage")
     public static let completion = Logger(category: "Completion")
+    public static let chatProxy = Logger(category: "ChatProxy")
     #if DEBUG
     /// Use a temp logger to log something temporary. I won't be available in release builds.
     public static let temp = Logger(category: "Temp")

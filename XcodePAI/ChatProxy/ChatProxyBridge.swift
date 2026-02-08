@@ -6,43 +6,13 @@
 //
 
 import Foundation
+import Logger
 
-// Think
-enum ThinkState {
-    case notStarted
-    case inProgress
-    case completed
-}
-
-enum ThinkParser: Int {
-    case inContentWithCodeSnippet = 0
-    case inContentWithEOT = 1
-    case inReasoningContent = 2
-}
-
-struct SourceCodeInContent {
-    let fileType: String?
-    let fileName: String?
-    let content: String
-}
-
-class ChatProxyBridge {
-    
-    let id: String
-    let delegate: ChatProxyBridgeDelegate
-    
-    var config: LLMConfig?
-    
-    private var llmClient: LLMClient?
-    private var isConnected = false
+class ChatProxyBridge: ChatProxyBridgeBase {
     
     private var roleReturned = false
     
-    private var thinkParser: ThinkParser = Configer.chatProxyThinkStyle
-    private var thinkState: ThinkState = .notStarted
-    
     private var mcpTools: [LLMMCPTool]?
-    private var useToolInRequest = Configer.chatProxyToolUseInRequest
     private var mcpToolUses = [LLMMCPToolUse]()
     
     private var currentRequest: LLMRequest?
@@ -50,48 +20,36 @@ class ChatProxyBridge {
     
     private var responseFixer = ResponseCodeSnippetFixer()
     
-    init(id: String, delegate: ChatProxyBridgeDelegate) {
-        self.id = id
-        self.delegate = delegate
+    override func receiveRequestData(_ data: Data) {
+        guard let jsonDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let request = try? LLMRequest(dict: jsonDict) else {
+            delegate.bridge(connected: false)
+            return
+        }
+        
+        receiveRequest(request)
     }
     
-    func receiveRequest(_ request: LLMRequest) {
+    private func receiveRequest(_ request: LLMRequest) {
         MenuBarManager.shared.startLoading()
         guard let config = StorageManager.shared.getConfig(request.model), let modelProvider = config.getModelProvider() else {
             delegate.bridge(connected: false)
             return
         }
         self.config = config
-        
         currentRequest = request
         
         let newRequest = processRequest(request)
         
-        // Do LLM request to server, add MCP...
         if roleReturned {
             thinkParser = .inContentWithCodeSnippet
         }
-        thinkState = .notStarted
         
-        if let llmClient = llmClient {
-            llmClient.stop()
-        }
-        
-        llmClient = LLMClient(modelProvider, delegate: self)
-        llmClient?.request(newRequest)
-    }
-    
-    func stop() {
-        llmClient?.stop()
-        MenuBarManager.shared.stopLoading()
+        createLLMClient(with: config, modelProvider: modelProvider).request(newRequest)
     }
     
     // Process message temp values
     private var lastSearchKeys = [String]()
-}
 
-// MARK: Request
-extension ChatProxyBridge {
     private func processRequest(_ request: LLMRequest) -> LLMRequest {
         guard let config = config else {
             return request
@@ -137,6 +95,7 @@ extension ChatProxyBridge {
         return newRequest
     }
     
+    // MARK: Request
     private func processRequestMessage(_ message: LLMMessage, isLastUserMessage: Bool = false) -> LLMMessage? {
         
         switch message.role {
@@ -146,17 +105,10 @@ extension ChatProxyBridge {
         case "system":
             // System Message
             let content = message.content ?? ""
-            
-            print("SYSTEM: \n\(content)")
-//            
-//            print("COVT: \n\(processSystemPrompt(content))")
-            
             return LLMMessage(role: "system", content: processSystemPrompt(content))
         case "assistant":
             // Assistant Message
             if let content = message.content {
-                print("ASSISTANT: \n\(content)")
-                
                 return LLMMessage(role: "assistant", content: processAssistantMessageContent(content))
             } else if let contents = message.contents {
                 var newContents = [LLMMessageContent]()
@@ -174,15 +126,13 @@ extension ChatProxyBridge {
         case "user":
             // User Message
             if let content = message.content {
-                print("USER: \n\(content)")
-                return LLMMessage(role: "user", content: processUserMessageContent(content, isLastUserMessage: isLastUserMessage))
+                return LLMMessage(role: "user", content: processUserMessageContent(content, isLastMessage: isLastUserMessage))
             } else if let contents = message.contents {
                 var newContents = [LLMMessageContent]()
                 for content in contents {
                     if content.type == .text, let text = content.text {
-                        print("USER: \n\(text)")
                         if contents.first === content, !text.contains(PromptTemplate.userPromptToolUseResultDescriptionTemplatePrefix){
-                            newContents.append(LLMMessageContent(text: processUserMessageContent(text, isLastUserMessage: isLastUserMessage)))
+                            newContents.append(LLMMessageContent(text: processUserMessageContent(text, isLastMessage: isLastUserMessage)))
                         } else {
                             newContents.append(content)
                         }
@@ -198,7 +148,7 @@ extension ChatProxyBridge {
         }
     }
     
-    private func processSystemPrompt(_ originSystemPrompt: String) -> String {
+    override func processSystemPrompt(_ originSystemPrompt: String) -> String {
         if let chatPlugin = PluginManager.shared.getChatPlugin(), let content = chatPlugin.processSystemPrompt(originSystemPrompt) {
             return content
         }
@@ -229,8 +179,7 @@ extension ChatProxyBridge {
         return systemPrompt
     }
     
-    private func processAssistantMessageContent(_ content: String, isLastUserMessage: Bool = false) -> String {
-        var returnContent = content
+    override func processAssistantMessageContent(_ content: String, isLastMessage: Bool = false) -> String {
         
         lastSearchKeys.removeAll()
         
@@ -247,83 +196,11 @@ extension ChatProxyBridge {
             }
         }
         
-        if let chatPlugin = PluginManager.shared.getChatPlugin(), let content = chatPlugin.processAssistantPrompt(returnContent, isLast: isLastUserMessage) {
-            returnContent = content
-        }
-        
-        // Remove think part in assistant message
-        // Process simple because think could only be at the start of content
-        if returnContent.count > ThinkInContentWithCodeSnippetStartMark.count, returnContent.substring(to: ThinkInContentWithCodeSnippetStartMark.count) == ThinkInContentWithCodeSnippetStartMark {
-            let components = returnContent.split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
-            if components.count == 2 {
-                returnContent = String(components[1])
-            }
-        } else if returnContent.count > ThinkInContentWithCodeSnippetStartMarkWithFix.count, returnContent.substring(to: ThinkInContentWithCodeSnippetStartMarkWithFix.count) == ThinkInContentWithCodeSnippetStartMarkWithFix {
-            let components = returnContent.split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
-            if components.count == 2 {
-                returnContent = String(components[1])
-            }
-        } else if returnContent.contains(ThinkInContentWithEOTEndMark) {
-            let components = returnContent.components(separatedBy: ThinkInContentWithEOTEndMark)
-            if components.count == 2 {
-                returnContent = components[1]
-            }
-        }
-
-        // Remove all think parts using code snippet in assistant message
-        while returnContent.contains(ThinkInContentWithCodeSnippetStartMark) {
-            let firstComponents = returnContent.split(separator: ThinkInContentWithCodeSnippetStartMark, maxSplits: 1)
-            if firstComponents.count == 2 {
-                let secondComponents = String(firstComponents[1]).split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
-                if secondComponents.count == 2 {
-                    returnContent = String(firstComponents[0]) + "\n" + String(secondComponents[1])
-                }
-            }
-        }
-        
-        // Remove all think parts using code snippet in assistant message with fix
-        while returnContent.contains(ThinkInContentWithCodeSnippetStartMarkWithFix) {
-            let firstComponents = returnContent.split(separator: ThinkInContentWithCodeSnippetStartMarkWithFix, maxSplits: 1)
-            if firstComponents.count == 2 {
-                let secondComponents = String(firstComponents[1]).split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
-                if secondComponents.count == 2 {
-                    returnContent = String(firstComponents[0]) + "\n" + String(secondComponents[1])
-                }
-            }
-        }
-        
-        // Remove all tool use parts in assistant message
-        while returnContent.contains(ToolUseInContentStartMark) {
-            let firstComponents = returnContent.split(separator: ToolUseInContentStartMark, maxSplits: 1)
-            if firstComponents.count == 2 {
-                let secondComponents = String(firstComponents[1]).split(separator: ToolUseInContentEndMark, maxSplits: 1)
-                if secondComponents.count == 2 {
-                    returnContent = String(firstComponents[0]) + "\n\n" + String(secondComponents[1])
-                }
-            }
-        }
-        
-        // Remove all tool use parts in assistant message with fix
-        while returnContent.contains(ToolUseInContentStartMarkWithFix) {
-            let firstComponents = returnContent.split(separator: ToolUseInContentStartMarkWithFix, maxSplits: 1)
-            if firstComponents.count == 2 {
-                let secondComponents = String(firstComponents[1]).split(separator: ToolUseInContentEndMark, maxSplits: 1)
-                if secondComponents.count == 2 {
-                    returnContent = String(firstComponents[0]) + "\n\n" + String(secondComponents[1])
-                }
-            }
-        }
-        
-        return returnContent
+        return super.processAssistantMessageContent(content, isLastMessage: isLastMessage)
     }
         
-    private func processUserMessageContent(_ content: String, isLastUserMessage: Bool = false) -> String {
+    override func processUserMessageContent(_ content: String, isLastMessage: Bool = false) -> String {
         var returnContent = content
-        
-        // Plugin
-        if let chatPlugin = PluginManager.shared.getChatPlugin(), let content = chatPlugin.processUserPrompt(returnContent, isLast: isLastUserMessage) {
-            returnContent = content
-        }
         
         // Cut search result source code
         if Configer.chatProxyCutSourceInSearchRequest,
@@ -332,36 +209,8 @@ extension ChatProxyBridge {
            let sourceCodes = findSourceCodeIn(returnContent), !sourceCodes.isEmpty {
             returnContent = cutAndReplaceSourceIn(returnContent, with: sourceCodes)
         }
-        
-        if isLastUserMessage {
-            // Force return in language, only for last message
-            let forceLanguage = Configer.forceLanguage
-            
-            // Language
-            let languageContent: String = {
-                switch forceLanguage {
-                case .english:
-                    return PromptTemplate.FLEnglish
-                case .chinese:
-                    return PromptTemplate.FLChinese
-                case .french:
-                    return PromptTemplate.FLFrance
-                case .russian:
-                    return PromptTemplate.FLRussian
-                case .japanese:
-                    return PromptTemplate.FLJapanese
-                case .korean:
-                    return PromptTemplate.FLKorean
-                }
-            }()
-            
-            if !languageContent.isEmpty {
-                return returnContent + "\n" + languageContent
-            }
-            
-            return returnContent
-        }
-        return returnContent
+
+        return super.processUserMessageContent(returnContent, isLastMessage: isLastMessage)
     }
     
     private func findSourceCodeIn(_ content: String) -> [SourceCodeInContent]? {
@@ -432,12 +281,161 @@ extension ChatProxyBridge {
                 
         return returnContent
     }
+    
+    // MARK: LLMClientDelegate
+    
+    override func client(_ client: LLMClient, receiveMessage message: LLMAssistantMessage) {
+        if let reason = message.reason {
+            Logger.chatProxy.debug("[R] \(reason)")
+        }
+        
+        if var content = message.content {
+            Logger.chatProxy.debug("[C] \(content)")
+            
+            if mcpToolUses.count > 0 {
+                for toolUse in mcpToolUses {
+                    if let toolUseContent = toolUse.content {
+                        content = content.replacingOccurrences(of: toolUseContent, with: "")
+                    }
+                }
+                recordAssistantMessages.append(LLMMessage(role: "assistant", content: content))
+            }
+        }
+    }
+    
+    override func client(_ client: LLMClient, receiveError error: Error?) {
+        super.client(client, receiveError: error)
+        
+        if let _ = error {
+            // Error
+            delegate.bridge(write: ["internal_error": "Server error"])
+        } else if mcpToolUses.count > 0 {
+            // Tool calling
+            callToolUses()
+            stopLLMClient()
+            return
+        }
+        
+        delegate.bridgeWriteEndChunk()
+        stopLLMClient()
+    }
+    
+    
+    override func sendReasonChunk(_ chunk: String?) {
+        guard let chunk else { return }
+        if thinkParser == .inReasoningContent {
+            sendReason(chunk)
+        } else {
+            switch thinkState {
+            case .notStarted:
+                thinkState = .inProgress
+                
+                if thinkParser == .inContentWithCodeSnippet {
+                    let startThinkMark = Configer.chatProxyCodeSnippetPreviewFix ? ThinkInContentWithCodeSnippetStartMarkWithFix : ThinkInContentWithCodeSnippetStartMark
+                    let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
+                    sendContent(startThinkMark + processedChunk)
+                } else {
+                    sendContent(chunk)
+                }
+            case .inProgress:
+                if thinkParser == .inContentWithCodeSnippet {
+                    let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
+                    sendContent(processedChunk)
+                } else {
+                    sendContent(chunk)
+                }
+            case .completed:
+                // No reason in this state
+                break
+            }
+        }
+    }
+    
+    override func sendContentChunk(_ chunk: String?, _ fromReasoning: Bool = false) {
+        guard let chunk else { return }
+        
+        if thinkState == .inProgress {
+            thinkState = .completed
+            let endThinkMark: String = {
+                switch thinkParser {
+                case .inContentWithEOT:
+                    return ThinkInContentWithEOTEndMark
+                case .inContentWithCodeSnippet:
+                    return ThinkInContentWithCodeSnippetEndMark
+                default:
+                    return ""
+                }
+            }()
+            sendContent(endThinkMark + chunk)
+        } else {
+            sendContent(Configer.chatProxyCodeSnippetPreviewFix ? responseFixer.processMessage(chunk) : chunk)
+        }
+    }
+    
+    override func sendFunctionCall(_ toolUse: LLMMessageToolCall) {
+        if let toolName = toolUse.function.name {
+            processToolUse(LLMMCPToolUse(toolName: toolName, arguments: toolUse.function.arguments))
+        }
+    }
+    
+    override func sendFinishReason(_ finishReason: String) {
+        guard finishReason != "tool_calls" else {
+            return
+        }
+        writeResponse(LLMResponse(
+            id: id,
+            model: Constraint.InternalModelName,
+            object: "chat.completion.chunk",
+            choices: [
+                LLMResponseChoice(
+                    index: 0,
+                    finishReason: finishReason,
+                    isFullMessage: false
+                )
+            ]
+        ))
+    }
+    
+    private func sendReason(_ reason: String) {
+        writeResponse(LLMResponse(
+            id: id,
+            model: Constraint.InternalModelName,
+            object: "chat.completion.chunk",
+            choices: [
+                LLMResponseChoice(
+                    index: 0,
+                    isFullMessage: false,
+                    message: LLMResponseChoiceMessage(
+                        role: roleReturned ? nil : "assistant",
+                        reasoningContent: reason
+                    )
+                )
+            ]
+        ))
+    }
+    
+    private func sendContent(_ content: String) {
+        writeResponse(LLMResponse(
+            id: id,
+            model: Constraint.InternalModelName,
+            object: "chat.completion.chunk",
+            choices: [
+                LLMResponseChoice(
+                    index: 0,
+                    isFullMessage: false,
+                    message: LLMResponseChoiceMessage(
+                        role: roleReturned ? nil : "assistant",
+                        content: content
+                    )
+                )
+            ]
+        ))
+    }
 }
 
-// MARK: tool use
+// MARK: Tool use
 extension ChatProxyBridge {
     private func processToolUse(_ toolUse: LLMMCPToolUse) {
-//        print("Tool Use: \(content)")
         guard let mcpTools = mcpTools else {
             return
         }
@@ -536,280 +534,7 @@ extension ChatProxyBridge {
     private func writeResponse(_ response: LLMResponse?) {
         if let response = response {
             delegate.bridge(write: response.toDictionary())
-            
             roleReturned = true
         }
     }
-}
-
-// MARK: LLMClientDelegate
-extension ChatProxyBridge: LLMClientDelegate {
-    func clientConnected(_ client: LLMClient) {
-        isConnected = true
-        delegate.bridge(connected: true)
-    }
-    
-    func client(_ client: LLMClient, receivePart part: LLMAssistantMessage) {
-        
-        sendReasonChunk(part.reason)
-        
-        sendContentChunk(part.content)
-        
-        if let tools = part.tools {
-            for tool in tools {
-                if let toolName = tool.function.name {
-                    processToolUse(LLMMCPToolUse(toolName: toolName, arguments: tool.function.arguments))
-                }
-            }
-        }
-        
-        if let finishReason = part.finishReason, finishReason != "tool_calls" {
-            // Write finish reason
-            sendFinishReason(finishReason)
-        }
-    }
-    
-    func client(_ client: LLMClient, receiveMessage message: LLMAssistantMessage) {
-        if let reason = message.reason {
-            print("[R] \(reason)")
-        }
-        
-        if var content = message.content {
-            print("[C] \(content)")
-            
-            if mcpToolUses.count > 0 {
-                for toolUse in mcpToolUses {
-                    if let toolUseContent = toolUse.content {
-                        content = content.replacingOccurrences(of: toolUseContent, with: "")
-                    }
-                }
-                recordAssistantMessages.append(LLMMessage(role: "assistant", content: content))
-            }
-        }
-    }
-    
-    func client(_ client: LLMClient, receiveError error: Error?) {
-        if !isConnected {
-            MenuBarManager.shared.stopLoading()
-            delegate.bridge(connected: false)
-            return
-        }
-        
-        if let _ = error {
-            // Error
-            delegate.bridge(write: ["internal_error": "Server error"])
-        } else if mcpToolUses.count > 0 {
-            // Tool calling
-            callToolUses()
-            
-            llmClient?.stop()
-            llmClient = nil
-            
-            MenuBarManager.shared.stopLoading()
-            return
-        }
-        
-        delegate.bridgeWriteEndChunk()
-        
-        llmClient?.stop()
-        llmClient = nil
-        
-        MenuBarManager.shared.stopLoading()
-    }
-    
-}
-
-extension ChatProxyBridge {
-    
-    private func sendReasonChunk(_ chunk: String?) {
-        guard let chunk else { return }
-        if thinkParser == .inReasoningContent {
-            sendReason(chunk)
-        } else {
-            switch thinkState {
-            case .notStarted:
-                thinkState = .inProgress
-                
-                if thinkParser == .inContentWithCodeSnippet {
-                    let startThinkMark = Configer.chatProxyCodeSnippetPreviewFix ? ThinkInContentWithCodeSnippetStartMarkWithFix : ThinkInContentWithCodeSnippetStartMark
-                    let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
-                    sendContent(startThinkMark + processedChunk)
-                } else {
-                    sendContent(chunk)
-                }
-            case .inProgress:
-                if thinkParser == .inContentWithCodeSnippet {
-                    let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
-                    sendContent(processedChunk)
-                } else {
-                    sendContent(chunk)
-                }
-            case .completed:
-                // No reason in this state
-                break
-            }
-        }
-    }
-    
-    private func sendContentChunk(_ chunk: String?) {
-        guard let chunk else { return }
-        
-        if thinkState == .inProgress {
-            thinkState = .completed
-            let endThinkMark: String = {
-                switch thinkParser {
-                case .inContentWithEOT:
-                    return ThinkInContentWithEOTEndMark
-                case .inContentWithCodeSnippet:
-                    return ThinkInContentWithCodeSnippetEndMark
-                default:
-                    return ""
-                }
-            }()
-            sendContent(endThinkMark + chunk)
-        } else {
-            sendContent(Configer.chatProxyCodeSnippetPreviewFix ? responseFixer.processMessage(chunk) : chunk)
-        }
-    }
-    
-    private func sendReason(_ reason: String) {
-        writeResponse(LLMResponse(
-            id: id,
-            model: Constraint.InternalModelName,
-            object: "chat.completion.chunk",
-            choices: [
-                LLMResponseChoice(
-                    index: 0,
-                    isFullMessage: false,
-                    message: LLMResponseChoiceMessage(
-                        role: roleReturned ? nil : "assistant",
-                        reasoningContent: reason
-                    )
-                )
-            ]
-        ))
-    }
-    
-    private func sendContent(_ content: String) {
-        writeResponse(LLMResponse(
-            id: id,
-            model: Constraint.InternalModelName,
-            object: "chat.completion.chunk",
-            choices: [
-                LLMResponseChoice(
-                    index: 0,
-                    isFullMessage: false,
-                    message: LLMResponseChoiceMessage(
-                        role: roleReturned ? nil : "assistant",
-                        content: content
-                    )
-                )
-            ]
-        ))
-    }
-    
-    private func sendFinishReason(_ finishReason: String) {
-        writeResponse(LLMResponse(
-            id: id,
-            model: Constraint.InternalModelName,
-            object: "chat.completion.chunk",
-            choices: [
-                LLMResponseChoice(
-                    index: 0,
-                    finishReason: finishReason,
-                    isFullMessage: false
-                )
-            ]
-        ))
-    }
-    
-}
-
-// Fixer for Xcode 26.1.1+
-fileprivate class ResponseCodeSnippetFixer {
-    private enum State {
-        case normal
-        case firstBacktick
-        case secondBacktick
-        case thirdBacktick
-    }
-    
-    private var status = State.normal
-    private var backtick: Character = "`"
-    private var markdownLanguage: String = ""
-
-    func processMessage(_ content: String) -> String {
-        if status == .normal, !content.contains(backtick) {
-            return content
-        }
-        var newContent = ""
-        for char in content {
-            switch status {
-            case .normal:
-                if char == backtick {
-                    status = .firstBacktick
-                }
-            case .firstBacktick:
-                if char == backtick {
-                    status = .secondBacktick
-                } else {
-                    status = .normal
-                }
-            case .secondBacktick:
-                if char == backtick {
-                    status = .thirdBacktick
-                } else {
-                    status = .normal
-                }
-            case .thirdBacktick:
-                if char == ":" {
-                    // Has filename, just return
-                    status = .normal
-                    markdownLanguage = ""
-                } else if char == "\n" {
-                    status = .normal
-                    if markdownLanguage.count > 0 {
-                        // No filename, add filename
-                        let ext = languageExtensions[markdownLanguage.lowercased()] ?? "txt"
-                        markdownLanguage = ""
-                        newContent.append(": Code Snippet.\(ext)")
-                    }
-                } else {
-                    markdownLanguage.append(char)
-                }
-            }
-            newContent.append(char)
-        }
-        
-        return newContent
-    }
-    
-    private let languageExtensions: [String: String] = [
-        "swift": "swift",
-        "python": "py",
-        "javascript": "js",
-        "typescript": "ts",
-        "java": "java",
-        "kotlin": "kt",
-        "cpp": "cpp",
-        "c": "c",
-        "go": "go",
-        "rust": "rs",
-        "ruby": "rb",
-        "php": "php",
-        "html": "html",
-        "css": "css",
-        "json": "json",
-        "xml": "xml",
-        "yaml": "yaml",
-        "sql": "sql",
-        "shell": "sh",
-        "bash": "sh",
-        "markdown": "md",
-        "m": "m",
-        "h": "h",
-        "objc": "m",
-        "objective-c": "m",
-        "text": "txt",
-    ]
 }

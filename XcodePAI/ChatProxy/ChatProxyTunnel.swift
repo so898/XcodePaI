@@ -59,7 +59,7 @@ class ChatProxyTunnel {
     }()
     
     private func writeServerErrorResponse() {
-        responseType = .unknown
+        responseType = .error
         connection?.writeResponse(HTTPResponse(statusCode: 500, statusMessage: "Server not supported."))
     }
 
@@ -87,24 +87,14 @@ extension ChatProxyTunnel{
 // MARK: Completions Response
 extension ChatProxyTunnel{
     func receiveCompletionsRequest(body: Data) {
-        guard let jsonDict = try? JSONSerialization.jsonObject(with: body) as? [String: Any], let originalRequest = try? LLMRequest(dict: jsonDict) else {
-            writeServerErrorResponse()
-            return
-        }
-        
-        bridge.receiveRequest(originalRequest)
+        bridge.receiveRequestData(body)
     }
 }
 
 // MARK: Responses
 extension ChatProxyTunnel{
     func receiveResponsesRequest(body: Data) {
-        guard let originalRequest = try? JSONDecoder().decode(LLMCodexRequest.self, from: body) else {
-            writeServerErrorResponse()
-            return
-        }
-        
-        agenticBridge.receiveRequest(originalRequest)
+        agenticBridge.receiveRequestData(body)
     }
 }
 
@@ -175,9 +165,7 @@ extension ChatProxyTunnel: ChatProxyBridgeDelegate {
             response.chunked()
             connection?.writeResponse(response)
         } else {
-            responseType = .error
-            let response = HTTPResponse(statusCode: 500)
-            connection?.writeResponse(response)
+            writeServerErrorResponse()
             connection?.stop()
         }
     }
