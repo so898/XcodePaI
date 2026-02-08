@@ -919,6 +919,17 @@
         }
       }
     },
+    "Enable Think" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用思考"
+          }
+        }
+      }
+    },
     "Enabled" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2295,6 +2306,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "本月"
+          }
+        }
+      }
+    },
+    "This switch turns on \"chain-of-thought\" reasoning, making the model explain its step-by-step thinking before answering — ideal for complex problems." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启此功能将激活模型的“思维链”推理，使其在给出最终答案前展示逐步的思考过程——尤其适合处理复杂问题。"
           }
         }
       }

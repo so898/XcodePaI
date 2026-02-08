@@ -11,6 +11,7 @@ import Combine
 struct ChatProxySettingSectionView: View {
     @State private var portNumber = "\(Configer.chatProxyPort)"
     @State private var codeProxyConfigState = AgenticConfiger.checkCodexConfigState()
+    @State private var enableThink = Configer.chatProxyEnableThink
     @State private var thinkStyle: Int = Configer.chatProxyThinkStyle.rawValue
     @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
     @State private var cutSourceInSearchRequest = Configer.chatProxyCutSourceInSearchRequest
@@ -78,6 +79,16 @@ struct ChatProxySettingSectionView: View {
                 
                 GridRow {
                     Divider().gridCellColumns(2)
+                }
+                
+                GridRow(alignment: .center) {
+                    Text("Enable Think")
+                        .help("This switch turns on \"chain-of-thought\" reasoning, making the model explain its step-by-step thinking before answering — ideal for complex problems.")
+                    Toggle("Enable", isOn: $enableThink)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: enableThink) { _, newValue in
+                            Configer.chatProxyEnableThink = newValue
+                        }
                 }
                 
                 GridRow(alignment: .center) {

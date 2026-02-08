@@ -24,6 +24,7 @@ class Configer {
     private static let openConfigurationWhenStartUpKey = "OpenConfigurationWhenStartUp"
     private static let updateModelsWhenStartUpKey = "UpdateModelsWhenStartUp"
     private static let chatProxyPortStorageKey = "ChatProxyPort"
+    private static let chatProxyEnableThinkStorageKey = "ChatProxyEnableThink"
     private static let chatProxyThinkStyleStorageKey = "ChatProxyThinkStyle"
     private static let chatProxyToolUseInRequestStorageKey = "chatProxyToolUseInRequest"
     private static let chatProxyCutSourceInSearchRequestStorageKey = "chatProxyCutSourceInSearchRequest"
@@ -63,6 +64,15 @@ class Configer {
         }
         get {
             return Self.value(chatProxyPortStorageKey, defaultValue: UInt16(50222)) ?? 50222
+        }
+    }
+    
+    static var chatProxyEnableThink: Bool {
+        set {
+            Self.setValue(chatProxyEnableThinkStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(chatProxyEnableThinkStorageKey, defaultValue: true) ?? true
         }
     }
     

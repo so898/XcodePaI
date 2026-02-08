@@ -90,6 +90,7 @@ class ChatProxyBridge: ChatProxyBridgeBase {
             newRequest.tools = tools
         }
         
+        newRequest.enableThinking = Configer.chatProxyEnableThink
         newRequest.streamOptions = LLMStreamOption(includeUsage: true)
         
         return newRequest

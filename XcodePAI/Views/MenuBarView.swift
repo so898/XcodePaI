@@ -117,6 +117,16 @@ extension MenuBarManager: NSMenuDelegate {
             }
             item.submenu = subMenu
             
+            item = NSMenuItem(title: "Enable Think".localizedString, action: #selector(toggleThinkMode(item:)), keyEquivalent: "")
+            item.isEnabled = true
+            item.target = self
+            if Configer.chatProxyEnableThink {
+                item.state = .on
+            } else {
+                item.state = .off
+            }
+            menu.addItem(item)
+            
             if !StorageManager.shared.availableMCPs().isEmpty {
                 item = NSMenuItem(title: "MCP".localizedString, action: nil, keyEquivalent: "")
                 item.isEnabled = true
@@ -375,6 +385,10 @@ extension MenuBarManager {
             config.modelProvider = model.provider
             StorageManager.shared.updateDefaultConfig(config)
         }
+    }
+    
+    @objc private func toggleThinkMode(item: NSMenuItem) {
+        Configer.chatProxyEnableThink = !Configer.chatProxyEnableThink
     }
     
     @objc private func updateDefaultWith(mcpItem: NSMenuItem) {
