@@ -7,6 +7,7 @@
 
 import Foundation
 import Network
+import Logger
 
 protocol TCPConnectionDelegate: AnyObject {
     func connectionConnected(_ connection: TCPConnection)
@@ -38,20 +39,20 @@ class TCPConnection {
             }
             switch newState {
             case .setup:
-                print("Connection setup")
+                Logger.network.debug("Connection setup")
             case .waiting(_):
-                print("Connection waiting")
+                Logger.network.debug("Connection waiting")
             case .preparing:
-                print("Connection preparing")
+                Logger.network.debug("Connection preparing")
             case .ready:
-                print("Connection ready")
+                Logger.network.info("Connection ready")
                 self.delegate?.connectionConnected(self)
                 self.receiveData()
             case .failed(let error):
-                print("Connection failed: \(error)")
+                Logger.network.error("Connection failed: \(error.localizedDescription)")
                 self.cleanup(error)
             case .cancelled:
-                print("Connection cancelled")
+                Logger.network.info("Connection cancelled")
                 self.cleanup(nil)
             @unknown default:
                 fatalError()

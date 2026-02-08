@@ -7,6 +7,7 @@
 
 import Foundation
 import SQLite
+import Logger
 
 class RecordStorage {
     private let db: Connection
@@ -58,7 +59,7 @@ class RecordStorage {
                 )
             )
         } catch let err {
-            print(err)
+            Logger.storage.error(err)
         }
     }
     
@@ -104,7 +105,7 @@ class RecordStorage {
             let rows = try db.prepare(query)
             return rows.compactMap { TokenUsageRecord(row: $0, table: tokenTable) }
         } catch {
-            print("Failed to load records: \(error)")
+            Logger.storage.error("Failed to load records: \(error.localizedDescription)")
             return []
         }
     }
@@ -144,7 +145,7 @@ class RecordStorage {
             
             return (inputTokens, outputTokens, totalTokens, count)
         } catch {
-            print("Failed to get total usage: \(error)")
+            Logger.storage.error("Failed to get total usage: \(error.localizedDescription)")
             return (0, 0, 0, 0)
         }
     }
@@ -180,7 +181,7 @@ class RecordStorage {
             
             return breakdown
         } catch {
-            print("Failed to get model breakdown: \(error)")
+            Logger.storage.error("Failed to get model breakdown: \(error.localizedDescription)")
             return [:]
         }
     }
@@ -202,7 +203,7 @@ class RecordStorage {
             
             return pageCount * pageSize
         } catch {
-            print("Failed to get database size: \(error)")
+            Logger.storage.error("Failed to get database size: \(error.localizedDescription)")
             return nil
         }
     }

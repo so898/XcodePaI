@@ -111,7 +111,7 @@ public class SystemUtils {
         do {
             try process.run()
         } catch {
-            print("Error running xcrun xcodebuild: \(error)")
+            Logger.command.error("Error running xcrun xcodebuild: \(error.localizedDescription)")
             return nil
         }
 

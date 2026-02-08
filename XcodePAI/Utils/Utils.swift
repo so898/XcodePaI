@@ -7,6 +7,7 @@
 
 import Foundation
 import ApplicationServices
+import Logger
 
 struct Utils {
     static func checkAccessibilityPermission() -> Bool {
@@ -124,7 +125,7 @@ extension Utils {
         
         // Check path validity
         guard fileManager.fileIsDirectory(atPath: folderPath) else {
-            print("Error: Path does not exist or is not a directory")
+            Logger.fileSystem.error("Error: Path does not exist or is not a directory")
             return nil
         }
         
@@ -174,7 +175,7 @@ extension Utils {
                     }
                 }
             } catch {
-                print("Error reading directory: \(error)")
+                Logger.fileSystem.error("Error reading directory: \(error.localizedDescription)")
             }
         }
         

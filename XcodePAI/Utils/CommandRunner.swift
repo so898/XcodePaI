@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Logger
 
 // MARK: - Command Result
 
@@ -276,7 +277,7 @@ struct CommandRunner {
     static func killProcess(byName name: String, force: Bool = true) {
         // Check if the process is running first
         guard isProcessRunning(name: name) else {
-            print("Process \(name) is not running")
+            Logger.command.info("Process \(name) is not running")
             return
         }
         
@@ -290,15 +291,15 @@ struct CommandRunner {
             )
             
             if result.isSuccess {
-                print("Successfully terminated process: \(name)")
+                Logger.command.info("Successfully terminated process: \(name)")
             } else {
-                print("Failed to terminate process, exit code: \(result.exitCode)")
+                Logger.command.error("Failed to terminate process, exit code: \(result.exitCode)")
                 if !result.errorOutput.isEmpty {
-                    print("Error: \(result.errorOutput)")
+                    Logger.command.error("Error: \(result.errorOutput)")
                 }
             }
         } catch {
-            print("Failed to execute killall: \(error)")
+            Logger.command.error("Failed to execute killall: \(error.localizedDescription)")
         }
     }
     
@@ -309,7 +310,7 @@ struct CommandRunner {
     static func killProcessAsync(byName name: String, force: Bool = true) async {
         // Check if the process is running first
         guard await isProcessRunningAsync(name: name) else {
-            print("Process \(name) is not running")
+            Logger.command.info("Process \(name) is not running")
             return
         }
         
@@ -322,11 +323,11 @@ struct CommandRunner {
         )
         
         if result.isSuccess {
-            print("Successfully terminated process: \(name)")
+            Logger.command.info("Successfully terminated process: \(name)")
         } else {
-            print("Failed to terminate process, exit code: \(result.exitCode)")
+            Logger.command.error("Failed to terminate process, exit code: \(result.exitCode)")
             if !result.errorOutput.isEmpty {
-                print("Error: \(result.errorOutput)")
+                Logger.command.error("Error: \(result.errorOutput)")
             }
         }
     }

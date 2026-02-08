@@ -8,6 +8,7 @@
 import Foundation
 import SuggestionBasic
 import Preferences
+import Logger
 
 public protocol SuggestionPortalProtocol {
     func requestSuggestion(fileURL: URL,
@@ -73,14 +74,14 @@ public class SuggestionPortal {
         let lines = string.components(separatedBy: "\n")
         
         guard line >= 0, line < lines.count else {
-            print("Invalid line index")
+            Logger.completion.debug("Invalid line index")
             return nil
         }
         
         let currentLine = lines[line]
         
         guard character >= 0, character <= currentLine.count else {
-            print("Invalid character index")
+            Logger.completion.debug("Invalid character index")
             return nil
         }
         

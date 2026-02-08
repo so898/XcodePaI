@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Logger
 
 class RecordTracker {
     static let shared: RecordTracker = {
@@ -45,7 +46,7 @@ class RecordTracker {
             
             return try storage.saveRecord(record)
         } catch {
-            print("Failed to record token usage: \(error)")
+            Logger.storage.error("Failed to record token usage: \(error.localizedDescription)")
         }
         return nil
     }
@@ -58,7 +59,7 @@ class RecordTracker {
                 ids.append(try storage.saveRecord(record))
             }
         } catch {
-            print("Failed to record token usages: \(error)")
+            Logger.storage.error("Failed to record token usages: \(error.localizedDescription)")
         }
         return ids
     }
@@ -101,7 +102,7 @@ class RecordTracker {
         do {
             try storage.cleanupOldRecords(olderThan: timeInterval)
         } catch {
-            print("Failed to cleanup old records: \(error)")
+            Logger.storage.error("Failed to cleanup old records: \(error.localizedDescription)")
         }
     }
     

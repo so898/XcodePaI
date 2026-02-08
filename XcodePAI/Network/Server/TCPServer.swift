@@ -7,6 +7,7 @@
 
 import Foundation
 import Network
+import Logger
 
 protocol TCPServerDelegate {
     func serverStartListen(port: Int)
@@ -40,17 +41,17 @@ class TCPServer {
             guard let `self` = self else { return }
             switch newState {
             case .setup:
-                print("Server setup")
+                Logger.network.debug("Server setup")
             case .waiting(_):
-                print("Server waiting")
+                Logger.network.debug("Server waiting")
             case .ready:
-                print("Server ready")
+                Logger.network.info("Server ready")
                 self.delegate.serverStartListen(port: Int(self.listener.port?.rawValue ?? 0))
             case .failed(let error):
-                print("Server failed: \(error)")
+                Logger.network.error("Server failed: \(error.localizedDescription)")
                 self.delegate.serverStopListen(error: error)
             case .cancelled:
-                print("Server cancelled")
+                Logger.network.info("Server cancelled")
                 self.delegate.serverStopListen(error: nil)
             @unknown default:
                 fatalError()
@@ -69,7 +70,7 @@ class TCPServer {
     
     func start() {
         listener.start(queue: queue)
-        print("Server started on port \(port)")
+        Logger.network.info("Server started on port \(port)")
     }
     
     func stop() {

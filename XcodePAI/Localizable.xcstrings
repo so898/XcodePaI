@@ -1016,6 +1016,16 @@
         }
       }
     },
+    "Error" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "错误"
+          }
+        }
+      }
+    },
     "Exit" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1043,6 +1053,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "扩展权限"
+          }
+        }
+      }
+    },
+    "Failed to import plugin: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入插件失败： %@"
           }
         }
       }

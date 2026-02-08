@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Logger
 
 class ChatProxy {
     
@@ -37,11 +38,15 @@ class ChatProxy {
 
 extension ChatProxy: TCPServerDelegate {
     func serverStartListen(port: Int) {
-        print("TCP listen at port: \(port)")
+        Logger.network.info("TCP listen at port: \(port)")
     }
     
     func serverStopListen(error: (any Error)?) {
-        print("TCP stop listening, \(String(describing: error))")
+        if let error {
+            Logger.network.error("TCP stop listening: \(error.localizedDescription)")
+        } else {
+            Logger.network.info("TCP stop listening")
+        }
     }
     
     func serverDidReceive(connection: TCPConnection) {

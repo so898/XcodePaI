@@ -26,6 +26,11 @@ public final class Logger: Sendable {
     public static let workspacePool = Logger(category: "WorkspacePool")
     public static let mcp = Logger(category: "MCP")
     public static let debug = Logger(category: "Debug")
+    public static let network = Logger(category: "Network")
+    public static let fileSystem = Logger(category: "FileSystem")
+    public static let command = Logger(category: "Command")
+    public static let storage = Logger(category: "Storage")
+    public static let completion = Logger(category: "Completion")
     #if DEBUG
     /// Use a temp logger to log something temporary. I won't be available in release builds.
     public static let temp = Logger(category: "Temp")

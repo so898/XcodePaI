@@ -1,4 +1,5 @@
 import Foundation
+import Logger
 
 /// Inter-process communication error types
 public enum IPCWormholeError: Error, LocalizedError {
@@ -238,7 +239,7 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
             )
             try writeMessage(envelope)
         } catch {
-            print("Failed to send message: \(error)")
+            Logger.communicationBridge.error("Failed to send message: \(error.localizedDescription)")
         }
     }
     
@@ -377,7 +378,7 @@ public class IPCWormhole: NSObject, @unchecked Sendable {
             )
             try writeMessage(replyEnvelope)
         } catch {
-            print("Failed to send reply: \(error)")
+            Logger.communicationBridge.error("Failed to send reply: \(error.localizedDescription)")
         }
     }
     
@@ -458,7 +459,7 @@ private struct MessageListener<T: Codable>: AnyMessageListener {
             let message = try JSONDecoder().decode(T.self, from: data)
             handler(message, replyHandler)
         } catch {
-            print("Message deserialization failed: \(error)")
+            Logger.communicationBridge.error("Message deserialization failed: \(error.localizedDescription)")
         }
     }
 }

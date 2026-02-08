@@ -5,6 +5,8 @@
 //  Created by Bill Cheng on 2025/12/14.
 //
 
+import Logger
+
 struct ProviderModelRefresher {
     static let shared = ProviderModelRefresher()
     
@@ -15,7 +17,7 @@ struct ProviderModelRefresher {
                 do {
                     try await refreshModels(provider)
                 } catch {
-                    print("Provider \(provider.name) update model list fail.")
+                    Logger.service.error("Provider \(provider.name) update model list fail.")
                 }
             }
         }

@@ -34,6 +34,7 @@ let package = Package(
         
         .target(name: "IPCShared", dependencies: [
             .product(name: "SuggestionBasic", package: "ThirdPartyTool"),
+            .product(name: "Logger", package: "ThirdPartyTool"),
         ]),
         
     ]

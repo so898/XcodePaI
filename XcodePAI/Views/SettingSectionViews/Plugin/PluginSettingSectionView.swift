@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import Logger
 
 // MARK: - Model List View
 struct PluginSettingSectionView: View {
@@ -18,6 +19,8 @@ struct PluginSettingSectionView: View {
     @State private var selectedBundle: Bundle?
     @State private var selectedPluginInfo: PluginInfo?
     @State private var shownPluginInfo: PluginInfo?
+    @State private var errorMessage: String?
+    @State private var showErrorAlert = false
     
     init() {
         self.pluginInfos = PluginManager.shared.getAllPluginInfos()
@@ -69,7 +72,9 @@ struct PluginSettingSectionView: View {
                     isShowingSheet = true
                 }
             case .failure(let error):
-                print("Error: \(error.localizedDescription)")
+                Logger.ui.error("Failed to import plugin: \(error.localizedDescription)")
+                errorMessage = error.localizedDescription
+                showErrorAlert = true
             }
         }
         .sheet(isPresented: $isShowingSheet) {
@@ -88,6 +93,13 @@ struct PluginSettingSectionView: View {
                 pluginInfos.removeAll { plugin in plugin.id == id}
                 PluginManager.shared.removePlugin(for: id)
             })
+        }
+        .alert("Error", isPresented: $showErrorAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            if let errorMessage {
+                Text(errorMessage)
+            }
         }
     }
 }

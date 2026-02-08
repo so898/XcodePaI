@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Logger
 
 class PluginManager {
     static let shared = PluginManager()
@@ -48,7 +49,7 @@ class PluginManager {
                 }
             }
         } catch {
-            print("Error loading plugins: \(error)")
+            Logger.extension.error("Error loading plugins: \(error.localizedDescription)")
         }
     }
     
@@ -86,7 +87,7 @@ class PluginManager {
         guard let url = url, let bundle = Bundle(url: url) else { return nil }
         
         guard bundle.load() else {
-            print("Failed to load bundle: \(bundle.bundleURL.lastPathComponent)")
+            Logger.extension.error("Failed to load bundle: \(bundle.bundleURL.lastPathComponent)")
             return nil
         }
         
@@ -107,10 +108,10 @@ class PluginManager {
             do {
                 try fileManager.copyItem(at: url, to: pluginsURL.appending(component: pluginInfo.id).appendingPathExtension(Self.pluginExtension))
             } catch {
-                print("Error adding plugin: \(error)")
+                Logger.extension.error("Error adding plugin: \(error.localizedDescription)")
             }
             loadPlugin(from: bundle)
-            print("Added plugin: \(pluginInfo.name)")
+            Logger.extension.info("Added plugin: \(pluginInfo.name)")
         }
     }
     
@@ -126,22 +127,22 @@ class PluginManager {
         
         do {
             try fileManager.removeItem(at: pluginURL)
-            print("Removed plugin: \(type(of: plugin).name)")
+            Logger.extension.info("Removed plugin: \(type(of: plugin).name)")
         } catch {
-            print("Error removing plugin: \(error)")
+            Logger.extension.error("Error removing plugin: \(error.localizedDescription)")
         }
     }
     
     private func loadPlugin(from bundle: Bundle) {
         guard bundle.load() else {
-            print("Failed to load bundle: \(bundle.bundleURL.lastPathComponent)")
+            Logger.extension.error("Failed to load bundle: \(bundle.bundleURL.lastPathComponent)")
             return
         }
         
         if let pluginClass = bundle.principalClass as? BasePluginProtocol.Type {
             let plugin = pluginClass.init()
             plugins.append(plugin)
-            print("Loaded plugin: \(pluginClass.name)")
+            Logger.extension.info("Loaded plugin: \(pluginClass.name)")
         }
     }
     

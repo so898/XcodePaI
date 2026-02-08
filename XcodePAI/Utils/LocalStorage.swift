@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import Logger
 
 /// Local Storage to store llm and other information
 final class LocalStorage {
@@ -101,7 +102,7 @@ final class LocalStorage {
                 let value = try self.decoder.decode(T.self, from: data)
                 DispatchQueue.main.async { completion(value) }
             } catch {
-                print("Load fail: \(error)")
+                Logger.storage.error("Load fail: \(error.localizedDescription)")
                 DispatchQueue.main.async { completion(nil) }
             }
         }
@@ -144,7 +145,7 @@ extension LocalStorage {
         Future { [weak self] promise in
             self?.setValue(value, forKey: key) { error in
                 if let error = error {
-                    print("save fail: \(error)")
+                    Logger.storage.error("save fail: \(error.localizedDescription)")
                 } else {
                     promise(.success(()))
                 }
