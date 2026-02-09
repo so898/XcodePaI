@@ -11,6 +11,29 @@ import Foundation
 /// Manages configuration for Xcode Coding Assistant (Codex), including installation checks, configuration status checks, and proxy settings
 class AgenticConfiger {
     
+    /// Configuration status enumeration
+    /// Represents different states of Codex configuration
+    enum AgenticConfigerConfigState: String {
+        /// Unknown state
+        case unknown = "Unknown"
+        /// Codex not installed
+        case notInstalled = "Not installed"
+        /// Codex installed but not configured
+        case notConfigured = "Not configured"
+        /// Configuration error or incomplete
+        case misconfigured = "Misconfigured"
+        /// Correctly configured to use XcodePAI proxy
+        case configured = "Configured"
+        /// Configured but using other provider
+        case configuredWithOther = "Configured with other provider"
+    }
+    
+    /// Local proxy server address
+    /// Local LLM proxy service provided by XcodePAI
+    static let LocalProxyServer = "http://127.0.0.1:50222/v1"
+    
+    // MARK: Codex
+    
     /// URL of the Codex configuration folder
     /// Default path: ~/Library/Developer/Xcode/CodingAssistant/codex
     static let CodexFolderURL = {
@@ -20,10 +43,6 @@ class AgenticConfiger {
     
     /// Codex configuration file name
     static let CodexConfigFileName = "config.toml"
-    
-    /// Local proxy server address
-    /// Local LLM proxy service provided by XcodePAI
-    static let LocalProxyServer = "http://127.0.0.1:50222/v1"
     
     /// Current Codex API type
     /// Specifies the API protocol type to use
@@ -44,23 +63,6 @@ class AgenticConfiger {
         } catch {
             return false
         }
-    }
-    
-    /// Codex configuration status enumeration
-    /// Represents different states of Codex configuration
-    enum AgenticConfigerConfigState: String {
-        /// Unknown state
-        case unknown = "Unknown"
-        /// Codex not installed
-        case notInstalled = "Not installed"
-        /// Codex installed but not configured
-        case notConfigured = "Not configured"
-        /// Configuration error or incomplete
-        case misconfigured = "Misconfigured"
-        /// Correctly configured to use XcodePAI proxy
-        case configured = "Configured"
-        /// Configured but using other provider
-        case configuredWithOther = "Configured with other provider"
     }
     
     /// Checks the Codex configuration status
@@ -133,13 +135,13 @@ class AgenticConfiger {
         return nil
     }
     
-    /// Sets up proxy configuration
-    /// 
+    /// Sets up codex proxy configuration
+    ///
     /// Configures Codex to use XcodePAI's local proxy service, including:
     /// 1. Add XcodePAI model provider configuration
     /// 2. Set default model provider to XcodePAI
     /// 3. Restart Codex service to apply configuration
-    static func setupProxyConfig() {
+    static func setupCodexProxyConfig() {
         // 1. Check if Codex is installed and read configuration file
         guard checkCodexInstall(), let content = try? String(contentsOf: CodexFolderURL.appendingPathComponent(CodexConfigFileName), encoding: .utf8) else {
             return
@@ -177,6 +179,80 @@ class AgenticConfiger {
             // 8. Restart Codex service to apply configuration
             if CommandRunner.isProcessRunning(name: "codex") {
                 CommandRunner.killProcess(byName: "codex", force: true)
+            }
+        } catch _ {
+            // Configuration update failed
+            return
+        }
+    }
+    
+    // MARK: Claude Code
+    
+    static let ClaudeFolderURL = {
+        let folderURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/CodingAssistant/ClaudeAgentConfig")
+        return folderURL
+    }()
+    
+    static let ClaudeConfigFileName = ".claude.json"
+    
+    static func checkClaudeInstall() -> Bool {
+        do {
+            let resourceValues = try ClaudeFolderURL.resourceValues(forKeys: [.isDirectoryKey])
+            
+            if let isDir = resourceValues.isDirectory, isDir {
+                return true
+            } else {
+                // Not a directory
+                return false
+            }
+        } catch {
+            return false
+        }
+    }
+    
+    static func checkClaudeConfigState() -> AgenticConfigerConfigState {
+        guard checkClaudeInstall(), let data = try? Data(contentsOf: ClaudeFolderURL.appendingPathComponent(ClaudeConfigFileName)) else {
+            return .notInstalled
+        }
+        
+        do {
+            if let configuration = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let env = configuration["env"] as? [String: Any],
+               let baseUrl = env["ANTHROPIC_BASE_URL"] as? String {
+                
+                if baseUrl == LocalProxyServer {
+                    return .configured
+                }
+                
+                return .configuredWithOther
+            }
+        } catch _ {
+            return .misconfigured
+        }
+        
+        // No model_provider configured
+        return .notConfigured
+    }
+    
+    static func setupClaudeProxyConfig() {
+        guard checkClaudeInstall(), let data = try? Data(contentsOf: ClaudeFolderURL.appendingPathComponent(ClaudeConfigFileName)) else {
+            return
+        }
+        
+        do {
+            if var configuration = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                
+                var env = configuration["env"] as? [String: Any] ?? [String: Any]()
+                env["ANTHROPIC_BASE_URL"] = LocalProxyServer
+                
+                configuration["env"] = env
+                
+                let data = try JSONSerialization.data(withJSONObject: configuration)
+                try data.write(to: ClaudeFolderURL.appendingPathComponent(ClaudeConfigFileName))
+            }
+            
+            if CommandRunner.isProcessRunning(name: "claude") {
+                CommandRunner.killProcess(byName: "claude", force: true)
             }
         } catch _ {
             // Configuration update failed
