@@ -229,7 +229,8 @@ class LLMResponseChoiceMessage {
         }
         if let reasoningContent = dict["reasoning_content"] as? String {
             thisReasoningContent = reasoningContent
-            
+        } else if let reasoning = dict["reasoning"] as? String {
+            thisReasoningContent = reasoning
         }
         if let toolCallId = dict["tool_call_id"] as? String {
             thisToolCallId = toolCallId
