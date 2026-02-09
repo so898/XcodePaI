@@ -103,22 +103,26 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
                     }
                 } else if input.type == "function_call", let name = input.name, let arguments = input.arguments, let callId = input.callId {
                     // Process function call type input
-                    
-                    var toolUse = PromptTemplate.toolUseTemplate
-                    toolUse = toolUse.replacingOccurrences(of: "{{TOOL_NAME}}", with: name)
-                    toolUse = toolUse.replacingOccurrences(of: "{{ARGUMENTS}}", with: arguments)
-                    
-                    messages.append(LLMMessage(role: "assistant", content: toolUse))
+                    if useToolInRequest {
+                        messages.append(LLMMessage(role: "assistant", toolCalls: [LLMMessageToolCall(id: callId, type: "function", function: LLMFunction(name: name, arguments: arguments))]))
+                    } else {
+                        var toolUse = PromptTemplate.toolUseTemplate
+                        toolUse = toolUse.replacingOccurrences(of: "{{TOOL_NAME}}", with: name)
+                        toolUse = toolUse.replacingOccurrences(of: "{{ARGUMENTS}}", with: arguments)
+                        messages.append(LLMMessage(role: "assistant", content: toolUse))
+                    }
                     
                     // Find corresponding function call output
                     for input in inputs {
                         if input.type == "function_call_output", let respCallId = input.callId, respCallId == callId {
-                            
-                            var toolUseResult = PromptTemplate.toolUseResultTemplate
-                            toolUseResult = toolUseResult.replacingOccurrences(of: "{{TOOL_NAME}}", with: name)
-                            toolUseResult = toolUseResult.replacingOccurrences(of: "{{RESULT}}", with: input.output ?? "")
-                            
-                            messages.append(LLMMessage(role: "user", content: toolUseResult))
+                            if useToolInRequest {
+                                messages.append(LLMMessage(toolCallId: respCallId, functionName: name, content: input.output ?? ""))
+                            } else {
+                                var toolUseResult = PromptTemplate.toolUseResultTemplate
+                                toolUseResult = toolUseResult.replacingOccurrences(of: "{{TOOL_NAME}}", with: name)
+                                toolUseResult = toolUseResult.replacingOccurrences(of: "{{RESULT}}", with: input.output ?? "")
+                                messages.append(LLMMessage(role: "user", content: toolUseResult))
+                            }
                         }
                     }
                 }
@@ -382,6 +386,8 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
     }
     
     override func sendFinishReason(_ finishReason: String) {
+        sendReasonEndMarkIfNeed()
+        
         completeLastOutput()
         lastOutputPart = .none
     }
