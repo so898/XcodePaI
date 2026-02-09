@@ -238,6 +238,15 @@ extension HTTPConnection {
         writeChunk("data: " + value + Constraint.DoubleLFString, tag: tag)
     }
     
+    func writeSSEEvent(event: String?, data: String, tag: Int? = nil) {
+        var output = ""
+        if let event = event {
+            output += "event: \(event)\n"
+        }
+        output += "data: \(data)" + Constraint.DoubleLFString
+        writeChunk(output, tag: tag)
+    }
+    
     func writeSSEComplete() {
         writeChunk("[DONE]" + Constraint.DoubleLFString)
         writeEndChunk()

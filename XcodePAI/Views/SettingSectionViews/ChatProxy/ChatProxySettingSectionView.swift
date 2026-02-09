@@ -10,7 +10,8 @@ import Combine
 
 struct ChatProxySettingSectionView: View {
     @State private var portNumber = "\(Configer.chatProxyPort)"
-    @State private var codeProxyConfigState = AgenticConfiger.checkCodexConfigState()
+    @State private var codexProxyConfigState = AgenticConfiger.checkCodexConfigState()
+    @State private var claudeProxyConfigState = AgenticConfiger.checkClaudeConfigState()
     @State private var enableThink = Configer.chatProxyEnableThink
     @State private var thinkStyle: Int = Configer.chatProxyThinkStyle.rawValue
     @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
@@ -57,24 +58,54 @@ struct ChatProxySettingSectionView: View {
                 GridRow(alignment: .center) {
                     Text("Xcode Codex Proxy")
                     HStack(spacing: 10) {
-                        if codeProxyConfigState == .configured {
-                            Text(codeProxyConfigState.rawValue.localizedString)
+                        if codexProxyConfigState == .configured {
+                            Text(codexProxyConfigState.rawValue.localizedString)
                                 .foregroundColor(.green)
                             Button("Open Codex Folder") {
                                 NSWorkspace.shared.open(AgenticConfiger.CodexFolderURL)
                             }
                             .buttonStyle(.bordered)
                             .controlSize(.large)
-                        } else if codeProxyConfigState == .notInstalled {
-                            Text(codeProxyConfigState.rawValue.localizedString)
+                        } else if codexProxyConfigState == .notInstalled {
+                            Text(codexProxyConfigState.rawValue.localizedString)
                                 .foregroundColor(.gray)
                         } else {
-                            if codeProxyConfigState == .notConfigured || codeProxyConfigState == .misconfigured {
-                                Text(codeProxyConfigState.rawValue.localizedString)
+                            if codexProxyConfigState == .notConfigured || codexProxyConfigState == .misconfigured {
+                                Text(codexProxyConfigState.rawValue.localizedString)
                                     .foregroundColor(.red)
                             }
                             Button("Configure Codex Proxy") {
-                                AgenticConfiger.setupProxyConfig()
+                                AgenticConfiger.setupCodexProxyConfig()
+                                codexProxyConfigState = AgenticConfiger.checkCodexConfigState()
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.large)
+                        }
+                    }
+                }
+                
+                GridRow(alignment: .center) {
+                    Text("Xcode Claude Proxy")
+                    HStack(spacing: 10) {
+                        if claudeProxyConfigState == .configured {
+                            Text(claudeProxyConfigState.rawValue.localizedString)
+                                .foregroundColor(.green)
+                            Button("Open Claude Folder") {
+                                NSWorkspace.shared.open(AgenticConfiger.ClaudeFolderURL)
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.large)
+                        } else if claudeProxyConfigState == .notInstalled {
+                            Text(claudeProxyConfigState.rawValue.localizedString)
+                                .foregroundColor(.gray)
+                        } else {
+                            if claudeProxyConfigState == .notConfigured || claudeProxyConfigState == .misconfigured {
+                                Text(claudeProxyConfigState.rawValue.localizedString)
+                                    .foregroundColor(.red)
+                            }
+                            Button("Configure Claude Proxy") {
+                                AgenticConfiger.setupClaudeProxyConfig()
+                                claudeProxyConfigState = AgenticConfiger.checkClaudeConfigState()
                             }
                             .buttonStyle(.bordered)
                             .controlSize(.large)

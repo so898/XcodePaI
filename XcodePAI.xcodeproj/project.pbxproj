@@ -84,6 +84,9 @@
 		799F50BD2F38FE72006383A1 /* ResponseCodeSnippetFixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50BC2F38FE71006383A1 /* ResponseCodeSnippetFixer.swift */; };
 		799F50BF2F38FEC1006383A1 /* ChatProxyBridgeDefines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50BE2F38FEA0006383A1 /* ChatProxyBridgeDefines.swift */; };
 		799F50C12F38FEE2006383A1 /* ChatProxyBaseBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50C02F38FED1006383A1 /* ChatProxyBaseBridge.swift */; };
+		799F50C32F3A1D7E006383A1 /* LLMClaudeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50C22F3A1D7E006383A1 /* LLMClaudeRequest.swift */; };
+		799F50C52F3A1D99006383A1 /* LLMClaudeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50C42F3A1D99006383A1 /* LLMClaudeResponse.swift */; };
+		799F50C82F3A1EF0006383A1 /* ChatProxyClaudeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50C72F3A1EF0006383A1 /* ChatProxyClaudeBridge.swift */; };
 		799F5F702EA521AC00868D0E /* TokenUsageRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */; };
 		799F5F732EA521E500868D0E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 799F5F722EA521E500868D0E /* SQLite */; };
 		799F5F752EA524E300868D0E /* RecordStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F742EA524DF00868D0E /* RecordStorage.swift */; };
@@ -238,6 +241,9 @@
 		799F50BC2F38FE71006383A1 /* ResponseCodeSnippetFixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseCodeSnippetFixer.swift; sourceTree = "<group>"; };
 		799F50BE2F38FEA0006383A1 /* ChatProxyBridgeDefines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyBridgeDefines.swift; sourceTree = "<group>"; };
 		799F50C02F38FED1006383A1 /* ChatProxyBaseBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyBaseBridge.swift; sourceTree = "<group>"; };
+		799F50C22F3A1D7E006383A1 /* LLMClaudeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMClaudeRequest.swift; sourceTree = "<group>"; };
+		799F50C42F3A1D99006383A1 /* LLMClaudeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMClaudeResponse.swift; sourceTree = "<group>"; };
+		799F50C72F3A1EF0006383A1 /* ChatProxyClaudeBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyClaudeBridge.swift; sourceTree = "<group>"; };
 		799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsageRecord.swift; sourceTree = "<group>"; };
 		799F5F742EA524DF00868D0E /* RecordStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordStorage.swift; sourceTree = "<group>"; };
 		799F5F762EA5252900868D0E /* RecordTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTracker.swift; sourceTree = "<group>"; };
@@ -352,6 +358,8 @@
 				790799C32E48D911004D9D1A /* LLMResponse.swift */,
 				796AF44F2F372B0C0017AAB8 /* LLMCodexRequest.swift */,
 				796AF4512F372B3F0017AAB8 /* LLMCodexResponse.swift */,
+				799F50C22F3A1D7E006383A1 /* LLMClaudeRequest.swift */,
+				799F50C42F3A1D99006383A1 /* LLMClaudeResponse.swift */,
 				79079A052E4F9449004D9D1A /* LLMMCP.swift */,
 				79079A062E4F9449004D9D1A /* LLMMCPTool.swift */,
 				79079A1D2E50F44C004D9D1A /* LLMMCPToolUse.swift */,
@@ -571,6 +579,7 @@
 			children = (
 				796AF44A2F3614460017AAB8 /* AgenticConfiger.swift */,
 				796AF4532F372E460017AAB8 /* ChatProxyCodexBridge.swift */,
+				799F50C72F3A1EF0006383A1 /* ChatProxyClaudeBridge.swift */,
 			);
 			path = Agentic;
 			sourceTree = "<group>";
@@ -808,6 +817,7 @@
 				796AF44E2F3617410017AAB8 /* TOML.swift in Sources */,
 				79079A272E54BFC0004D9D1A /* StorageManager.swift in Sources */,
 				799F5F772EA5252D00868D0E /* RecordTracker.swift in Sources */,
+				799F50C52F3A1D99006383A1 /* LLMClaudeResponse.swift in Sources */,
 				796DC5272F1E9A01009DBE96 /* HTTPClientExtension.swift in Sources */,
 				799F50BD2F38FE72006383A1 /* ResponseCodeSnippetFixer.swift in Sources */,
 				3385C1FD2E4C79A8005C4210 /* ModelProviderEditView.swift in Sources */,
@@ -818,6 +828,7 @@
 				79E64EB82EF5831E00844C5A /* RecordListView.swift in Sources */,
 				790799F72E4CD562004D9D1A /* ModelProviderDetailView.swift in Sources */,
 				79CFC6AE2E69FCD400367E78 /* CoroutineHTTPClient.swift in Sources */,
+				799F50C32F3A1D7E006383A1 /* LLMClaudeRequest.swift in Sources */,
 				799F5F7E2EA9217500868D0E /* UsageSettingSectionView.swift in Sources */,
 				79079A112E4FB78C004D9D1A /* MCPDetailView.swift in Sources */,
 				796AF4502F372B130017AAB8 /* LLMCodexRequest.swift in Sources */,
@@ -874,6 +885,7 @@
 				79079A0F2E4F9B27004D9D1A /* MCPEditView.swift in Sources */,
 				796AF4542F372E4F0017AAB8 /* ChatProxyCodexBridge.swift in Sources */,
 				79BB48462E9E9EC5002F2255 /* SourceAnalysisShared.swift in Sources */,
+				799F50C82F3A1EF0006383A1 /* ChatProxyClaudeBridge.swift in Sources */,
 				790799AF2E47204C004D9D1A /* Constraint.swift in Sources */,
 				79079A0D2E4F95E8004D9D1A /* MCPSettingView.swift in Sources */,
 				790799B42E487E08004D9D1A /* TCPConnection.swift in Sources */,

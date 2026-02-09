@@ -690,6 +690,16 @@
         }
       }
     },
+    "Configure Claude Proxy" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置 Claude 代理"
+          }
+        }
+      }
+    },
     "Configure Codex Proxy" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1602,12 +1612,22 @@
         }
       }
     },
+    "Open Claude Folder" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Claude 配置"
+          }
+        }
+      }
+    },
     "Open Codex Folder" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Codex 文件夹"
+            "value" : "打开 Codex 配置"
           }
         }
       }
@@ -2623,6 +2643,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用模型"
+          }
+        }
+      }
+    },
+    "Xcode Claude Proxy" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xcode 内置 Claude 代理"
           }
         }
       }

@@ -15,6 +15,7 @@ protocol ChatProxyBridgeDelegate {
     func bridge(connected success: Bool)
     func bridge(write dict: [String: Any])
     func bridge(write string: String)
+    func bridge(event: String?, data: String)
     func bridgeWriteEndChunk()
 }
 
@@ -72,6 +73,11 @@ class ChatProxyTunnel {
         let bridge = ChatProxyCodexBridge(id: id, delegate: self)
         return bridge
     }()
+    
+    private lazy var claudeBridge: ChatProxyClaudeBridge = {
+        let bridge = ChatProxyClaudeBridge(id: id, delegate: self)
+        return bridge
+    }()
 }
 
 // MARK: Models List Response
@@ -98,6 +104,13 @@ extension ChatProxyTunnel{
     }
 }
 
+// MARK: Messages Response
+extension ChatProxyTunnel{
+    func receiveMessagesRequest(body: Data) {
+        claudeBridge.receiveRequestData(body)
+    }
+}
+
 // MARK: HTTPConnectionDelegate
 extension ChatProxyTunnel: HTTPConnectionDelegate {
     func connection(_ connection: HTTPConnection, didReceiveRequest request: HTTPRequest) {
@@ -114,6 +127,8 @@ extension ChatProxyTunnel: HTTPConnectionDelegate {
             receiveCompletionsRequest(body: bodyData)
         } else if request.method == "POST", request.path.contains("/v1/responses"), let bodyData = request.body {
             receiveResponsesRequest(body: bodyData)
+        } else if request.method == "POST", request.path.contains("/v1/messages"), let bodyData = request.body {
+            receiveMessagesRequest(body: bodyData)
         } else {
             writeServerErrorResponse()
         }
@@ -176,6 +191,10 @@ extension ChatProxyTunnel: ChatProxyBridgeDelegate {
     
     func bridge(write string: String) {
         connection?.writeSSEString(string)
+    }
+    
+    func bridge(event: String?, data: String) {
+        connection?.writeSSEEvent(event: event, data: data)
     }
     
     func bridgeWriteEndChunk() {
