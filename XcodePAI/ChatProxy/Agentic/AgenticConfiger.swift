@@ -7,49 +7,68 @@
 
 import Foundation
 
-/// Codex Agent Configuration Manager
-/// Manages configuration for Xcode Coding Assistant (Codex), including installation checks, configuration status checks, and proxy settings
+/// Configuration manager for AI coding assistants (Codex and Claude) in Xcode.
+///
+/// Handles installation verification, configuration status checks, proxy setup,
+/// and service management for AI coding assistant agents. Supports:
+/// - Codex (TOML-based configuration)
+/// - Claude Code (JSON-based configuration)
+///
+/// Ensures proper integration with XcodePAI's local proxy service at `LocalProxyServer`.
 class AgenticConfiger {
     
-    /// Configuration status enumeration
-    /// Represents different states of Codex configuration
+    /// Represents the configuration state of an AI assistant agent.
+    ///
+    /// Used to determine installation status, configuration validity, and proxy alignment.
     enum AgenticConfigerConfigState: String {
-        /// Unknown state
+        /// Initial or undetermined state (should not occur in normal operation)
         case unknown = "Unknown"
-        /// Codex not installed
+        
+        /// Agent folder does not exist or is not installed
         case notInstalled = "Not installed"
-        /// Codex installed but not configured
+        
+        /// Agent is installed but lacks required configuration entries
         case notConfigured = "Not configured"
-        /// Configuration error or incomplete
+        
+        /// Configuration exists but contains errors or missing critical fields
         case misconfigured = "Misconfigured"
-        /// Correctly configured to use XcodePAI proxy
+        
+        /// Correctly configured to use XcodePAI's local proxy service
         case configured = "Configured"
-        /// Configured but using other provider
+        
+        /// Configured to use a provider other than XcodePAI's proxy
         case configuredWithOther = "Configured with other provider"
     }
     
-    /// Local proxy server address
-    /// Local LLM proxy service provided by XcodePAI
+    /// Local proxy server endpoint for XcodePAI's LLM service.
+    ///
+    /// All AI agents should route requests through this endpoint when properly configured.
+    /// Format: `http://127.0.0.1:50222/v1`
     static let LocalProxyServer = "http://127.0.0.1:50222/v1"
     
-    // MARK: Codex
+    // MARK: - Codex Configuration Management
     
-    /// URL of the Codex configuration folder
-    /// Default path: ~/Library/Developer/Xcode/CodingAssistant/codex
+    /// Default filesystem path for Codex configuration directory.
+    ///
+    /// Path: `~/Library/Developer/Xcode/CodingAssistant/codex`
+    /// Contains `config.toml` and related Codex resources.
     static let CodexFolderURL = {
         let folderURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/CodingAssistant/codex")
         return folderURL
     }()
     
-    /// Codex configuration file name
+    /// Filename for Codex's primary configuration file.
     static let CodexConfigFileName = "config.toml"
     
-    /// Current Codex API type
-    /// Specifies the API protocol type to use
+    /// API protocol type used for communication between Codex and XcodePAI proxy.
+    ///
+    /// Must match the `wire_api` value expected by the proxy service.
+    /// Current value: `"responses"`
     static let CurrentCodexAPIType = "responses"
     
-    /// Checks if Codex is installed
-    /// - Returns: Returns true if the Codex folder exists and is a directory; otherwise returns false
+    /// Verifies Codex installation status by checking directory existence.
+    ///
+    /// - Returns: `true` if the Codex configuration directory exists and is valid; `false` otherwise.
     static func checkCodexInstall() -> Bool {
         do {
             let resourceValues = try CodexFolderURL.resourceValues(forKeys: [.isDirectoryKey])
@@ -57,7 +76,7 @@ class AgenticConfiger {
             if let isDir = resourceValues.isDirectory, isDir {
                 return true
             } else {
-                // Not a directory
+                // Path exists but is not a directory
                 return false
             }
         } catch {
@@ -65,136 +84,152 @@ class AgenticConfiger {
         }
     }
     
-    /// Checks the Codex configuration status
-    /// - Returns: The current configuration status
-    /// 
-    /// Check steps:
-    /// 1. Check if Codex is installed
-    /// 2. Read the configuration file
-    /// 3. Parse TOML configuration
-    /// 4. Verify if configuration is correct
+    /// Analyzes Codex configuration state against XcodePAI requirements.
+    ///
+    /// Validation steps:
+    /// 1. Verifies Codex installation
+    /// 2. Reads and parses `config.toml`
+    /// 3. Checks `model_provider` value against `Constraint.InternalModelName`
+    /// 4. Validates `model_providers` table contains correct proxy details:
+    ///    - `base_url` matches `LocalProxyServer`
+    ///    - `wire_api` matches `CurrentCodexAPIType`
+    ///
+    /// - Returns: Current configuration state per `AgenticConfigerConfigState`
     static func checkCodexConfigState() -> AgenticConfigerConfigState {
-        // 1. Check if Codex is installed
-        guard checkCodexInstall(), let content = try? String(contentsOf: CodexFolderURL.appendingPathComponent(CodexConfigFileName), encoding: .utf8) else {
+        // 1. Verify installation and read config file
+        guard checkCodexInstall(),
+              let content = try? String(contentsOf: CodexFolderURL.appendingPathComponent(CodexConfigFileName), encoding: .utf8)
+        else {
             return .notInstalled
         }
         
         do {
-            // 2. Parse TOML configuration file
+            // 2. Parse TOML configuration
             let doc = try TOMLDocument(content: content)
             
-            // 3. Check model_provider configuration
+            // 3. Check active model provider
             if let modelProviderValue = doc["model_provider"],
                let modelProvider = modelProviderValue.stringValue {
                 
-                // 4. Check if configured with other provider
+                // 4. Detect non-XcodePAI provider configuration
                 if modelProvider != Constraint.InternalModelName.lowercased() {
-                    // Configured with other model provider
                     return .configuredWithOther
                 } else {
-                    // 5. Verify XcodePAI configuration details
+                    // 5. Validate XcodePAI-specific configuration details
                     if let modelProviderTable = doc["model_providers"]?.tableValue,
                        let detailTable = modelProviderTable[Constraint.InternalModelName.lowercased()]?.tableValue,
                        detailTable["base_url"]?.stringValue == LocalProxyServer,
                        detailTable["wire_api"]?.stringValue == CurrentCodexAPIType {
-                        // Configuration correct
                         return .configured
                     }
-                    // Configuration incomplete or incorrect
+                    // Required fields missing or incorrect values
                     return .misconfigured
                 }
             }
-        } catch _ {
-            // TOML parsing failed
+        } catch {
+            // TOML parsing failure
             return .unknown
         }
         
-        // No model_provider configured
+        // Configuration file exists but lacks model_provider declaration
         return .notConfigured
     }
     
-    /// Gets the default model name for Codex
-    /// - Returns: The default model name set in the configuration file, or nil if not set or reading fails
-    /// 
-    /// Reads the "model" field from the config.toml file
+    /// Retrieves the default model name specified in Codex configuration.
+    ///
+    /// - Returns: Model name string from `model` field in `config.toml`, or `nil` if:
+    ///   - Codex is not installed
+    ///   - Configuration file is unreadable
+    ///   - `model` field is missing or unparsable
     static func codexDefaultModelName() -> String? {
-        guard checkCodexInstall(), let content = try? String(contentsOf: CodexFolderURL.appendingPathComponent(CodexConfigFileName), encoding: .utf8) else {
+        guard checkCodexInstall(),
+              let content = try? String(contentsOf: CodexFolderURL.appendingPathComponent(CodexConfigFileName), encoding: .utf8)
+        else {
             return nil
         }
         
         do {
             let doc = try TOMLDocument(content: content)
-            
-            // Read the model field
-            if let modelValue = doc["model"] {
-                return modelValue.stringValue
-            }
-        } catch _ {
+            return doc["model"]?.stringValue
+        } catch {
             return nil
         }
-        return nil
     }
     
-    /// Sets up codex proxy configuration
+    /// Configures Codex to use XcodePAI's local proxy service.
     ///
-    /// Configures Codex to use XcodePAI's local proxy service, including:
-    /// 1. Add XcodePAI model provider configuration
-    /// 2. Set default model provider to XcodePAI
-    /// 3. Restart Codex service to apply configuration
+    /// Performs:
+    /// 1. Reads existing `config.toml`
+    /// 2. Injects/updates XcodePAI model provider entry in `model_providers` table
+    /// 3. Sets `model_provider` to XcodePAI's internal identifier
+    /// 4. Persists updated configuration
+    /// 5. Restarts Codex process to apply changes
+    ///
+    /// Uses `Constraint.InternalModelName` as the provider key (lowercased).
+    /// Does not throw errors; failures are silently ignored.
     static func setupCodexProxyConfig() {
-        // 1. Check if Codex is installed and read configuration file
-        guard checkCodexInstall(), let content = try? String(contentsOf: CodexFolderURL.appendingPathComponent(CodexConfigFileName), encoding: .utf8) else {
+        guard checkCodexInstall(),
+              let content = try? String(contentsOf: CodexFolderURL.appendingPathComponent(CodexConfigFileName), encoding: .utf8)
+        else {
             return
         }
                 
         do {
-            // 2. Parse existing configuration
+            // Parse existing configuration
             let doc = try TOMLDocument(content: content)
             
-            // 3. Create XcodePAI model provider configuration table
+            // Create XcodePAI provider configuration
             let detailTable = TOMLValue.table([
                 "name": .string("XcodePaI LLM Proxy"),
                 "base_url": .string(LocalProxyServer),
                 "wire_api": .string(CurrentCodexAPIType)
             ])
             
-            // 4. Get or create the model_providers table
-            var modelProvidersTable = {
-                if let modelProviders = doc["model_providers"], let table = modelProviders.tableValue {
-                    return table
+            // Get or initialize model_providers table
+            var modelProvidersTable: [String: TOMLValue] = {
+                if let existing = doc["model_providers"]?.tableValue {
+                    return existing
                 }
-                return [String: TOMLValue]()
+                return [:]
             }()
             
-            // 5. Add/update XcodePAI configuration
+            // Inject/update XcodePAI configuration
             modelProvidersTable[Constraint.InternalModelName.lowercased()] = detailTable
             
-            // 6. Update configuration file
+            // Update document with new configuration
             doc["model_providers"] = .table(modelProvidersTable)
             doc["model_provider"] = .string(Constraint.InternalModelName.lowercased())
             
-            // 7. Write configuration file
+            // Persist changes
             try doc.write(to: CodexFolderURL.appendingPathComponent(CodexConfigFileName))
             
-            // 8. Restart Codex service to apply configuration
+            // Restart Codex service to apply configuration
             if CommandRunner.isProcessRunning(name: "codex") {
                 CommandRunner.killProcess(byName: "codex", force: true)
             }
-        } catch _ {
-            // Configuration update failed
+        } catch {
+            // Silent failure on configuration update error
             return
         }
     }
     
-    // MARK: Claude Code
+    // MARK: - Claude Code Configuration Management
     
+    /// Default filesystem path for Claude Code configuration directory.
+    ///
+    /// Path: `~/Library/Developer/Xcode/CodingAssistant/ClaudeAgentConfig`
+    /// Contains `.claude.json` configuration file.
     static let ClaudeFolderURL = {
         let folderURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Developer/Xcode/CodingAssistant/ClaudeAgentConfig")
         return folderURL
     }()
     
+    /// Filename for Claude Code's configuration file (hidden file).
     static let ClaudeConfigFileName = ".claude.json"
     
+    /// Verifies Claude Code installation status by checking directory existence.
+    ///
+    /// - Returns: `true` if the Claude configuration directory exists and is valid; `false` otherwise.
     static func checkClaudeInstall() -> Bool {
         do {
             let resourceValues = try ClaudeFolderURL.resourceValues(forKeys: [.isDirectoryKey])
@@ -202,7 +237,7 @@ class AgenticConfiger {
             if let isDir = resourceValues.isDirectory, isDir {
                 return true
             } else {
-                // Not a directory
+                // Path exists but is not a directory
                 return false
             }
         } catch {
@@ -210,8 +245,22 @@ class AgenticConfiger {
         }
     }
     
+    /// Analyzes Claude Code configuration state against XcodePAI requirements.
+    ///
+    /// Validation steps:
+    /// 1. Verifies Claude installation
+    /// 2. Parses `.claude.json` as JSON
+    /// 3. Checks `env.ANTHROPIC_BASE_URL` value
+    ///
+    /// - Returns: 
+    ///   - `.configured` if `ANTHROPIC_BASE_URL` matches `LocalProxyServer`
+    ///   - `.configuredWithOther` if URL is set but differs from proxy
+    ///   - `.notConfigured` if `env` or `ANTHROPIC_BASE_URL` missing
+    ///   - `.misconfigured` on JSON parsing errors
     static func checkClaudeConfigState() -> AgenticConfigerConfigState {
-        guard checkClaudeInstall(), let data = try? Data(contentsOf: ClaudeFolderURL.appendingPathComponent(ClaudeConfigFileName)) else {
+        guard checkClaudeInstall(),
+              let data = try? Data(contentsOf: ClaudeFolderURL.appendingPathComponent(ClaudeConfigFileName))
+        else {
             return .notInstalled
         }
         
@@ -220,42 +269,49 @@ class AgenticConfiger {
                let env = configuration["env"] as? [String: Any],
                let baseUrl = env["ANTHROPIC_BASE_URL"] as? String {
                 
-                if baseUrl == LocalProxyServer {
-                    return .configured
-                }
-                
-                return .configuredWithOther
+                return baseUrl == LocalProxyServer ? .configured : .configuredWithOther
             }
-        } catch _ {
+            // env block or ANTHROPIC_BASE_URL missing
+            return .notConfigured
+        } catch {
             return .misconfigured
         }
-        
-        // No model_provider configured
-        return .notConfigured
     }
     
+    /// Configures Claude Code to use XcodePAI's local proxy service.
+    ///
+    /// Performs:
+    /// 1. Reads existing `.claude.json`
+    /// 2. Sets `env.ANTHROPIC_BASE_URL` to `LocalProxyServer`
+    /// 3. Persists updated configuration
+    /// 4. Restarts Claude process to apply changes
+    ///
+    /// Does not throw errors; failures are silently ignored.
     static func setupClaudeProxyConfig() {
-        guard checkClaudeInstall(), let data = try? Data(contentsOf: ClaudeFolderURL.appendingPathComponent(ClaudeConfigFileName)) else {
+        guard checkClaudeInstall(),
+              let data = try? Data(contentsOf: ClaudeFolderURL.appendingPathComponent(ClaudeConfigFileName))
+        else {
             return
         }
         
         do {
             if var configuration = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                
-                var env = configuration["env"] as? [String: Any] ?? [String: Any]()
+                // Update or create env dictionary with proxy URL
+                var env = configuration["env"] as? [String: Any] ?? [:]
                 env["ANTHROPIC_BASE_URL"] = LocalProxyServer
-                
                 configuration["env"] = env
                 
-                let data = try JSONSerialization.data(withJSONObject: configuration)
-                try data.write(to: ClaudeFolderURL.appendingPathComponent(ClaudeConfigFileName))
+                // Write updated configuration
+                let updatedData = try JSONSerialization.data(withJSONObject: configuration)
+                try updatedData.write(to: ClaudeFolderURL.appendingPathComponent(ClaudeConfigFileName))
             }
             
+            // Restart Claude service to apply configuration
             if CommandRunner.isProcessRunning(name: "claude") {
                 CommandRunner.killProcess(byName: "claude", force: true)
             }
-        } catch _ {
-            // Configuration update failed
+        } catch {
+            // Silent failure on configuration update error
             return
         }
     }
