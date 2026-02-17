@@ -22,6 +22,7 @@ struct UsageSettingSectionView: View {
     @State private var selectedTimeRange: TimeRange = .month
     @State private var selectedDate: Date?
     @State private var hoveredBarData: BarChartData?
+    @State private var tooltipPosition: CGPoint = .zero
     
     // Get records by time range
     private var filteredRecords: [TokenUsageRecord] {
@@ -66,7 +67,8 @@ struct UsageSettingSectionView: View {
                     // Token Usage Bar Chart
                     TokenUsageBarChart(
                         records: filteredRecords,
-                        hoveredBarData: $hoveredBarData
+                        hoveredBarData: $hoveredBarData,
+                        tooltipPosition: $tooltipPosition
                     )
                     .frame(height: 400)
                 }
@@ -74,10 +76,11 @@ struct UsageSettingSectionView: View {
             }
         }
         .navigationTitle("Token Usage".localizedString)
-        .overlay {
-            // Info
+        .overlay(alignment: .topLeading) {
+            // Info - follows mouse position
             if let hoveredData = hoveredBarData {
                 BarChartTooltip(data: hoveredData)
+                    .position(tooltipPosition)
             }
         }
     }
@@ -300,6 +303,7 @@ struct CompletionRateLineChart: View {
 struct TokenUsageBarChart: View {
     let records: [TokenUsageRecord]
     @Binding var hoveredBarData: BarChartData?
+    @Binding var tooltipPosition: CGPoint
     
     // Separate via provider and model name
     private var groupedData: [BarChartData] {
@@ -340,16 +344,38 @@ struct TokenUsageBarChart: View {
                     Spacer()
                 })
             } else {
-                Chart(groupedData) { data in
-                    BarMark(
-                        x: .value("Provider", data.provider),
-                        y: .value("Token Count", data.totalTokens)
-                    )
-                    .foregroundStyle(by: .value("Model", data.modelName))
-                    .annotation(position: .top) {
-                        Text("\(data.totalTokens)")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                // Calculate total tokens per provider for top labels
+                let providerTotals = Dictionary(grouping: groupedData, by: { $0.provider })
+                    .mapValues { $0.reduce(0) { $0 + $1.totalTokens } }
+                
+                Chart {
+                    ForEach(groupedData) { data in
+                        BarMark(
+                            x: .value("Provider", data.provider),
+                            y: .value("Token Count", data.totalTokens)
+                        )
+                        .foregroundStyle(by: .value("Model", data.modelName))
+                    }
+                    
+                    // Add total token labels at top of each bar (provider)
+                    ForEach(Array(providerTotals.keys.sorted()), id: \.self) { provider in
+                        if let total = providerTotals[provider] {
+                            RuleMark(
+                                x: .value("Provider", provider),
+                                yStart: .value("Total", total),
+                                yEnd: .value("Total", total)
+                            )
+                            .lineStyle(StrokeStyle(lineWidth: 0))
+                            .annotation(position: .top, alignment: .center) {
+                                Text("\(total)")
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.primary.opacity(0.1))
+                                    .cornerRadius(4)
+                            }
+                        }
                     }
                 }
                 .chartForegroundStyleScale(range: [.blue, .green, .orange, .purple, .pink, .yellow, .cyan, .indigo])
@@ -370,55 +396,46 @@ struct TokenUsageBarChart: View {
                         Rectangle()
                             .fill(.clear)
                             .contentShape(Rectangle())
-                            .gesture(
-                                DragGesture(minimumDistance: 0)
-                                    .onChanged { value in
-                                        if let plotFrame = proxy.plotFrame {
-                                            let xPosition = value.location.x - geometry[plotFrame].origin.x
-                                            let yPosition = value.location.y - geometry[plotFrame].origin.y
+                            .onContinuousHover { phase in
+                                switch phase {
+                                case .active(let location):
+                                    // Update tooltip position relative to window
+                                    let globalPosition = geometry.frame(in: .global)
+                                    tooltipPosition = CGPoint(
+                                        x: globalPosition.origin.x + location.x + 10,
+                                        y: globalPosition.origin.y + location.y - 40
+                                    )
+                                    
+                                    if let plotFrame = proxy.plotFrame {
+                                        let xPosition = location.x - geometry[plotFrame].origin.x
+                                        let yPosition = location.y - geometry[plotFrame].origin.y
+                                        
+                                        if let provider: String = proxy.value(atX: xPosition),
+                                           let totalTokens: Int = proxy.value(atY: yPosition) {
                                             
-                                            if let provider: String = proxy.value(atX: xPosition),
-                                               let totalTokens: Int = proxy.value(atY: yPosition) {
-                                                                                                
-                                                var dataItems = groupedData.filter { $0.provider == provider }
-                                                
-                                                if !dataItems.isEmpty {
-                                                    dataItems = dataItems.sorted{ $0.totalTokens > $1.totalTokens}
-                                                }
-                                                
-                                                var maxTokens = 0
-                                                var maxData: BarChartData?
-                                                dataItems.forEach { data in
-                                                    maxTokens += data.totalTokens
-                                                    if maxData == nil, maxTokens > totalTokens {
-                                                        maxData = data
-                                                    }
-                                                }
-                                                hoveredBarData = maxData
+                                            var dataItems = groupedData.filter { $0.provider == provider }
+                                            
+                                            if !dataItems.isEmpty {
+                                                dataItems = dataItems.sorted{ $0.totalTokens > $1.totalTokens}
                                             }
+                                            
+                                            var maxTokens = 0
+                                            var maxData: BarChartData?
+                                            dataItems.forEach { data in
+                                                maxTokens += data.totalTokens
+                                                if maxData == nil, maxTokens > totalTokens {
+                                                    maxData = data
+                                                }
+                                            }
+                                            hoveredBarData = maxData
                                         }
                                     }
-                                    .onEnded { _ in
-                                        hoveredBarData = nil
-                                    }
-                            )
+                                case .ended:
+                                    hoveredBarData = nil
+                                }
+                            }
                     }
                 }
-                
-                // Chart
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], alignment: .leading, spacing: 8) {
-                    ForEach(Array(Set(groupedData.map { $0.modelName })), id: \.self) { model in
-                        HStack {
-                            Circle()
-                                .fill(colorForModel(model))
-                                .frame(width: 8, height: 8)
-                            Text(model)
-                                .font(.caption)
-                            Spacer()
-                        }
-                    }
-                }
-                .padding(.top, 8)
             }
         }
         .padding()
@@ -457,12 +474,13 @@ struct BarChartTooltip: View {
                     .foregroundColor(.orange)
             }
         }
-        .padding()
-        .background(Color.black.opacity(0.25))
-        .cornerRadius(8)
-        .shadow(radius: 5)
-        .padding()
-        .frame(maxWidth: 200)
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.black.opacity(0.85))
+                .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+        )
+        .fixedSize()
     }
 }
 

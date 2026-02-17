@@ -2477,6 +2477,16 @@
         }
       }
     },
+    "Total" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部"
+          }
+        }
+      }
+    },
     "Total Count" : {
       "extractionState" : "manual",
       "localizations" : {
