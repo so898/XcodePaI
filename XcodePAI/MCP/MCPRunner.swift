@@ -49,6 +49,12 @@ class MCPRunner {
         Task {
             let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
 
+            defer {
+                Task {
+                    await client.disconnect()
+                }
+            }
+            
             guard let transport = makeTransport(mcp: mcp) else {
                 DispatchQueue.main.async {
                     complete(false, nil)
@@ -132,11 +138,15 @@ class MCPRunner {
     }
     
     private func run(mcp: LLMMCP, tool: LLMMCPTool, arguments: [String: Value]?) async throws -> String {
-        defer {
-            localProcess?.terminate()
-        }
         // Create client and transport
         let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
+        
+        defer {
+            Task {
+                await client.disconnect()
+            }
+            localProcess?.terminate()
+        }
         
         guard let transport = makeTransport(mcp: mcp) else {
             throw MCPError.invalidURL
