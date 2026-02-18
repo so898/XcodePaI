@@ -87,6 +87,7 @@
 		799F50C32F3A1D7E006383A1 /* LLMClaudeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50C22F3A1D7E006383A1 /* LLMClaudeRequest.swift */; };
 		799F50C52F3A1D99006383A1 /* LLMClaudeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50C42F3A1D99006383A1 /* LLMClaudeResponse.swift */; };
 		799F50C82F3A1EF0006383A1 /* ChatProxyClaudeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50C72F3A1EF0006383A1 /* ChatProxyClaudeBridge.swift */; };
+		799F50CA2F4613FB006383A1 /* MCPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F50C92F4613F8006383A1 /* MCPServer.swift */; };
 		799F5F702EA521AC00868D0E /* TokenUsageRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */; };
 		799F5F732EA521E500868D0E /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 799F5F722EA521E500868D0E /* SQLite */; };
 		799F5F752EA524E300868D0E /* RecordStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799F5F742EA524DF00868D0E /* RecordStorage.swift */; };
@@ -244,6 +245,7 @@
 		799F50C22F3A1D7E006383A1 /* LLMClaudeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMClaudeRequest.swift; sourceTree = "<group>"; };
 		799F50C42F3A1D99006383A1 /* LLMClaudeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMClaudeResponse.swift; sourceTree = "<group>"; };
 		799F50C72F3A1EF0006383A1 /* ChatProxyClaudeBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProxyClaudeBridge.swift; sourceTree = "<group>"; };
+		799F50C92F4613F8006383A1 /* MCPServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MCPServer.swift; sourceTree = "<group>"; };
 		799F5F6F2EA521AB00868D0E /* TokenUsageRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsageRecord.swift; sourceTree = "<group>"; };
 		799F5F742EA524DF00868D0E /* RecordStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordStorage.swift; sourceTree = "<group>"; };
 		799F5F762EA5252900868D0E /* RecordTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTracker.swift; sourceTree = "<group>"; };
@@ -509,6 +511,7 @@
 			isa = PBXGroup;
 			children = (
 				79079A1F2E51C114004D9D1A /* MCPRunner.swift */,
+				799F50C92F4613F8006383A1 /* MCPServer.swift */,
 			);
 			path = MCP;
 			sourceTree = "<group>";
@@ -856,6 +859,7 @@
 				79079A142E4FBD7E004D9D1A /* ModelProviderManager.swift in Sources */,
 				799F50BF2F38FEC1006383A1 /* ChatProxyBridgeDefines.swift in Sources */,
 				79079A202E51C116004D9D1A /* MCPRunner.swift in Sources */,
+				799F50CA2F4613FB006383A1 /* MCPServer.swift in Sources */,
 				790799F22E4BB5E2004D9D1A /* ModelProviderIconListView.swift in Sources */,
 				799F50C12F38FEE2006383A1 /* ChatProxyBaseBridge.swift in Sources */,
 				790799BE2E48B6BD004D9D1A /* HTTPClient.swift in Sources */,

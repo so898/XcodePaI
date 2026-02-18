@@ -82,6 +82,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             if Configer.updateModelsWhenStartUp {
                 ProviderModelRefresher.shared.refreshAllProviderModels()
             }
+            
+            if let config = StorageManager.shared.defaultConfig() {
+                MCPServer.shared.updateTools(config.getTools())
+            }
         }
     }
     

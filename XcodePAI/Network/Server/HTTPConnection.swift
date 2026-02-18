@@ -86,6 +86,13 @@ class HTTPConnection {
         connection.write(data, tag: tag)
     }
     
+    func write(_ data: Data, tag: Int? = nil) {
+        guard HTTPResponseWrited else {
+            return
+        }
+        connection.write(data, tag: tag)
+    }
+    
     func stop() {
         connection.stop()
     }

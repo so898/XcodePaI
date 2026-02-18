@@ -402,6 +402,7 @@ extension MenuBarManager {
                 config.mcps.append(mcp.name)
             }
             StorageManager.shared.updateDefaultConfig(config)
+            MCPServer.shared.updateTools(config.getTools())
         }
     }
     

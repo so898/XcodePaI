@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Logger
 
 protocol ChatProxyTunnelDelegate {
     func tunnelStoped(_ tunnel: ChatProxyTunnel)
@@ -23,6 +24,7 @@ enum ChatProxyTunnelResponeType {
     case unknown
     case models
     case completions
+    case mcp
     case error
 }
 
@@ -59,11 +61,14 @@ class ChatProxyTunnel {
         return _modelListString ?? ""
     }()
     
+    private let mcpResponseBodyTag = 66336
+    private var mcpResponseBodyData: Data?
+    
     private func writeServerErrorResponse() {
         responseType = .error
         connection?.writeResponse(HTTPResponse(statusCode: 500, statusMessage: "Server not supported."))
     }
-
+    
     private lazy var bridge: ChatProxyBridge = {
         let bridge = ChatProxyBridge(id: id, delegate: self)
         return bridge
@@ -129,6 +134,8 @@ extension ChatProxyTunnel: HTTPConnectionDelegate {
             receiveResponsesRequest(body: bodyData)
         } else if request.method == "POST", request.path.contains("/v1/messages"), let bodyData = request.body {
             receiveMessagesRequest(body: bodyData)
+        } else if request.method == "POST", request.path.contains("/mcp"), let bodyData = request.body {
+            receiveMCPRequest(body: bodyData)
         } else {
             writeServerErrorResponse()
         }
@@ -145,6 +152,13 @@ extension ChatProxyTunnel: HTTPConnectionDelegate {
             connection.write(modelListString, tag: modelListTag)
         case .completions:
             break
+        case .mcp:
+            if let mcpResponseBodyData {
+                connection.write(mcpResponseBodyData, tag: mcpResponseBodyTag)
+            } else {
+                connection.stop()
+            }
+            break
         case .error:
             break
         case .unknown:
@@ -155,7 +169,7 @@ extension ChatProxyTunnel: HTTPConnectionDelegate {
     }
     
     func connection(_ connection: HTTPConnection, didWrite tag: Int?) {
-        if modelListTag == tag {
+        if modelListTag == tag || mcpResponseBodyTag == tag {
             connection.stop()
             return
         }
@@ -171,6 +185,50 @@ extension ChatProxyTunnel: HTTPConnectionDelegate {
     }
 }
 
+// MARK: MCPServer
+extension ChatProxyTunnel {
+    
+    func receiveMCPRequest(body: Data) {
+        if let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any] {
+            responseType = .mcp
+            handleJSONRPCRequest(json)
+        }
+    }
+    
+    private func handleJSONRPCRequest(_ json: [String: Any]) {
+        guard let method = json["method"] as? String,
+              let id = json["id"] else {
+            return
+        }
+        
+        let params = json["params"] as? [String: Any] ?? [:]
+        
+        MCPServer.shared.handleRequest(method: method, params: params) {[weak self] result in
+            let response: [String: Any] = [
+                "jsonrpc": "2.0",
+                "id": id,
+                "result": result ?? [:]
+            ]
+            
+            self?.writeMCPResponse(response)
+        }
+    }
+    
+    func writeMCPResponse(_ response: [String: Any]) {
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: response)
+            mcpResponseBodyData = jsonData
+
+            var response = HTTPResponse(headers: ["Content-Type": "application/json"])
+            response.addContentLength(jsonData.count)
+            connection?.writeResponse(response)
+        }catch {
+            Logger.mcp.error("Failed to serialize response: \(error.localizedDescription)")
+        }
+    }
+}
+
+// MARK: ChatProxyBridgeDelegate
 extension ChatProxyTunnel: ChatProxyBridgeDelegate {
     
     func bridge(connected success: Bool) {
