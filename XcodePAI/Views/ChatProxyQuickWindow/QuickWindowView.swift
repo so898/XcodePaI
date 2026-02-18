@@ -91,6 +91,7 @@ struct QuickWindowView: View {
                 config.mcps.append(mcpName)
             }
             StorageManager.shared.updateDefaultConfig(config)
+            MCPServer.shared.updateTools(config.getTools())
         }
     }
 }
