@@ -442,7 +442,7 @@ extension XcodeAppInstanceInspector {
                 }
             }
             if width == nil, let chatContentRect = chatContent.rect {
-                width = chatContentRect.size.width - 20
+                width = chatContentRect.size.width - 60
             }
             if let origin, let width {
                 self.modelButtonAreaFrame = NSRect(origin: origin, size: CGSizeMake(width, 19))
