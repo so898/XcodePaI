@@ -10,6 +10,12 @@ import MCP
 import Network
 import Logger
 
+/// Protocol for MCP clients to receive server notifications
+protocol MCPServerClientDelegate: AnyObject {
+    /// Called when the tool list changes on the server
+    func mcpServerToolsDidChange()
+}
+
 /// A local MCP server that runs on a specified port and allows dynamic tool registration
 /// External clients can connect via HTTP/SSE and call registered MCP tools
 class MCPServer: ObservableObject {
@@ -17,6 +23,11 @@ class MCPServer: ObservableObject {
     
     // MARK: - Published Properties
     @Published var registeredTools: [LLMMCPTool] = []
+    
+    // MARK: - Connected Clients (by Session ID)
+    /// Thread-safe storage for connected SSE clients, keyed by session ID
+    private var sessions = [String: MCPServerClientDelegate]()
+    private let sessionsQueue = DispatchQueue(label: "com.xcodepai.mcpserver.sessions")
     
     // MARK: - Lifecycle
     private init() {}
@@ -50,8 +61,46 @@ class MCPServer: ObservableObject {
     }
     
     private func notifyClientsOfToolChange() {
-        // In a real implementation, this would notify SSE clients
-        // For now, tools are fetched on demand via the tools/list endpoint
+        sessionsQueue.async { [weak self] in
+            guard let self = self else { return }
+            let sessionCount = self.sessions.count
+            Logger.mcp.info("Notifying \(sessionCount) connected sessions about tool changes")
+            for (sessionId, client) in self.sessions {
+                Logger.mcp.info("Notifying session: \(sessionId)")
+                client.mcpServerToolsDidChange()
+            }
+        }
+    }
+    
+    // MARK: - Session Management
+    
+    /// Register a session to receive tool change notifications
+    /// - Parameters:
+    ///   - sessionId: The MCP session ID
+    ///   - client: The client delegate to register
+    func registerSession(_ sessionId: String, client: MCPServerClientDelegate) {
+        sessionsQueue.async { [weak self] in
+            self?.sessions[sessionId] = client
+            Logger.mcp.info("Session registered: \(sessionId), total sessions: \(self?.sessions.count ?? 0)")
+        }
+    }
+    
+    /// Unregister a session from receiving notifications
+    /// - Parameter sessionId: The session ID to unregister
+    func unregisterSession(_ sessionId: String) {
+        sessionsQueue.async { [weak self] in
+            self?.sessions.removeValue(forKey: sessionId)
+            Logger.mcp.info("Session unregistered: \(sessionId), total sessions: \(self?.sessions.count ?? 0)")
+        }
+    }
+    
+    /// Get the number of connected sessions
+    var connectedSessionsCount: Int {
+        var count = 0
+        sessionsQueue.sync {
+            count = sessions.count
+        }
+        return count
     }
 }
 
@@ -61,8 +110,12 @@ extension MCPServer {
     /// - Parameters:
     ///   - method: The MCP method name
     ///   - params: The parameters for the method
-    ///   - completion: Completion handler with the result
-    func handleRequest(method: String, params: [String: Any], completion: @escaping ([String: Any]?) -> Void) {
+    ///   - id: The JSON-RPC request id (nil for notifications)
+    ///   - completion: Completion handler with the result (nil means no response needed)
+    func handleRequest(method: String, params: [String: Any], id: Any?, completion: @escaping ([String: Any]?) -> Void) {
+        // Check if this is a notification (no id field)
+        let isNotification = id == nil
+        
         switch method {
         case "initialize":
             handleInitialize(params: params, completion: completion)
@@ -72,25 +125,41 @@ extension MCPServer {
             handleToolsCall(params: params, completion: completion)
         case "ping":
             handlePing(completion: completion)
+        case "notifications/initialized":
+            // Notifications don't require a response per JSON-RPC spec
+            handleNotificationInitialized()
+            completion(nil)  // Signal no response needed
         default:
-            Logger.mcp.info("Unknown MCP method: \(method)")
-            completion(["error": ["message": "Unknown method: \(method)"]])
+            // Handle other notifications (methods starting with "notifications/")
+            if method.hasPrefix("notifications/") || isNotification {
+                completion(nil)  // No response for notifications
+            } else {
+                Logger.mcp.info("Unknown MCP method: \(method)")
+                completion(["error": ["message": "Unknown method: \(method)"]])
+            }
         }
     }
     
     private func handleInitialize(params: [String: Any], completion: @escaping ([String: Any]?) -> Void) {
+        // Get client's protocol version and echo it back for compatibility
+        let clientProtocolVersion = params["protocolVersion"] as? String ?? "2025-06-18"
+        
+        // Response per MCP 2025-06-18 spec
+        // capabilities.tools must include listChanged field
         let response: [String: Any] = [
-            "protocolVersion": "2024-11-05",
+            "protocolVersion": clientProtocolVersion,
             "capabilities": [
                 "tools": [
                     "listChanged": true
                 ]
             ],
             "serverInfo": [
-                "name": "XcodePaI Local MCP Server",
+                "name": "xcodepai-mcp-server",
+                "title": "XcodePaI Local MCP Server",
                 "version": "1.0.0"
             ]
         ]
+        
         completion(response)
     }
     
@@ -105,6 +174,12 @@ extension MCPServer {
                let jsonData = schema.data(using: .utf8),
                let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
                 toolDict["inputSchema"] = json
+            } else {
+                // Provide empty schema if not specified
+                toolDict["inputSchema"] = [
+                    "type": "object",
+                    "properties": [:]
+                ]
             }
             
             return toolDict
@@ -160,5 +235,10 @@ extension MCPServer {
     
     private func handlePing(completion: @escaping ([String: Any]?) -> Void) {
         completion([:])
+    }
+    
+    private func handleNotificationInitialized() {
+        // Notifications don't require a response per JSON-RPC specification
+        // The client should now send tools/list or other requests
     }
 }
