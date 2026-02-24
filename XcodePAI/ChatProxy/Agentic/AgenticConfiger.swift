@@ -46,6 +46,12 @@ class AgenticConfiger {
     /// Format: `http://127.0.0.1:50222/v1`
     static let LocalProxyServer = "http://127.0.0.1:50222/v1"
     
+    /// Local MCP server endpoint for XcodePAI's MCP service.
+    ///
+    /// Used by AI agents to access MCP tools for code operations.
+    /// Format: `http://127.0.0.1:50222/mcp`
+    static let LocalMCPServer = "http://127.0.0.1:50222/mcp"
+    
     // MARK: - Codex Configuration Management
     
     /// Default filesystem path for Codex configuration directory.
@@ -162,8 +168,9 @@ class AgenticConfiger {
     /// 1. Reads existing `config.toml`
     /// 2. Injects/updates XcodePAI model provider entry in `model_providers` table
     /// 3. Sets `model_provider` to XcodePAI's internal identifier
-    /// 4. Persists updated configuration
-    /// 5. Restarts Codex process to apply changes
+    /// 4. Configures local MCP server endpoint in `mcp_servers` table
+    /// 5. Persists updated configuration
+    /// 6. Restarts Codex process to apply changes
     ///
     /// Uses `Constraint.InternalModelName` as the provider key (lowercased).
     /// Does not throw errors; failures are silently ignored.
@@ -173,7 +180,7 @@ class AgenticConfiger {
         else {
             return
         }
-                
+        
         do {
             // Parse existing configuration
             let doc = try TOMLDocument(content: content)
@@ -199,6 +206,24 @@ class AgenticConfiger {
             // Update document with new configuration
             doc["model_providers"] = .table(modelProvidersTable)
             doc["model_provider"] = .string(Constraint.InternalModelName.lowercased())
+            
+            // Configure local MCP server
+            let mcpServerConfig = TOMLValue.table([
+                "url": .string(LocalMCPServer),
+                "enabled": .boolean(true)
+            ])
+            
+            // Get or initialize mcp_servers table
+            var mcpServersTable: [String: TOMLValue] = {
+                if let existing = doc["mcp_servers"]?.tableValue {
+                    return existing
+                }
+                return [:]
+            }()
+            
+            // Inject/update XcodePAI MCP server configuration
+            mcpServersTable[Constraint.InternalModelName.lowercased()] = mcpServerConfig
+            doc["mcp_servers"] = .table(mcpServersTable)
             
             // Persist changes
             try doc.write(to: CodexFolderURL.appendingPathComponent(CodexConfigFileName))
@@ -252,7 +277,7 @@ class AgenticConfiger {
     /// 2. Parses `.claude.json` as JSON
     /// 3. Checks `env.ANTHROPIC_BASE_URL` value
     ///
-    /// - Returns: 
+    /// - Returns:
     ///   - `.configured` if `ANTHROPIC_BASE_URL` matches `LocalProxyServer`
     ///   - `.configuredWithOther` if URL is set but differs from proxy
     ///   - `.notConfigured` if `env` or `ANTHROPIC_BASE_URL` missing
