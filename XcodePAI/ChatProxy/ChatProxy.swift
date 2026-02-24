@@ -22,6 +22,9 @@ class ChatProxy {
     /// List of currently active tunnel connections.
     private var tunnels = [ChatProxyTunnel]()
     
+    /// Serial queue for thread-safe access to tunnels array
+    private let tunnelsQueue = DispatchQueue(label: "com.xcodepai.chatproxy.tunnels")
+    
     /// Initializes the `ChatProxy` instance and starts the server.
     init() {
         restart()
@@ -75,7 +78,10 @@ extension ChatProxy: TCPServerDelegate {
     /// - Creates a `ChatProxyTunnel` for the new connection and adds it to the `tunnels` array.
     /// - Parameter connection: The newly established TCP connection.
     func serverDidReceive(connection: TCPConnection) {
-        tunnels.append(ChatProxyTunnel(connection, delegate: self))
+        let tunnel = ChatProxyTunnel(connection, delegate: self)
+        tunnelsQueue.async { [weak self] in
+            self?.tunnels.append(tunnel)
+        }
     }
 }
 
@@ -86,6 +92,8 @@ extension ChatProxy: ChatProxyTunnelDelegate {
     /// - Removes the stopped tunnel from the `tunnels` array.
     /// - Parameter tunnel: The tunnel instance that has stopped.
     func tunnelStoped(_ tunnel: ChatProxyTunnel) {
-        tunnels.removeAll { $0 == tunnel }
+        tunnelsQueue.async { [weak self] in
+            self?.tunnels.removeAll { $0 == tunnel }
+        }
     }
 }
