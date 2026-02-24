@@ -92,6 +92,10 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
                             // Process assistant message content (remove thinking part)
                             if role == "assistant" {
                                 text = processAssistantMessageContent(text)
+                                // Remove empty assistant message
+                                if text.replacingOccurrences(of: "\n", with: "").isEmpty {
+                                    continue
+                                }
                             }
                             // Process user message content (add language force prompt)
                             if role == "user" {
