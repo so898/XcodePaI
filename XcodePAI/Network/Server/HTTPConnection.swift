@@ -30,7 +30,7 @@ struct HTTPResponse {
     init(
         statusCode: Int = 200,
         statusMessage: String = "OK",
-        headers: [String: String] = [:],
+        headers: [String: String] = [:]
     ) {
         self.statusCode = statusCode
         self.statusMessage = statusMessage
@@ -188,13 +188,17 @@ class HTTPConnection {
     }
     
     private func handleFullRequest(_ request: HTTPRequest) {
+        // Reset HTTP response status BEFORE handling request
+        // This is critical for keep-alive connections where the previous response
+        // has set HTTPResponseWrited = true, and we need to allow new response for new request
+        HTTPResponseWrited = false
+        
         self.delegate?.connection(self, didReceiveRequest: request)
         
-        // Reset status for the next request (keep-alive)
+        // Reset other status for the next request (keep-alive)
         currentRequest = nil
         isHeaderComplete = false
         expectedBodyLength = 0
-        HTTPResponseWrited = false
         
         // Keep receiving data
         if accumulatedData.count > 0 {
@@ -209,7 +213,10 @@ class HTTPConnection {
 // MARK: Chunked
 extension HTTPConnection {
     func writeChunk(_ chunk: String, tag: Int? = nil) {
-        guard HTTPResponseWrited, let data = chunk.data(using: .utf8) else {
+        guard HTTPResponseWrited else {
+            return
+        }
+        guard let data = chunk.data(using: .utf8) else {
             return
         }
         let chunkSize = String(format: "%lx", data.count)
@@ -246,7 +253,15 @@ extension HTTPConnection {
     }
     
     func writeSSEEvent(event: String?, data: String, tag: Int? = nil) {
+        writeSSEEventWithId(id: nil, event: event, data: data, tag: tag)
+    }
+    
+    func writeSSEEventWithId(id: String?, event: String?, data: String, tag: Int? = nil) {
         var output = ""
+        // Add SSE message ID for resumability support
+        if let id = id {
+            output += "id: \(id)\n"
+        }
         if let event = event {
             output += "event: \(event)\n"
         }
