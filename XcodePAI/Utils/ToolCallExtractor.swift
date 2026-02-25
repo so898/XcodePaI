@@ -29,6 +29,8 @@ class ToolCallExtractor {
         /// The parsed tool call extracted from the XML block, if found.
         /// Nil for segments containing only regular text.
         let toolUse: LLMMessageToolCall?
+        
+        let hallucination: Bool
     }
     
     /// Processes a new chunk of text from the LLM response stream.
@@ -50,6 +52,7 @@ class ToolCallExtractor {
         var foundLeftBlock = false
         var foundToolUse = false
         var blockContent = ""
+        var hallucination = false
         for char in processingBuffer {
             if char == "<" {
                 foundLeftBlock = true
@@ -62,7 +65,7 @@ class ToolCallExtractor {
                     let toolUse = parseToolCall(from: blockContent)
                     blockContent = ""
                     
-                    ret.append(ContentAndToolUse(before: before, toolUse: toolUse))
+                    ret.append(ContentAndToolUse(before: before, toolUse: toolUse, hallucination: hallucination))
                     before = ""
                 }
             } else {
@@ -74,6 +77,11 @@ class ToolCallExtractor {
                     if blockContent.last == ">" {
                         if blockContent.lowercased() == "<tool_use>" {
                             foundToolUse = true
+                        } else if Configer.chatProxyRemoveHallucinationToolCallResult, isHallucinationTag(blockContent) {
+                            foundLeftBlock = false
+                            hallucination = true
+                            blockContent = ""
+                            ret.append(ContentAndToolUse(before: nil, toolUse: nil, hallucination: true))
                         } else {
                             foundLeftBlock = false
                             before += blockContent
@@ -85,7 +93,7 @@ class ToolCallExtractor {
         }
         
         if !before.isEmpty {
-            ret.append(ContentAndToolUse(before: before, toolUse: nil))
+            ret.append(ContentAndToolUse(before: before, toolUse: nil, hallucination: hallucination))
         }
         
         if !blockContent.isEmpty {
@@ -108,6 +116,20 @@ class ToolCallExtractor {
             buffer = ""
         }
         return buffer.isEmpty ? nil : buffer
+    }
+}
+
+extension ToolCallExtractor {
+    /// Checks if the given tag is a hallucination tag (tool result, function result, etc.)
+    private func isHallucinationTag(_ tag: String) -> Bool {
+        let hallucinationTags = [
+            "<tool_use_result>",
+            "<tool_result>",
+            "<function_result>",
+            "<function_response>",
+            "<tool_response>"
+        ]
+        return hallucinationTags.contains(tag)
     }
 }
 

@@ -27,6 +27,7 @@ class Configer {
     private static let chatProxyEnableThinkStorageKey = "ChatProxyEnableThink"
     private static let chatProxyThinkStyleStorageKey = "ChatProxyThinkStyle"
     private static let chatProxyToolUseInRequestStorageKey = "chatProxyToolUseInRequest"
+    private static let chatProxyRemoveHallucinationToolCallResultStorageKey = "chatProxyRemoveHallucinationToolCallResult"
     private static let chatProxyCutSourceInSearchRequestStorageKey = "chatProxyCutSourceInSearchRequest"
     private static let chatProxyCodeSnippetPreviewFixStorageKey = "chatProxyCodeSnippetPreviewFix"
     private static let chatProxyQuickWindowStorageKey = "chatProxyQuickWindow"
@@ -92,6 +93,15 @@ class Configer {
         }
         get {
             return Self.value(chatProxyToolUseInRequestStorageKey, defaultValue: true) ?? true
+        }
+    }
+    
+    static var chatProxyRemoveHallucinationToolCallResult: Bool {
+        set {
+            Self.setValue(chatProxyRemoveHallucinationToolCallResultStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(chatProxyRemoveHallucinationToolCallResultStorageKey, defaultValue: true) ?? true
         }
     }
     

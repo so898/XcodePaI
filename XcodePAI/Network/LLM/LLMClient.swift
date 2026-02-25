@@ -133,7 +133,9 @@ class LLMClient {
     
     private let toolCallExtractor = ToolCallExtractor()
     private var toolCallParts: [LLMMessageToolCall]?
-    private var toolCalls: [LLMMessageToolCall]?
+    var toolCalls = [LLMMessageToolCall]()
+    
+    var hallucinationResponse = false
     
     private func sendFullMessage() {
         delegate?.client(self, receiveMessage: LLMAssistantMessage(reason: reason,
@@ -150,7 +152,7 @@ class LLMClient {
                 return ""
             }()
             let toolString = {
-                if let toolCalls, let data = try? JSONSerialization.data(withJSONObject: toolCalls.map({$0.toDictionary()})) {
+                if let data = try? JSONSerialization.data(withJSONObject: toolCalls.map({$0.toDictionary()})) {
                     return String(data: data, encoding: .utf8) ?? ""
                 }
                 return ""
@@ -316,7 +318,6 @@ extension LLMClient {
                         sendToolCall(toolCall)
                     }
                 }
-                toolCalls = toolCallsInsideContent
                 
                 // Close client when full message received
                 self.stop()
@@ -363,12 +364,22 @@ extension LLMClient {
             
             processToolCallPart()
             
-            for contentAndToolCall in toolCallExtractor.processChunk(thisChunkContent) {
-                if let content = contentAndToolCall.before {
-                    sendContent(content)
-                }
-                if let toolUse = contentAndToolCall.toolUse {
-                    sendToolCall(toolUse)
+            if !hallucinationResponse {
+                for contentAndToolCall in toolCallExtractor.processChunk(thisChunkContent) {
+                    if let content = contentAndToolCall.before {
+                        sendContent(content)
+                    }
+                    if let toolUse = contentAndToolCall.toolUse {
+                        sendToolCall(toolUse)
+                    }
+                    
+                    // Model response hallucination tool call, drop chunk after
+                    if contentAndToolCall.hallucination {
+                        _ = toolCallExtractor.resetBuffer()
+                        
+                        hallucinationResponse = true
+                        break
+                    }
                 }
             }
         }
@@ -389,7 +400,7 @@ extension LLMClient {
                 sendContent(finalizeContent)
             }
             
-            if let toolCalls, !toolCalls.isEmpty {
+            if !toolCalls.isEmpty {
                 chunkFinishReason = "tool_calls"
             }
             
@@ -410,6 +421,7 @@ extension LLMClient {
     }
     
     private func sendToolCall(_ toolCall: LLMMessageToolCall) {
+        toolCalls.append(toolCall)
         delegate?.client(self, receivePart: LLMAssistantMessage(tools: [toolCall]))
     }
     
