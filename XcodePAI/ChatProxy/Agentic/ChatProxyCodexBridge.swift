@@ -24,6 +24,7 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
     /// Receive and process Agentic format requests
     /// - Parameter request: Agentic format request object
     private func receiveRequest(_ request: LLMCodexRequest) {
+        MenuBarManager.shared.startLoading()
         // Get default configuration and model provider from storage manager
         guard let config = StorageManager.shared.defaultConfig(), let modelProvider = config.getModelProvider() else {
             // Configuration incomplete or error, notify delegate of connection failure
