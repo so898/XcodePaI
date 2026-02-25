@@ -10,11 +10,23 @@ import SwiftUI
 struct QuickWindowView: View {
     @StateObject private var dataManager = QuickWindowDataManager()
     @StateObject private var languageManager = LanguageManager.shared
+    @State private var enableThink = Configer.chatProxyEnableThink
     
     var body: some View {
         VStack{
             Spacer()
             HStack(spacing: 5) {
+                Button(action: {
+                    enableThink.toggle()
+                    Configer.chatProxyEnableThink = enableThink
+                }) {
+                    Image(systemName: enableThink ? "brain.fill" : "brain")
+                        .foregroundColor(enableThink ? Color(nsColor: .selectedContentBackgroundColor) : Color(nsColor: .textColor))
+                        .padding(.init(top: 2, leading: 2, bottom: 2, trailing: 2))
+                }
+                .buttonStyle(.borderless)
+                .frame(height: 19)
+                
                 Menu {
                     ForEach(dataManager.availableProviderNames, id: \.self) { providerName in
                         Menu(providerName) {
