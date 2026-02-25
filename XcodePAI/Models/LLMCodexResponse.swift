@@ -474,7 +474,7 @@ enum LLMCodexResponseEvent: Codable {
                 self = .message(try MessageItem(from: decoder))
             case "function_call":
                 self = .functionCall(try FunctionCallItem(from: decoder))
-            case "reasoing":
+            case "reasoning":
                 self = .reasoning(try ReasoningItem(from: decoder))
             default:
                 throw DecodingError.dataCorruptedError(forKey: .type, in: container, debugDescription: "Unknown output item type: \(type)")
