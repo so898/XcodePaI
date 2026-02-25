@@ -382,7 +382,7 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
             LLMCodexResponseEvent.outputItemAdded(.init(outputIndex: outputs.count, item: .functionCall(.init(id: itemId, callId: callId, name: name)), sequenceNumber: sequenceNumber)),
             LLMCodexResponseEvent.functionCallArgumentsDelta(.init(itemId: itemId, outputIndex: outputs.count, delta: arguments, sequenceNumber: sequenceNumber)),
             LLMCodexResponseEvent.functionCallArgumentsDone(.init(itemId: itemId, name: name, outputIndex: outputs.count, arguments: arguments, sequenceNumber: sequenceNumber)),
-            LLMCodexResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .functionCall(.init(id: itemId, callId: callId, name: name, arguments: arguments)), sequenceNumber: sequenceNumber))
+            LLMCodexResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .functionCall(.init(id: itemId, callId: callId, name: name, arguments: arguments, status: "completed")), sequenceNumber: sequenceNumber))
         ])
         
         // Add function call to output array
@@ -410,7 +410,7 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
             sendEvents([
                 LLMCodexResponseEvent.reasoningSummaryTextDone(.init(itemId: itemId, outputIndex: outputs.count, summaryIndex: 0, text: lastContent, sequenceNumber: sequenceNumber)),
                 LLMCodexResponseEvent.reasoningSummaryPartDone(.init(itemId: itemId, outputIndex: outputs.count, summaryIndex: 0, part: .init(text: lastContent), sequenceNumber: sequenceNumber)),
-                LLMCodexResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .reasoning(.init(id: itemId, content: [.init(text: lastContent)])), sequenceNumber: sequenceNumber))
+                LLMCodexResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .reasoning(.init(id: itemId, content: [.init(text: lastContent)], status: "completed")), sequenceNumber: sequenceNumber))
             ])
             outputs.append(.reasoning(.init(id: itemId, content: [.init(text: lastContent)])))
             lastContent = ""
@@ -418,7 +418,7 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
         case .text:
             sendEvents([
                 LLMCodexResponseEvent.contentPartDone(.init(itemId: itemId, outputIndex: outputs.count, contentIndex: 0, part: .outputText(.init(text: lastContent)), sequenceNumber: sequenceNumber)),
-                LLMCodexResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .message(.init(id: itemId, content: [.outputText(.init(text: lastContent))])), sequenceNumber: sequenceNumber))
+                LLMCodexResponseEvent.outputItemDone(.init(outputIndex: outputs.count, item: .message(.init(id: itemId, content: [.outputText(.init(text: lastContent))], status: "completed")), sequenceNumber: sequenceNumber))
             ])
             outputs.append(.message(.init(id: itemId, content: [.outputText(.init(text: lastContent))])))
             lastContent = ""
