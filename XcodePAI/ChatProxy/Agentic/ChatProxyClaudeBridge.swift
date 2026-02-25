@@ -42,6 +42,7 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
     }
     
     private func receiveRequest(_ request: LLMClaudeRequest) {
+        MenuBarManager.shared.startLoading()
         // Get config
         guard let config = StorageManager.shared.defaultConfig(), let modelProvider = config.getModelProvider() else {
             delegate.bridge(connected: false)
