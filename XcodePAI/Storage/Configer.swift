@@ -24,7 +24,7 @@ class Configer {
     private static let openConfigurationWhenStartUpKey = "OpenConfigurationWhenStartUp"
     private static let updateModelsWhenStartUpKey = "UpdateModelsWhenStartUp"
     private static let chatProxyPortStorageKey = "ChatProxyPort"
-    private static let chatProxyEnableThinkStorageKey = "ChatProxyEnableThink"
+    static let chatProxyEnableThinkStorageKey = "ChatProxyEnableThink"
     private static let chatProxyThinkStyleStorageKey = "ChatProxyThinkStyle"
     private static let chatProxyToolUseInRequestStorageKey = "chatProxyToolUseInRequest"
     private static let chatProxyRemoveHallucinationToolCallResultStorageKey = "chatProxyRemoveHallucinationToolCallResult"
