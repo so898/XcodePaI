@@ -10,7 +10,7 @@ import SwiftUI
 struct QuickWindowView: View {
     @StateObject private var dataManager = QuickWindowDataManager()
     @StateObject private var languageManager = LanguageManager.shared
-    @State private var enableThink = Configer.chatProxyEnableThink
+    @AppStorage(Configer.chatProxyEnableThinkStorageKey) private var enableThink = true
     
     var body: some View {
         VStack{
