@@ -29,6 +29,8 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
     /// Current state tracking what type of content block is being processed.
     private var currentBlockType: OutputBlockType = .none
     
+    private var modelName = ""
+    
     // MARK: - Request Processing
     
     override func receiveRequestData(_ data: Data) {
@@ -54,6 +56,9 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
         outputIndex = 0
         currentBlockType = .none
         thinkState = .notStarted
+        hasToolUse = false
+        
+        modelName = request.model
         
         // Process request
         let newRequest = processRequest(request)
@@ -95,12 +100,27 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
         }
         
         // Convert request.messages to internal LLMMessage
-        var toolUseIds = [String]()
-        var toolUseResultIds = [String]()
+        // Process each Claude message, collecting tool_use and tool_result within same message
+        var toolUseIds = Set<String>()
+        var toolUseResultIds = Set<String>()
+        
         for (index, msg) in request.messages.enumerated() {
+            // Collect tool calls within this single Claude message for proper grouping
+            var pendingToolCalls = [LLMMessageToolCall]()
+            var pendingToolUsePrompts = [String]()
+            
             for (contentIdx, content) in msg.content.enumerated() {
                 switch content.type {
                 case "text":
+                    // Flush any pending tool calls before adding text content
+                    if useToolInRequest && !pendingToolCalls.isEmpty {
+                        messages.append(LLMMessage(role: "assistant", toolCalls: pendingToolCalls))
+                        pendingToolCalls.removeAll()
+                    } else if !useToolInRequest && !pendingToolUsePrompts.isEmpty {
+                        messages.append(LLMMessage(role: "assistant", content: pendingToolUsePrompts.joined(separator: "\n")))
+                        pendingToolUsePrompts.removeAll()
+                    }
+                    
                     if let text = content.text {
                         var processedText = text
                         if msg.role == "user" {
@@ -112,33 +132,49 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
                             messages.append(LLMMessage(role: msg.role, content: processedText))
                         }
                     }
+                case "thinking":
+                    // Claude Code sends back previous thinking blocks; skip them
+                    // as they are internal reasoning and should not be forwarded
+                    break
                 case "image":
                     if let source = content.source {
                         let dataUri = "data:\(source.mediaType);base64,\(source.data)"
                         messages.append(LLMMessage(role: msg.role, contents: [LLMMessageContent(imageUrl: dataUri)]))
                     }
                 case "tool_use":
-                    if let id = content.id, let name = content.name, let input = content.input, !toolUseIds.contains(id) {
-                        toolUseIds.append(id)
+                    if let id = content.id, let name = content.name, !toolUseIds.contains(id) {
+                        toolUseIds.insert(id)
                         let arguments: String
-                        if let data = try? JSONEncoder().encode(input), let str = String(data: data, encoding: .utf8) {
+                        if let input = content.input,
+                           let data = try? JSONEncoder().encode(input),
+                           let str = String(data: data, encoding: .utf8) {
                             arguments = str
                         } else {
                             arguments = "{}"
                         }
                         
                         if useToolInRequest {
-                            messages.append(LLMMessage(role: "assistant", toolCalls: [LLMMessageToolCall(id: id, type: "function", function: LLMFunction(name: name, arguments: arguments))]))
+                            // Collect tool calls to merge into single assistant message
+                            pendingToolCalls.append(LLMMessageToolCall(id: id, type: "function", function: LLMFunction(name: name, arguments: arguments)))
                         } else {
                             var toolUse = PromptTemplate.toolUseTemplate
                             toolUse = toolUse.replacingOccurrences(of: "{{TOOL_NAME}}", with: name)
                             toolUse = toolUse.replacingOccurrences(of: "{{ARGUMENTS}}", with: arguments)
-                            messages.append(LLMMessage(role: "assistant", content: toolUse))
+                            pendingToolUsePrompts.append(toolUse)
                         }
                     }
                 case "tool_result":
+                    // Flush any pending tool calls before processing tool results
+                    if useToolInRequest && !pendingToolCalls.isEmpty {
+                        messages.append(LLMMessage(role: "assistant", toolCalls: pendingToolCalls))
+                        pendingToolCalls.removeAll()
+                    } else if !useToolInRequest && !pendingToolUsePrompts.isEmpty {
+                        messages.append(LLMMessage(role: "assistant", content: pendingToolUsePrompts.joined(separator: "\n")))
+                        pendingToolUsePrompts.removeAll()
+                    }
+                    
                     if let toolUseId = content.toolUseId, !toolUseResultIds.contains(toolUseId) {
-                        toolUseResultIds.append(toolUseId)
+                        toolUseResultIds.insert(toolUseId)
                         let name: String = {
                             for msg in request.messages {
                                 for content in msg.content {
@@ -149,11 +185,18 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
                             }
                             return ""
                         }()
-                        let result = {
+                        let result: String = {
+                            // tool_result content can be a string, an array of content objects, or nil
                             if let contentStr = content.content?.value as? String {
                                 return contentStr
-                            } else if let contentArr = content.content?.value as? [[String: Any]] {
-                                return contentArr.compactMap { $0["text"] as? String }.joined(separator: "\n")
+                            } else if let contentArr = content.content?.value as? [Any] {
+                                // Array of content objects - extract text from each
+                                return contentArr.compactMap { item -> String? in
+                                    if let dict = item as? [String: Any] {
+                                        return dict["text"] as? String
+                                    }
+                                    return nil
+                                }.joined(separator: "\n")
                             } else if let contentText = content.text {
                                 return contentText
                             }
@@ -172,6 +215,13 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
                 default:
                     break
                 }
+            }
+            
+            // Flush any remaining pending tool calls at end of message
+            if useToolInRequest && !pendingToolCalls.isEmpty {
+                messages.append(LLMMessage(role: "assistant", toolCalls: pendingToolCalls))
+            } else if !useToolInRequest && !pendingToolUsePrompts.isEmpty {
+                messages.append(LLMMessage(role: "assistant", content: pendingToolUsePrompts.joined(separator: "\n")))
             }
         }
         
@@ -202,22 +252,6 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
     }
     
     // MARK: - Response Handling
-    override func clientConnected(_ client: LLMClient) {
-        super.clientConnected(client)
-        
-        let message = LLMClaudeMessageResponse(
-            id: "msg_" + UUID().uuidString,
-            type: "message",
-            role: "assistant",
-            content: [],
-            model: config?.modelName ?? "claude",
-            stopReason: nil,
-            stopSequence: nil,
-            usage: LLMClaudeUsageResponse(inputTokens: 0, outputTokens: 0)
-        )
-        sendEvent(.messageStart(MessageStartEvent(message: message)))
-    }
-    
     override func client(_ client: LLMClient, receiveError error: (any Error)?) {
         super.client(client, receiveError: error)
         
@@ -227,11 +261,29 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
             sendEvent(.error(.init(error: .init(type: "internal_error", message: error.localizedDescription))))
         }
         
-        // Notify delegate to write end chunk
         delegate.bridgeWriteEndChunk()
         
         // Stop and release LLM client
         stopLLMClient()
+    }
+    
+    override func sendFirstChunk() {
+        guard !firstChunkSend else {
+            return
+        }
+        super.sendFirstChunk()
+        
+        let message = LLMClaudeMessageResponse(
+            id: "msg_" + UUID().uuidString,
+            type: "message",
+            role: "assistant",
+            content: [],
+            model: modelName,
+            stopReason: nil,
+            stopSequence: nil,
+            usage: LLMClaudeUsageResponse(inputTokens: nil, outputTokens: nil)
+        )
+        sendEvent(.messageStart(MessageStartEvent(message: message)))
     }
     
     override func sendReasonChunk(_ chunk: String?) {
@@ -245,10 +297,10 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
                     outputIndex += 1
                 }
                 
-                sendEvent(.contentBlockStart(ContentBlockStartEvent(index: outputIndex, contentBlock: LLMClaudeContentBlockResponse(type: "thinking", text: "", id: nil, name: nil, input: nil))))
-                currentBlockType = .text
+                sendEvent(.contentBlockStart(ContentBlockStartEvent(index: outputIndex, contentBlock: LLMClaudeContentBlockResponse(type: "thinking", text: nil, thinking: "", id: nil, name: nil, input: nil))))
+                currentBlockType = .thinking
             }
-            sendEvent(.contentBlockStart(ContentBlockStartEvent(index: outputIndex, contentBlock: LLMClaudeContentBlockResponse(type: "thinking_delta", text: chunk, id: nil, name: nil, input: nil))))
+            sendEvent(.contentBlockDelta(ContentBlockDeltaEvent(index: outputIndex, delta: LLMClaudeDeltaResponse(type: "thinking_delta", text: nil, thinking: chunk, partialJson: nil))))
         } else {
             // Other thinking parsing modes (thinking embedded in content)
             var textContent = ""
@@ -292,8 +344,8 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
                     return ""
                 }
             }()
-            sendEvent(.contentBlockDelta(ContentBlockDeltaEvent(index: outputIndex, delta: LLMClaudeDeltaResponse(type: "text_delta", text: endThinkMark, partialJson: nil))))
-
+            sendEvent(.contentBlockDelta(ContentBlockDeltaEvent(index: outputIndex, delta: LLMClaudeDeltaResponse(type: "text_delta", text: endThinkMark, thinking: nil, partialJson: nil))))
+            
         }
     }
     
@@ -311,12 +363,15 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
                 outputIndex += 1
             }
             
-            sendEvent(.contentBlockStart(ContentBlockStartEvent(index: outputIndex, contentBlock: LLMClaudeContentBlockResponse(type: "text", text: "", id: nil, name: nil, input: nil))))
+            sendEvent(.contentBlockStart(ContentBlockStartEvent(index: outputIndex, contentBlock: LLMClaudeContentBlockResponse(type: "text", text: "", thinking: nil, id: nil, name: nil, input: nil))))
             currentBlockType = .text
         }
         
-        sendEvent(.contentBlockDelta(ContentBlockDeltaEvent(index: outputIndex, delta: LLMClaudeDeltaResponse(type: "text_delta", text: chunk, partialJson: nil))))
+        sendEvent(.contentBlockDelta(ContentBlockDeltaEvent(index: outputIndex, delta: LLMClaudeDeltaResponse(type: "text_delta", text: chunk, thinking: nil, partialJson: nil))))
     }
+    
+    /// Track if tool was used, for determining stop reason
+    private var hasToolUse = false
     
     override func sendFunctionCall(_ toolUse: LLMMessageToolCall) {
         sendReasonEndMarkIfNeed()
@@ -330,13 +385,20 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
         }
         
         currentBlockType = .toolUse
+        hasToolUse = true
         let toolId = toolUse.id.isEmpty ? "toolu_" + UUID().uuidString : toolUse.id
         
-        sendEvent(.contentBlockStart(ContentBlockStartEvent(index: outputIndex, contentBlock: LLMClaudeContentBlockResponse(type: "tool_use", text: nil, id: toolId, name: name, input: nil))))
+        // Claude API streaming format for tool_use content_block_start:
+        // { "type": "tool_use", "id": "...", "name": "...", "input": {} }
+        // NOTE: input field MUST be an empty object {} in content_block_start
+        // The actual input is sent incrementally via input_json_delta events
+        sendEvent(.contentBlockStart(ContentBlockStartEvent(index: outputIndex, contentBlock: LLMClaudeContentBlockResponse(type: "tool_use", text: nil, thinking: nil, id: toolId, name: name, input: [:]))))
         
-        sendEvent(.contentBlockDelta(ContentBlockDeltaEvent(index: outputIndex, delta: LLMClaudeDeltaResponse(type: "input_json_delta", text: nil, partialJson: arguments))))
+        sendEvent(.contentBlockDelta(ContentBlockDeltaEvent(index: outputIndex, delta: LLMClaudeDeltaResponse(type: "input_json_delta", text: nil, thinking: nil, partialJson: arguments))))
         
         sendEvent(.contentBlockStop(ContentBlockStopEvent(index: outputIndex)))
+        outputIndex += 1
+        currentBlockType = .none
     }
     
     override func sendFinishReason(_ finishReason: String) {
@@ -346,12 +408,12 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
         
         if currentBlockType != .none {
             sendEvent(.contentBlockStop(ContentBlockStopEvent(index: outputIndex)))
-            
-            if currentBlockType == .toolUse {
-                reason = "tool_calls"
-            }
-            
             currentBlockType = .none
+        }
+        
+        // Use hasToolUse flag to determine stop reason, since currentBlockType is already reset to .none after tool use
+        if hasToolUse {
+            reason = "tool_calls"
         }
         
         let mappedReason: String
@@ -362,7 +424,7 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
         default: mappedReason = finishReason
         }
         
-        sendEvent(.messageDelta(MessageDeltaEvent(delta: LLMClaudeMessageDeltaResponse(stopReason: mappedReason, stopSequence: nil), usage: LLMClaudeUsageResponse(inputTokens: 0, outputTokens: 0))))
+        sendEvent(.messageDelta(MessageDeltaEvent(delta: LLMClaudeMessageDeltaResponse(stopReason: mappedReason, stopSequence: nil), usage: LLMClaudeUsageResponse(inputTokens: nil, outputTokens: nil))))
         
         sendEvent(.messageStop(MessageStopEvent()))
     }
@@ -373,7 +435,9 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         if let data = try? encoder.encode(event), let str = String(data: data, encoding: .utf8) {
-            delegate.bridge(event: getEventType(event), data: str)
+            let eventStr = getEventType(event)
+            print("sm.pro: [\(eventStr)] \(str)")
+            delegate.bridge(event: eventStr, data: str)
         }
     }
     

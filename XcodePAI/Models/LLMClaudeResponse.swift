@@ -124,24 +124,73 @@ struct LLMClaudeMessageResponse: Codable {
         case stopReason = "stop_reason"
         case stopSequence = "stop_sequence"
     }
+    
+    // Custom encoding to ensure stop_reason and stop_sequence are always encoded
+    // even when nil (as JSON null), since Claude API requires these fields
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(type, forKey: .type)
+        try container.encode(role, forKey: .role)
+        try container.encode(content, forKey: .content)
+        try container.encode(model, forKey: .model)
+        try container.encode(stopReason, forKey: .stopReason)  // Encodes null if nil
+        try container.encode(stopSequence, forKey: .stopSequence)  // Encodes null if nil
+        try container.encode(usage, forKey: .usage)
+    }
 }
 
 struct LLMClaudeContentBlockResponse: Codable {
-    let type: String // text, tool_use
+    let type: String // text, tool_use, thinking
     let text: String?
+    let thinking: String?
     let id: String?
     let name: String?
     let input: [String: AnyCodable]?
+    
+    enum CodingKeys: String, CodingKey {
+        case type, text, thinking, id, name, input
+    }
+    
+    // Custom encoding to skip nil values
+    // Claude API expects different fields for different content block types:
+    // - text: { "type": "text", "text": "..." }
+    // - thinking: { "type": "thinking", "thinking": "..." }
+    // - tool_use: { "type": "tool_use", "id": "...", "name": "...", "input": {} }
+    //   NOTE: input MUST be an empty object {} in streaming content_block_start
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(type, forKey: .type)
+        try container.encodeIfPresent(text, forKey: .text)
+        try container.encodeIfPresent(thinking, forKey: .thinking)
+        try container.encodeIfPresent(id, forKey: .id)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encodeIfPresent(input, forKey: .input)
+    }
 }
 
 struct LLMClaudeDeltaResponse: Codable {
-    let type: String // text_delta, input_json_delta
+    let type: String // text_delta, input_json_delta, thinking_delta
     let text: String?
+    let thinking: String?
     let partialJson: String?
     
     enum CodingKeys: String, CodingKey {
-        case type, text
+        case type, text, thinking
         case partialJson = "partial_json"
+    }
+    
+    // Custom encoding to skip nil values
+    // Claude API expects different fields for different delta types:
+    // - text_delta: { "type": "text_delta", "text": "..." }
+    // - thinking_delta: { "type": "thinking_delta", "thinking": "..." }
+    // - input_json_delta: { "type": "input_json_delta", "partial_json": "..." }
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(type, forKey: .type)
+        try container.encodeIfPresent(text, forKey: .text)
+        try container.encodeIfPresent(thinking, forKey: .thinking)
+        try container.encodeIfPresent(partialJson, forKey: .partialJson)
     }
 }
 
@@ -153,11 +202,19 @@ struct LLMClaudeMessageDeltaResponse: Codable {
         case stopReason = "stop_reason"
         case stopSequence = "stop_sequence"
     }
+    
+    // Custom encoding to ensure stop_sequence is always encoded even when nil
+    // Claude API expects stop_sequence field to be present (as null)
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(stopReason, forKey: .stopReason)  // Encodes null if nil
+        try container.encode(stopSequence, forKey: .stopSequence)  // Encodes null if nil
+    }
 }
 
 struct LLMClaudeUsageResponse: Codable {
-    let inputTokens: Int
-    let outputTokens: Int
+    let inputTokens: Int?
+    let outputTokens: Int?
     
     enum CodingKeys: String, CodingKey {
         case inputTokens = "input_tokens"

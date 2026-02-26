@@ -326,6 +326,10 @@ class AgenticConfiger {
                 env["ANTHROPIC_BASE_URL"] = LocalProxyServer
                 configuration["env"] = env
                 
+                var mcpServers = configuration["mcpServers"] as? [String: Any] ?? [:]
+                mcpServers[Constraint.InternalModelName.lowercased()] = ["type": "http", "url": LocalMCPServer]
+                configuration["mcpServers"] = mcpServers
+                
                 // Write updated configuration
                 let updatedData = try JSONSerialization.data(withJSONObject: configuration)
                 try updatedData.write(to: ClaudeFolderURL.appendingPathComponent(ClaudeConfigFileName))

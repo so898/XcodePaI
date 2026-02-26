@@ -31,6 +31,8 @@ class ChatProxyBridgeBase: LLMClientDelegate {
     /// Connection status
     private(set) var isConnected = false
     
+    private(set) var firstChunkSend = false
+    
     /// Thinking content parsing method (in content, with code snippets, with EOT markers, etc.)
     var thinkParser: ThinkParser = Configer.chatProxyThinkStyle
     
@@ -257,6 +259,7 @@ class ChatProxyBridgeBase: LLMClientDelegate {
     ///   - client: LLM client
     ///   - part: Received partial response
     public func client(_ client: LLMClient, receivePart part: LLMAssistantMessage) {
+        sendFirstChunk()
         // Send thinking chunk
         sendReasonChunk(part.reason)
         // Send text chunk
@@ -302,7 +305,11 @@ class ChatProxyBridgeBase: LLMClientDelegate {
     }
     
     // MARK: Response
-
+    
+    func sendFirstChunk() {
+        firstChunkSend = true
+    }
+    
     /// Send thinking content chunk
     /// - Parameter chunk: Thinking content chunk
     func sendReasonChunk(_ chunk: String?) {

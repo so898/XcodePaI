@@ -214,18 +214,6 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
     
     // MARK: - LLMClientDelegate - LLM client delegate implementation
     
-    /// LLM client connection successful callback
-    /// - Parameter client: Connected LLM client
-    override func clientConnected(_ client: LLMClient) {
-        super.clientConnected(client)
-        
-        // Send response created and response in progress events
-        sendEvents([
-            LLMCodexResponseEvent.responseCreated(.init(response: .init(id: id, object: "response", createdAt: createTime, status: "queued", model: "XcodePaI"), sequenceNumber: sequenceNumber)),
-            LLMCodexResponseEvent.responseInProgress(.init(response: .init(id: id, object: "response", createdAt: createTime, status: "in_progress", model: "XcodePaI"), sequenceNumber: sequenceNumber))
-        ])
-    }
-    
     /// LLM client error reception callback
     /// - Parameters:
     ///   - client: LLM client
@@ -256,6 +244,19 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
     }
     
     // MARK: - Response event sending
+    
+    override func sendFirstChunk() {
+        guard !firstChunkSend else {
+            return
+        }
+        super.sendFirstChunk()
+        
+        // Send response created and response in progress events
+        sendEvents([
+            LLMCodexResponseEvent.responseCreated(.init(response: .init(id: id, object: "response", createdAt: createTime, status: "queued", model: "XcodePaI"), sequenceNumber: sequenceNumber)),
+            LLMCodexResponseEvent.responseInProgress(.init(response: .init(id: id, object: "response", createdAt: createTime, status: "in_progress", model: "XcodePaI"), sequenceNumber: sequenceNumber))
+        ])
+    }
     
     /// Send thinking content chunk
     /// - Parameter chunk: Thinking content chunk

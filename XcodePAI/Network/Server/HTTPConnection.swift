@@ -42,6 +42,8 @@ struct HTTPResponse {
     }
     
     mutating func chunked() {
+        headers["Connection"] = "keep-alive"
+        headers["Content-Type"] = "text/event-stream"
         headers["Transfer-Encoding"] = "chunked"
     }
 }
@@ -62,6 +64,7 @@ class HTTPConnection {
     
     private var HTTPResponseWrited = false
     private let HTTPResponseWriteTag = 4887 // HTTP
+    private let SSEWriteLastTag = 5278 // LAST
     
     func writeResponse(_ response: HTTPResponse) {
         guard !HTTPResponseWrited else {
@@ -232,7 +235,7 @@ extension HTTPConnection {
         let chunkSize = String(format: "%lx", 0)
         let chunkHeader = Data("\(chunkSize)".utf8)
         let chunkData = chunkHeader + Constraint.DoubleCRLF
-        connection.write(chunkData)
+        connection.write(chunkData, tag: SSEWriteLastTag)
     }
 }
 
@@ -270,7 +273,7 @@ extension HTTPConnection {
     }
     
     func writeSSEComplete() {
-        writeChunk("[DONE]" + Constraint.DoubleLFString)
+        writeChunk("data: [DONE]" + Constraint.DoubleLFString)
         writeEndChunk()
     }
 }
@@ -291,6 +294,10 @@ extension HTTPConnection: TCPConnectionDelegate {
         if HTTPResponseWriteTag == tag {
             HTTPResponseWrited = true
             delegate?.connection(self, didSentResponse: true)
+            return
+        }
+        if SSEWriteLastTag == tag {
+            stop()
             return
         }
         delegate?.connection(self, didWrite: tag)
