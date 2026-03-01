@@ -436,7 +436,6 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
         encoder.keyEncodingStrategy = .convertToSnakeCase
         if let data = try? encoder.encode(event), let str = String(data: data, encoding: .utf8) {
             let eventStr = getEventType(event)
-            print("sm.pro: [\(eventStr)] \(str)")
             delegate.bridge(event: eventStr, data: str)
         }
     }

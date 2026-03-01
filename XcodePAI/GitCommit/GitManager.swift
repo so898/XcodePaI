@@ -512,6 +512,8 @@ extension GitManager {
         // Force return in language
         let languageContent: String = {
             switch Configer.forceLanguage {
+            case .default:
+                return ""
             case .english:
                 return PromptTemplate.FLEnglish
             case .chinese:

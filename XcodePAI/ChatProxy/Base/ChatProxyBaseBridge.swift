@@ -42,6 +42,8 @@ class ChatProxyBridgeBase: LLMClientDelegate {
     /// Whether to use tools (function calls) in requests
     var useToolInRequest = Configer.chatProxyToolUseInRequest
     
+    private var systemPromptForceLanguageMarked = false
+    
     // MARK: - Initialization
     
     /// Initialize the bridge base
@@ -84,6 +86,25 @@ class ChatProxyBridgeBase: LLMClientDelegate {
     /// - Parameter originSystemPrompt: Original system prompt
     /// - Returns: Processed system prompt
     open func processSystemPrompt(_ originSystemPrompt: String) -> String {
+        if !systemPromptForceLanguageMarked, Configer.forceLanguageIn == .systemPrompt {
+            systemPromptForceLanguageMarked = true
+            let forceLanguage = Configer.forceLanguage
+            let languageContent: String = {
+                switch forceLanguage {
+                case .default: return ""
+                case .english: return PromptTemplate.FLEnglish
+                case .chinese: return PromptTemplate.FLChinese
+                case .french: return PromptTemplate.FLFrance
+                case .russian: return PromptTemplate.FLRussian
+                case .japanese: return PromptTemplate.FLJapanese
+                case .korean: return PromptTemplate.FLKorean
+                }
+            }()
+            
+            if !languageContent.isEmpty {
+                return originSystemPrompt + "\n" + languageContent
+            }
+        }
         return originSystemPrompt
     }
     
@@ -205,11 +226,12 @@ class ChatProxyBridgeBase: LLMClientDelegate {
             returnContent = processedContent
         }
         
-        // Force language for last message
-        if isLastMessage {
+        // Force language in user message
+        if Configer.forceLanguageIn == .userPrompt {
             let forceLanguage = Configer.forceLanguage
             let languageContent: String = {
                 switch forceLanguage {
+                case .default: return ""
                 case .english: return PromptTemplate.FLEnglish
                 case .chinese: return PromptTemplate.FLChinese
                 case .french: return PromptTemplate.FLFrance

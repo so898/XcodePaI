@@ -12,12 +12,20 @@ class Configer {
     public enum Language: String, CaseIterable, Identifiable {
         var id: String { self.rawValue }
         
+        case `default` = "Model Default"
         case english = "English"
         case chinese = "Chinese"
         case french = "French"
         case russian = "Russian"
         case japanese = "Japanese"
         case korean = "Korean"
+    }
+    
+    public enum ForceLanguageIn: String, CaseIterable, Identifiable {
+        var id: String { self.rawValue }
+        
+        case systemPrompt = "System Prompt"
+        case userPrompt = "User Prompt"
     }
     
     // MARK: - Keys
@@ -37,6 +45,7 @@ class Configer {
     private static let gitCommitGenerateTimeoutStorageKey = "gitCommitGenerateTimeout"
     private static let selectedPluginIdStorageKey = "selectedPluginId"
     private static let forceLanguageStorageKey = "forceLanguage"
+    private static let forceLanguageInStorageKey = "forceLanguageIn"
     private static let showXcodeInspectorDebugStorageKey = "showXcodeInspectorDebug"
     private static let showLoadingWhenRequestStorageKey = "showLoadingWhenRequest"
     
@@ -189,8 +198,18 @@ class Configer {
             Self.setValue(forceLanguageStorageKey, value: newValue.rawValue)
         }
         get {
-            let rawValue: String = Self.value(forceLanguageStorageKey, defaultValue: Language.english.rawValue) ?? Language.english.rawValue
-            return Configer.Language(rawValue: rawValue) ?? .english
+            let rawValue: String = Self.value(forceLanguageStorageKey, defaultValue: Language.default.rawValue) ?? Language.default.rawValue
+            return Configer.Language(rawValue: rawValue) ?? .default
+        }
+    }
+    
+    static var forceLanguageIn: Configer.ForceLanguageIn {
+        set {
+            Self.setValue(forceLanguageInStorageKey, value: newValue.rawValue)
+        }
+        get {
+            let rawValue: String = Self.value(forceLanguageInStorageKey, defaultValue: ForceLanguageIn.systemPrompt.rawValue) ?? ForceLanguageIn.systemPrompt.rawValue
+            return Configer.ForceLanguageIn(rawValue: rawValue) ?? .systemPrompt
         }
     }
     

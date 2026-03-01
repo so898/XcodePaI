@@ -11,6 +11,7 @@ struct GeneralSettingSectionView: View {
     @State private var openConfigurationOnStartUp = Configer.openConfigurationWhenStartUp
     @State private var updateModelsWhenStartUp = Configer.updateModelsWhenStartUp
     @State private var forceLanguage: Configer.Language = Configer.forceLanguage
+    @State private var forceLanguageIn: Configer.ForceLanguageIn = Configer.forceLanguageIn
     @State private var showXcodeInspectorDebug = Configer.showXcodeInspectorDebug
     @State private var showLoadingWhenRequest = Configer.showLoadingWhenRequest
     
@@ -68,6 +69,22 @@ struct GeneralSettingSectionView: View {
                     .frame(maxWidth: 150, alignment: .leading)
                     .onChange(of: forceLanguage) { _, newValue in
                         Configer.forceLanguage = newValue
+                    }
+                }
+                
+                if forceLanguage != .default {
+                    GridRow {
+                        Text("Language Directive In")
+                        Picker("", selection: $forceLanguageIn) {
+                            ForEach(Configer.ForceLanguageIn.allCases, id: \.rawValue) { (language: Configer.ForceLanguageIn) in
+                                Text(language.rawValue.localizedString)
+                                    .tag(language)
+                            }
+                        }
+                        .frame(maxWidth: 150, alignment: .leading)
+                        .onChange(of: forceLanguageIn) { _, newValue in
+                            Configer.forceLanguageIn = newValue
+                        }
                     }
                 }
                 

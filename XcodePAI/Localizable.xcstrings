@@ -1395,6 +1395,16 @@
         }
       }
     },
+    "Language Directive In" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插入语言提示"
+          }
+        }
+      }
+    },
     "Link" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2289,6 +2299,17 @@
         }
       }
     },
+    "System Prompt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在系统提示词中"
+          }
+        }
+      }
+    },
     "Test" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2685,6 +2706,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用模型"
+          }
+        }
+      }
+    },
+    "User Prompt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在用户提示词中"
           }
         }
       }

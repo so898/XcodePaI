@@ -115,7 +115,6 @@ class ChatProxyBridge: ChatProxyBridgeBase {
                 var newContents = [LLMMessageContent]()
                 for content in contents {
                     if content.type == .text, let text = content.text {
-                        print("ASSISTANT: \n\(text)")
                         newContents.append(LLMMessageContent(text: processAssistantMessageContent(text)))
                     } else {
                         newContents.append(content)
@@ -177,7 +176,7 @@ class ChatProxyBridge: ChatProxyBridgeBase {
             systemPrompt = systemPrompt.replacingOccurrences(of: "{{USE_TOOLS}}", with: "")
         }
         
-        return systemPrompt
+        return super.processSystemPrompt(systemPrompt)
     }
     
     override func processAssistantMessageContent(_ content: String, isLastMessage: Bool = false) -> String {
