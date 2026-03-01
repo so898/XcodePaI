@@ -331,6 +331,7 @@ class LLMMessageContent {
     let type: LLMMessageContentType
     let text: String?
     let imageUrl: LLMMessageContentImageUrl?
+    var cacheControl: Bool = false
     
     init(text: String) {
         self.type = .text
@@ -377,6 +378,10 @@ class LLMMessageContent {
             if let imageUrl = imageUrl {
                 dict["image_url"] = imageUrl.toDictionary()
             }
+        }
+        
+        if cacheControl {
+            dict["cache_control"] = ["type": "ephemeral"]
         }
         return dict
     }

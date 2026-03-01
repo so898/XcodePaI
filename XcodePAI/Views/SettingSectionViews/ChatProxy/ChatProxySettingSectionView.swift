@@ -13,6 +13,7 @@ struct ChatProxySettingSectionView: View {
     @State private var codexProxyConfigState = AgenticConfiger.checkCodexConfigState()
     @State private var claudeProxyConfigState = AgenticConfiger.checkClaudeConfigState()
     @State private var enableThink = Configer.chatProxyEnableThink
+    @State private var enableEphemeralCache = Configer.chatProxyEnableEphemeralCache
     @State private var thinkStyle: Int = Configer.chatProxyThinkStyle.rawValue
     @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
     @State private var removeHallucination: Bool = Configer.chatProxyRemoveHallucinationToolCallResult
@@ -125,6 +126,16 @@ struct ChatProxySettingSectionView: View {
                         .toggleStyle(.checkbox)
                         .onChange(of: enableThink) { _, newValue in
                             Configer.chatProxyEnableThink = newValue
+                        }
+                }
+                
+                GridRow(alignment: .center) {
+                    Text("Enable Ephemeral Cache")
+                        .help("Turn on ephemeral caching, supported by the model provider. This setting allows the API to utilize caching for repeated or similar requests, resulting in improved response speed and significantly lower token consumption.")
+                    Toggle("Enable", isOn: $enableEphemeralCache)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: enableEphemeralCache) { _, newValue in
+                            Configer.chatProxyEnableEphemeralCache = newValue
                         }
                 }
                 

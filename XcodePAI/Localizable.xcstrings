@@ -929,6 +929,16 @@
         }
       }
     },
+    "Enable Ephemeral Cache" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用临时缓存"
+          }
+        }
+      }
+    },
     "Enable Think" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2598,6 +2608,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "裁剪 Xcode 搜索出的源码内容"
+          }
+        }
+      }
+    },
+    "Turn on ephemeral caching, supported by the model provider. This setting allows the API to utilize caching for repeated or similar requests, resulting in improved response speed and significantly lower token consumption." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用由模型提供商支持的临时缓存。开启此选项，API 将自动为重复或相似的查询启用缓存，以实现更快的响应速度和更低的 Token 开销。"
           }
         }
       }

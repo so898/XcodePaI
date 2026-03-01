@@ -33,6 +33,7 @@ class Configer {
     private static let updateModelsWhenStartUpKey = "UpdateModelsWhenStartUp"
     private static let chatProxyPortStorageKey = "ChatProxyPort"
     static let chatProxyEnableThinkStorageKey = "ChatProxyEnableThink"
+    private static let chatProxyEnableEphemeralCacheStorageKey = "chatProxyEnableEphemeralCache"
     private static let chatProxyThinkStyleStorageKey = "ChatProxyThinkStyle"
     private static let chatProxyToolUseInRequestStorageKey = "chatProxyToolUseInRequest"
     private static let chatProxyRemoveHallucinationToolCallResultStorageKey = "chatProxyRemoveHallucinationToolCallResult"
@@ -83,6 +84,15 @@ class Configer {
         }
         get {
             return Self.value(chatProxyEnableThinkStorageKey, defaultValue: true) ?? true
+        }
+    }
+    
+    static var chatProxyEnableEphemeralCache: Bool {
+        set {
+            Self.setValue(chatProxyEnableEphemeralCacheStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(chatProxyEnableEphemeralCacheStorageKey, defaultValue: false) ?? false
         }
     }
     
