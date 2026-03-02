@@ -102,6 +102,12 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
                             if role == "user" {
                                 let isLastMessage = (inputIdx == inputs.count - 1 && contentIdx == contents.count - 1)
                                 text = processUserMessageContent(text, isLastMessage: isLastMessage)
+                                
+                                if isLastMessage, Configer.chatProxyEnableEphemeralCache {
+                                    messages.append(LLMMessage(role: "user", contents: [LLMMessageContent(text: text).cacheControlEphemeral()]))
+                                    continue
+                                }
+                                
                             }
                             messages.append(LLMMessage(role: role, content: text))
                         }

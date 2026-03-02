@@ -78,7 +78,11 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
         if let systems = request.system {
             for system in systems {
                 if let text = system.text {
-                    messages.append(LLMMessage(role: "system", content: processSystemPrompt(text)))
+                    if Configer.chatProxyEnableEphemeralCache, system.cacheControl?.isEphemeral() ?? false {
+                        messages.append(LLMMessage(role: "system", contents: [.init(text: processSystemPrompt(text)).cacheControlEphemeral()]))
+                    } else {
+                        messages.append(LLMMessage(role: "system", content: processSystemPrompt(text)))
+                    }
                 }
             }
         }
@@ -96,7 +100,11 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
             
             toolPrompt = toolPrompt.replacingOccurrences(of: "{{TOOLS}}", with: toolsStr)
             
-            messages.append(LLMMessage(role: "system", content: toolPrompt))
+            if Configer.chatProxyEnableEphemeralCache {
+                messages.append(LLMMessage(role: "system", contents: [.init(text: processSystemPrompt(toolPrompt)).cacheControlEphemeral()]))
+            } else {
+                messages.append(LLMMessage(role: "system", content: toolPrompt))
+            }
         }
         
         // Convert request.messages to internal LLMMessage
@@ -129,7 +137,11 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
                             processedText = processAssistantMessageContent(text, isLastMessage: false)
                         }
                         if !processedText.isEmpty {
-                            messages.append(LLMMessage(role: msg.role, content: processedText))
+                            if Configer.chatProxyEnableEphemeralCache, content.cacheControl?.isEphemeral() ?? false {
+                                messages.append(LLMMessage(role: msg.role, contents: [.init(text: processedText).cacheControlEphemeral()]))
+                            } else {
+                                messages.append(LLMMessage(role: msg.role, content: processedText))
+                            }
                         }
                     }
                 case "thinking":

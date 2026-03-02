@@ -365,6 +365,11 @@ class LLMMessageContent {
         }
     }
     
+    func cacheControlEphemeral(_ ephemeral: Bool = true) -> LLMMessageContent {
+        cacheControl = ephemeral
+        return self
+    }
+    
     func toDictionary() -> [String: Any] {
         var dict = [String: Any]()
         switch type {

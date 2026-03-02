@@ -38,6 +38,12 @@ struct LLMClaudeRequest: Codable {
 struct LLMClaudeSystem: Codable {
     let type: String?
     let text: String?
+    let cacheControl: LLMClaudeCacheControl?
+    
+    enum CodingKeys: String, CodingKey {
+        case type, text
+        case cacheControl = "cache_control"
+    }
 }
 
 struct LLMClaudeMessage: Codable {
@@ -55,11 +61,21 @@ struct LLMClaudeContent: Codable {
     let toolUseId: String?
     let isError: Bool?
     let content: AnyCodable?
+    let cacheControl: LLMClaudeCacheControl?
     
     enum CodingKeys: String, CodingKey {
         case type, text, source, id, name, input, content
         case toolUseId = "tool_use_id"
         case isError = "is_error"
+        case cacheControl = "cache_control"
+    }
+}
+
+struct LLMClaudeCacheControl: Codable {
+    let type: String? // ephemeral
+    
+    func isEphemeral() -> Bool {
+        return type == "ephemeral"
     }
 }
 

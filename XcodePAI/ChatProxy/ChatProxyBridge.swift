@@ -132,11 +132,7 @@ class ChatProxyBridge: ChatProxyBridgeBase {
                 for content in contents {
                     if content.type == .text, let text = content.text {
                         if contents.first === content, !text.contains(PromptTemplate.userPromptToolUseResultDescriptionTemplatePrefix){
-                            let message = LLMMessageContent(text: processUserMessageContent(text, isLastMessage: isLastUserMessage))
-                            if Configer.chatProxyEnableEphemeralCache {
-                                message.cacheControl = isLastUserMessage
-                            }
-                            newContents.append(message)
+                            newContents.append(LLMMessageContent(text: processUserMessageContent(text, isLastMessage: isLastUserMessage)).cacheControlEphemeral(Configer.chatProxyEnableEphemeralCache && isLastUserMessage))
                         } else {
                             newContents.append(content)
                         }
