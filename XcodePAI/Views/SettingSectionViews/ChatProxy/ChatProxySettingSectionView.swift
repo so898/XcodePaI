@@ -143,7 +143,7 @@ struct ChatProxySettingSectionView: View {
                 
                 GridRow(alignment: .center) {
                     Text("Combine Messages")
-                        .help("When enabled, consecutive messages with the same role will be combined into a single message. This reduces the number of messages sent to the model and can improve performance and context handling.")
+                        .help("When enabled, consecutive messages with the same role will be combined into a single message. This reduces the number of messages sent to the model and can improve performance and context handling. Note: This feature is incompatible with Ephemeral Cache.")
                     Toggle("Enable", isOn: $enableCombineRoleContents)
                         .toggleStyle(.checkbox)
                         .onChange(of: enableCombineRoleContents) { _, newValue in
@@ -156,9 +156,11 @@ struct ChatProxySettingSectionView: View {
                         .help("Turn on ephemeral caching, supported by the model provider. This setting allows the API to utilize caching for repeated or similar requests, resulting in improved response speed and significantly lower token consumption.")
                     Toggle("Enable", isOn: $enableEphemeralCache)
                         .toggleStyle(.checkbox)
+                        .disabled(enableCombineRoleContents)
                         .onChange(of: enableEphemeralCache) { _, newValue in
                             Configer.chatProxyEnableEphemeralCache = newValue
                         }
+                        .help(enableCombineRoleContents ? "Ephemeral Cache is unavailable when Combine Messages is enabled." : "")
                 }
                 
                 GridRow(alignment: .center) {
