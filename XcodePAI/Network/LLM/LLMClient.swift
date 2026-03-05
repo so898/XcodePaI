@@ -87,7 +87,28 @@ class LLMClient {
             }
         }
         
-        let client = EventSource(request: request)
+        let configuration = URLSessionConfiguration.default
+        
+        if let info = Configer.debugNetworkProxyInfo {
+            if info.type == "http" || info.type == "https" {
+                configuration.connectionProxyDictionary = [
+                    kCFNetworkProxiesHTTPEnable: 1,
+                    kCFNetworkProxiesHTTPProxy: info.host,
+                    kCFNetworkProxiesHTTPPort: info.port,
+                    kCFNetworkProxiesHTTPSEnable: 1,
+                    kCFNetworkProxiesHTTPSProxy: info.host,
+                    kCFNetworkProxiesHTTPSPort: info.port,
+                ]
+            } else if info.type.hasPrefix("socks") {
+                configuration.connectionProxyDictionary = [
+                    kCFNetworkProxiesSOCKSEnable: 1,
+                    kCFNetworkProxiesSOCKSProxy: info.host,
+                    kCFNetworkProxiesSOCKSPort: info.port,
+                ]
+            }
+        }
+        
+        let client = EventSource(request: request, configuration: configuration)
         
         client.onOpen = { [weak self] in
             guard let `self` = self else { return }

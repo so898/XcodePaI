@@ -52,6 +52,8 @@ class Configer {
     private static let showXcodeInspectorDebugStorageKey = "showXcodeInspectorDebug"
     private static let showLoadingWhenRequestStorageKey = "showLoadingWhenRequest"
     
+    private static let debugNetworkProxyStorageKey = "debugNetworkProxy"
+    
     // MARK: - Properties
     static var openConfigurationWhenStartUp: Bool {
         set {
@@ -258,6 +260,29 @@ class Configer {
         }
         get {
             return Self.value(showLoadingWhenRequestStorageKey, defaultValue: true) ?? true
+        }
+    }
+    
+    static var debugNetworkProxy: String {
+        set {
+            Self.setValue(debugNetworkProxyStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(debugNetworkProxyStorageKey, defaultValue: "") ?? ""
+        }
+    }
+    
+    static var debugNetworkProxyInfo: (type: String, host: String, port: Int)? {
+        set {}
+        get {
+            guard let url = URL(string: Self.debugNetworkProxy),
+                  let type = url.scheme,
+                  let host = url.host,
+                  let port = url.port else {
+                return nil
+            }
+            
+            return (type, host, port)
         }
     }
 }

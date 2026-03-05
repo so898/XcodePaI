@@ -83,7 +83,7 @@ class CoroutineHTTPClient {
             }
         }
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await Self.getSession().data(for: request)
         
         //        if let str = String(data: data, encoding: .utf8) {
         //            print("\(str)")
@@ -137,7 +137,7 @@ class CoroutineHTTPClient {
             }
         }
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await getSession().data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw CoroutineHTTPClientError.invalidResponse
@@ -244,6 +244,30 @@ class CoroutineHTTPClient {
             method: .post,
             headers: headers
         )
+    }
+    
+    private static func getSession() -> URLSession {
+        if let info = Configer.debugNetworkProxyInfo {
+            let configuration = URLSessionConfiguration.default
+            if info.type == "http" || info.type == "https" {
+                configuration.connectionProxyDictionary = [
+                    kCFNetworkProxiesHTTPEnable: 1,
+                    kCFNetworkProxiesHTTPProxy: info.host,
+                    kCFNetworkProxiesHTTPPort: info.port,
+                    kCFNetworkProxiesHTTPSEnable: 1,
+                    kCFNetworkProxiesHTTPSProxy: info.host,
+                    kCFNetworkProxiesHTTPSPort: info.port,
+                ]
+            } else if info.type.hasPrefix("socks") {
+                configuration.connectionProxyDictionary = [
+                    kCFNetworkProxiesSOCKSEnable: 1,
+                    kCFNetworkProxiesSOCKSProxy: info.host,
+                    kCFNetworkProxiesSOCKSPort: info.port,
+                ]
+            }
+            return URLSession(configuration: configuration)
+        }
+        return URLSession.shared
     }
 }
 

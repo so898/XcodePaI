@@ -14,6 +14,7 @@ struct GeneralSettingSectionView: View {
     @State private var forceLanguageIn: Configer.ForceLanguageIn = Configer.forceLanguageIn
     @State private var showXcodeInspectorDebug = Configer.showXcodeInspectorDebug
     @State private var showLoadingWhenRequest = Configer.showLoadingWhenRequest
+    @State private var proxyString = Configer.debugNetworkProxy
     
     @StateObject private var languageManager = LanguageManager.shared
     
@@ -119,6 +120,23 @@ struct GeneralSettingSectionView: View {
                     Button("Open List") {
                         WindowManager.shared.openRecordListWindow()
                     }
+                }
+                
+                GridRow {
+                    Divider().gridCellColumns(2)
+                }
+                
+                GridRow(alignment: .center) {
+                    Text("Request Proxy")
+                    TextField("http://127.0.0.1:8080", text: $proxyString)
+                        .textFieldStyle(.plain)
+                        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+                        .background(Color.black.opacity(0.3))
+                        .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray))
+                        .cornerRadius(5)
+                        .onChange(of: proxyString) { _, newValue in
+                            Configer.debugNetworkProxy = newValue
+                        }
                 }
             }
             .gridColumnAlignment(.trailing)
