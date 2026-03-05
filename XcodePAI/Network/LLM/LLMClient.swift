@@ -15,6 +15,7 @@ protocol LLMClientDelegate {
     func client(_ client: LLMClient, receivePart part: LLMAssistantMessage)
     func client(_ client: LLMClient, receiveMessage message: LLMAssistantMessage)
     func client(_ client: LLMClient, receiveError error: Error?)
+    func client(_ client: LLMClient, receiveChunkError error: LLMErrorResponseInfo)
 }
 
 class LLMAssistantMessage {
@@ -294,7 +295,14 @@ class LLMClient {
 // MARK:  Event Source Functions
 extension LLMClient {
     private func receive(chunk: String) {
-        guard let data = chunk.data(using: .utf8), let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let response = try? LLMResponse(dict: dict) else {
+        guard let data = chunk.data(using: .utf8), let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return
+        }
+        guard let response = try? LLMResponse(dict: dict) else {
+            let response = LLMErrorResponse(dict: dict)
+            if let error = response.error {
+                self.delegate?.client(self, receiveChunkError: error)
+            }
             return
         }
         

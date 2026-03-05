@@ -230,13 +230,7 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
         // If there's an error, send error event
         if let error = error {
             // Send error event
-            let errorEvent = LLMCodexResponseEvent.error(.init(
-                code: "internal_error",
-                message: error.localizedDescription,
-                param: nil,
-                sequenceNumber: sequenceNumber
-            ))
-            sendEvent(errorEvent)
+            sendChunkError(LLMErrorResponseInfo(code: "internal_error", message: error.localizedDescription, type: "internal_error"))
         }
         
         // Send response completed event
@@ -402,6 +396,16 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
         
         completeLastOutput()
         lastOutputPart = .none
+    }
+    
+    override func sendChunkError(_ error: LLMErrorResponseInfo) {
+        let errorEvent = LLMCodexResponseEvent.error(.init(
+            code: error.code ?? "",
+            message: error.message ?? "",
+            param: nil,
+            sequenceNumber: sequenceNumber
+        ))
+        sendEvent(errorEvent)
     }
     
     /// Complete previous output, send corresponding completion events

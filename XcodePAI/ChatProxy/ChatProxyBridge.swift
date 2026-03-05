@@ -309,9 +309,9 @@ class ChatProxyBridge: ChatProxyBridgeBase {
     override func client(_ client: LLMClient, receiveError error: Error?) {
         super.client(client, receiveError: error)
         
-        if let _ = error {
+        if let error = error {
             // Error
-            delegate.bridge(write: ["internal_error": "Server error"])
+            sendChunkError(LLMErrorResponseInfo(code: "internal_error", message: error.localizedDescription, type: "internal_error"))
         } else if mcpToolUses.count > 0 {
             // Tool calling
             callToolUses()
@@ -433,6 +433,14 @@ class ChatProxyBridge: ChatProxyBridgeBase {
                 )
             ]
         ))
+    }
+    
+    override func sendChunkError(_ error: LLMErrorResponseInfo) {
+        let response = LLMErrorResponse(
+            id: id,
+            error: error
+        )
+        delegate.bridge(write: response.toDictionary())
     }
 }
 

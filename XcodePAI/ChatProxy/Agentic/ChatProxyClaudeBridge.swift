@@ -272,7 +272,7 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
         // If there's an error, send error event
         if let error = error {
             // Send error event
-            sendEvent(.error(.init(error: .init(type: "internal_error", message: error.localizedDescription))))
+            sendChunkError(LLMErrorResponseInfo(code: "internal_error", message: error.localizedDescription, type: "internal_error"))
         }
         
         delegate.bridgeWriteEndChunk()
@@ -441,6 +441,10 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
         sendEvent(.messageDelta(MessageDeltaEvent(delta: LLMClaudeMessageDeltaResponse(stopReason: mappedReason, stopSequence: nil), usage: LLMClaudeUsageResponse(inputTokens: nil, outputTokens: nil))))
         
         sendEvent(.messageStop(MessageStopEvent()))
+    }
+    
+    override func sendChunkError(_ error: LLMErrorResponseInfo) {
+        sendEvent(.error(.init(error: .init(type: error.type ?? "", message: error.message ?? ""))))
     }
     
     // MARK: - Helpers

@@ -21,6 +21,70 @@ enum LLMResponseError: Error, LocalizedError {
     }
 }
 
+class LLMErrorResponse {
+    let id: String?
+    let error: LLMErrorResponseInfo?
+    
+    init(id: String?, error: LLMErrorResponseInfo?) {
+        self.id = id
+        self.error = error
+    }
+    
+    init(dict: [String: Any]) {
+        self.id = dict["id"] as? String
+        
+        if let error = dict["error"] as? [String: Any] {
+            self.error = LLMErrorResponseInfo(dict: error)
+        } else {
+            self.error = nil
+        }
+    }
+    
+    func toDictionary() -> [String: Any] {
+        var dict = [String: Any]()
+        if let id {
+            dict["id"] = id
+        }
+        
+        if let error {
+            dict["error"] = error.toDictionary()
+        }
+        return dict
+    }
+}
+
+class LLMErrorResponseInfo {
+    let code: String?
+    let message: String?
+    let type: String?
+    
+    init(code: String?, message: String?, type: String?) {
+        self.code = code
+        self.message = message
+        self.type = type
+    }
+    
+    init(dict: [String: Any]) {
+        self.code = dict["code"] as? String
+        self.message = dict["message"] as? String
+        self.type = dict["type"] as? String
+    }
+    
+    func toDictionary() -> [String: Any] {
+        var dict = [String: Any]()
+        if let code {
+            dict["code"] = code
+        }
+        if let message {
+            dict["message"] = message
+        }
+        if let type {
+            dict["type"] = type
+        }
+        return dict
+    }
+}
+
 class LLMResponse {
     let id: String?
     let model: String?

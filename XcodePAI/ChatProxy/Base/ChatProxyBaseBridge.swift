@@ -381,6 +381,10 @@ class ChatProxyBridgeBase: LLMClientDelegate {
         // .. other action by subclasses
     }
     
+    public func client(_ client: LLMClient, receiveChunkError error: LLMErrorResponseInfo) {
+        sendChunkError(error)
+    }
+    
     // MARK: Response
     
     func sendFirstChunk() {
@@ -411,5 +415,11 @@ class ChatProxyBridgeBase: LLMClientDelegate {
     /// - Parameter finishReason: Finish reason string
     func sendFinishReason(_ finishReason: String) {
         fatalError("sendFinishReason(_:) not implemented.")
+    }
+    
+    /// Send chunk error
+    /// - Parameter error: Error info
+    func sendChunkError(_ error: LLMErrorResponseInfo) {
+        fatalError("sendChunkError(_:) not implemented.")
     }
 }
