@@ -83,7 +83,7 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
                 // Process message type input
                 if input.type == "message", let contents = input.content {
                     let role = {
-                        if input.role == "developer" {
+                        if input.role == "developer", Configer.chatProxyConvertDeveloper {
                             return "system"
                         }
                         return input.role ?? "user"
@@ -160,7 +160,7 @@ class ChatProxyCodexBridge: ChatProxyBridgeBase {
         }
         
         // Return complete LLM request
-        return LLMRequest(model: config.modelName, messages: messages, stream: request.stream, usage: true, tools: tools, seed: nil, maxTokens: nil, temperature: nil, topP: nil, enableThinking: Configer.chatProxyEnableThink)
+        return processRequestAfter(LLMRequest(model: config.modelName, messages: messages, stream: request.stream, usage: true, tools: tools, seed: nil, maxTokens: nil, temperature: nil, topP: nil, enableThinking: Configer.chatProxyEnableThink))
     }
     
     /// Response creation time (Unix timestamp)

@@ -259,3 +259,7 @@
 "Xcode Claude Proxy" = "Xcode 内置 Claude 代理";
 "Xcode Codex Proxy" = "Xcode 内置 Codex 代理";
 "Xcode Inspector Debug" = "Xcode 检查器调试";
+"Convert Developer To System" = "将 Developer 转换为 System";
+"When enabled, messages with the 'developer' role will be converted to 'system' role before being sent to the AI model. This can be useful for models that don't recognize or properly handle the 'developer' role." = "启用后，具有 'developer' 角色的消息将在发送给 AI 模型之前被转换为 'system' 角色。这对于不能正确识别 'developer' 角色的模型很有用。";
+"Combine Messages" = "合并消息";
+"When enabled, consecutive messages with the same role will be combined into a single message. This reduces the number of messages sent to the model and can improve performance and context handling." = "启用后，具有相同角色的连续消息将被合并为一条消息。这可以减少发送给模型的消息数量，并可以提高性能和上下文处理。";

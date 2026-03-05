@@ -93,7 +93,7 @@ class ChatProxyBridge: ChatProxyBridgeBase {
         newRequest.enableThinking = Configer.chatProxyEnableThink
         newRequest.streamOptions = LLMStreamOption(includeUsage: true)
         
-        return newRequest
+        return processRequestAfter(newRequest)
     }
     
     // MARK: Request
@@ -102,6 +102,9 @@ class ChatProxyBridge: ChatProxyBridgeBase {
         switch message.role {
         case "developer":
             // Developer Message
+            if Configer.chatProxyConvertDeveloper {
+                fallthrough
+            }
             return message
         case "system":
             // System Message

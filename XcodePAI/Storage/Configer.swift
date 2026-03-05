@@ -34,6 +34,8 @@ class Configer {
     private static let chatProxyPortStorageKey = "ChatProxyPort"
     static let chatProxyEnableThinkStorageKey = "ChatProxyEnableThink"
     private static let chatProxyEnableEphemeralCacheStorageKey = "chatProxyEnableEphemeralCache"
+    private static let chatProxyConvertDeveloperStorageKey = "chatProxyConvertDeveloper"
+    private static let chatProxyCombineRoleContentsStorageKey = "chatProxyCombineRoleContents"
     private static let chatProxyThinkStyleStorageKey = "ChatProxyThinkStyle"
     private static let chatProxyToolUseInRequestStorageKey = "chatProxyToolUseInRequest"
     private static let chatProxyRemoveHallucinationToolCallResultStorageKey = "chatProxyRemoveHallucinationToolCallResult"
@@ -93,6 +95,24 @@ class Configer {
         }
         get {
             return Self.value(chatProxyEnableEphemeralCacheStorageKey, defaultValue: false) ?? false
+        }
+    }
+    
+    static var chatProxyConvertDeveloper: Bool {
+        set {
+            Self.setValue(chatProxyConvertDeveloperStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(chatProxyConvertDeveloperStorageKey, defaultValue: true) ?? true
+        }
+    }
+    
+    static var chatProxyCombineRoleContents: Bool {
+        set {
+            Self.setValue(chatProxyCombineRoleContentsStorageKey, value: newValue)
+        }
+        get {
+            return Self.value(chatProxyCombineRoleContentsStorageKey, defaultValue: false) ?? false
         }
     }
     

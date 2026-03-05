@@ -251,15 +251,17 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
             }
         }
         
-        return LLMRequest(
-            model: config.modelName,
-            messages: messages,
-            stream: request.stream ?? true,
-            usage: true,
-            tools: tools,
-            temperature: request.temperature.map { Float($0) },
-            topP: request.topP.map { Float($0) },
-            enableThinking: Configer.chatProxyEnableThink
+        return processRequestAfter(
+            LLMRequest(
+                model: config.modelName,
+                messages: messages,
+                stream: request.stream ?? true,
+                usage: true,
+                tools: tools,
+                temperature: request.temperature.map { Float($0) },
+                topP: request.topP.map { Float($0) },
+                enableThinking: Configer.chatProxyEnableThink
+            )
         )
     }
     

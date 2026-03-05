@@ -82,6 +82,61 @@ class ChatProxyBridgeBase: LLMClientDelegate {
     
     // MARK: - Message Processing Methods
     
+    enum LLMRequestMessageRole: String {
+        case unknown = "unknown"
+        case system = "system"
+        case developer = "developer"
+        case user = "user"
+        case assistant = "assistant"
+    }
+    
+    func processRequestAfter(_ request: LLMRequest) -> LLMRequest {
+        guard Configer.chatProxyCombineRoleContents else {
+            return request
+        }
+        
+        var messages = [LLMMessage]()
+        
+        var lastRole = LLMRequestMessageRole.unknown
+        var content = ""
+        for message in request.messages {
+            if message.role != lastRole.rawValue {
+                if !content.isEmpty {
+                    let textMessage = LLMMessage(role: lastRole.rawValue, content: content)
+                    content = ""
+                    messages.append(textMessage)
+                }
+                
+                lastRole = LLMRequestMessageRole(rawValue: message.role) ?? .unknown
+            }
+            
+            if let contentValue = message.content {
+                content += (content.isEmpty ? "" : "\n") + contentValue
+            } else if let contents = message.contents {
+                for contentValue in contents {
+                    if contentValue.type == .text {
+                        if let text = contentValue.text {
+                            content += (content.isEmpty ? "" : "\n") + text
+                        }
+                    } else if let imageUrl = contentValue.imageUrl?.url {
+                        let imageMessage = LLMMessage(role: message.role, contents: [LLMMessageContent(imageUrl: imageUrl)])
+                        messages.append(imageMessage)
+                    }
+                }
+            }
+        }
+        
+        if !content.isEmpty {
+            let textMessage = LLMMessage(role: lastRole.rawValue, content: content)
+            content = ""
+            messages.append(textMessage)
+        }
+        
+        request.messages = messages
+        
+        return request
+    }
+    
     /// Process system prompt before sending to LLM
     /// - Parameter originSystemPrompt: Original system prompt
     /// - Returns: Processed system prompt

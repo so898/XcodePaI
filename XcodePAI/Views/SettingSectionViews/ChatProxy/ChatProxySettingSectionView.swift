@@ -13,6 +13,8 @@ struct ChatProxySettingSectionView: View {
     @State private var codexProxyConfigState = AgenticConfiger.checkCodexConfigState()
     @State private var claudeProxyConfigState = AgenticConfiger.checkClaudeConfigState()
     @State private var enableThink = Configer.chatProxyEnableThink
+    @State private var enableConverDeveloper = Configer.chatProxyConvertDeveloper
+    @State private var enableCombineRoleContents = Configer.chatProxyCombineRoleContents
     @State private var enableEphemeralCache = Configer.chatProxyEnableEphemeralCache
     @State private var thinkStyle: Int = Configer.chatProxyThinkStyle.rawValue
     @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
@@ -126,6 +128,26 @@ struct ChatProxySettingSectionView: View {
                         .toggleStyle(.checkbox)
                         .onChange(of: enableThink) { _, newValue in
                             Configer.chatProxyEnableThink = newValue
+                        }
+                }
+                
+                GridRow(alignment: .center) {
+                    Text("Convert Developer To System")
+                        .help("When enabled, messages with the 'developer' role will be converted to 'system' role before being sent to the AI model. This can be useful for models that don't recognize or properly handle the 'developer' role.")
+                    Toggle("Enable", isOn: $enableConverDeveloper)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: enableConverDeveloper) { _, newValue in
+                            Configer.chatProxyConvertDeveloper = newValue
+                        }
+                }
+                
+                GridRow(alignment: .center) {
+                    Text("Combine Messages")
+                        .help("When enabled, consecutive messages with the same role will be combined into a single message. This reduces the number of messages sent to the model and can improve performance and context handling.")
+                    Toggle("Enable", isOn: $enableCombineRoleContents)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: enableCombineRoleContents) { _, newValue in
+                            Configer.chatProxyCombineRoleContents = newValue
                         }
                 }
                 
