@@ -6,13 +6,10 @@
 //
 
 import Foundation
-import SwiftUI
-import Combine
 
 // MARK: - Constants
 private enum GitConstants {
     static let gitFolder = ".git"
-    static let gitBinaryPath = "/usr/bin/git"
     static let patchFileExtension = ".patch"
     static let utf8Encoding = String.Encoding.utf8
 }
@@ -103,24 +100,23 @@ class GitManager: ObservableObject {
     
     private func getUnstagedFiles() async -> [GitFile] {
         let output = await runGitCommand(["diff", "--name-status"])
-        return parseGitStatus(output: output, isStaged: false)
+        return parseGitStatusDiff(output: output, isStaged: false)
     }
     
     private func getUntrackedFiles() async -> [GitFile] {
         let output = await runGitCommand(["status", "--porcelain"])
-        let files = parseGitPorcelain(output: output)
+        let untrackedFiles = parseGitPorcelainUntracked(output: output)
         
         var result = [GitFile]()
-        for file in files {
-            let filePath = (gitRepoPath as NSString).appendingPathComponent(file.path)
-            if FileManager.default.fileIsDirectory(atPath: filePath) {
-                if let paths = Utils.getAllFiles(in: filePath) {
+        for file in untrackedFiles {
+            let fullPath = (gitRepoPath as NSString).appendingPathComponent(file.path)
+            
+            if isDirectory(at: fullPath) {
+                if let paths = Utils.getAllFiles(in: fullPath) {
                     for path in paths {
-                        var newPath = path.replacingOccurrences(of: gitRepoPath, with: "")
-                        if newPath.first == "/" {
-                            newPath.removeFirst()
+                        if let relativePath = makeRelativePath(from: path) {
+                            result.append(GitFile(path: relativePath, changeType: .untracked, isStaged: false))
                         }
-                        result.append(GitFile(path: newPath, changeType: .untracked, isStaged: false))
                     }
                 }
             } else {
@@ -133,10 +129,10 @@ class GitManager: ObservableObject {
     
     private func getStagedFiles() async -> [GitFile] {
         let output = await runGitCommand(["diff", "--cached", "--name-status"])
-        return parseGitStatus(output: output, isStaged: true)
+        return parseGitStatusDiff(output: output, isStaged: true)
     }
     
-    private func parseGitStatus(output: String, isStaged: Bool) -> [GitFile] {
+    private func parseGitStatusDiff(output: String, isStaged: Bool) -> [GitFile] {
         return output
             .components(separatedBy: .newlines)
             .filter { !$0.isEmpty }
@@ -152,24 +148,65 @@ class GitManager: ObservableObject {
             }
     }
     
-    private func parseGitPorcelain(output: String) -> [GitFile] {
+    private func parseGitPorcelainUntracked(output: String) -> [GitFile] {
         return output
             .components(separatedBy: .newlines)
             .filter { !$0.isEmpty }
             .compactMap { line -> GitFile? in
-                let components = line.components(separatedBy: " ")
-                guard components.count == 2 else { return nil }
+                let trimmed = line.trimmingCharacters(in: .whitespaces)
+                guard trimmed.count >= 2 else { return nil }
                 
-                let status = components[0]
-                let path = components[1]
-                let changeType = GitChangeType.from(status: status)
+                let status = String(trimmed.prefix(2))
+                let path = String(trimmed.dropFirst(2)).trimmingCharacters(in: .whitespaces)
                 
-                if changeType == .untracked {
+                // Porcelain format: XY PATH
+                // Untracked files have status "??"
+                if status == "??" {
                     return GitFile(path: path, changeType: .untracked, isStaged: false)
                 }
                 
                 return nil
             }
+    }
+    
+    private func isDirectory(at path: String) -> Bool {
+        var isDir: ObjCBool = false
+        return fileManager.fileExists(atPath: path, isDirectory: &isDir) && isDir.boolValue
+    }
+    
+    private func makeRelativePath(from fullPath: String) -> String? {
+        guard fullPath.hasPrefix(gitRepoPath) else { return nil }
+        
+        let relativePath = String(fullPath.dropFirst(gitRepoPath.count))
+        return relativePath.hasPrefix("/") ? String(relativePath.dropFirst()) : relativePath
+    }
+    
+    private func getAllFilesRecursively(in directoryPath: String) -> [String]? {
+        let fileManager = FileManager.default
+        var allFiles: [String] = []
+        
+        guard isDirectory(at: directoryPath) else { return nil }
+        
+        guard let enumerator = fileManager.enumerator(
+            at: URL(fileURLWithPath: directoryPath),
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
+        ) else { return nil }
+        
+        for case let fileURL as URL in enumerator {
+            do {
+                let resourceValues = try fileURL.resourceValues(forKeys: [.isDirectoryKey])
+                let isDirectory = resourceValues.isDirectory ?? false
+                
+                if !isDirectory {
+                    allFiles.append(fileURL.path)
+                }
+            } catch {
+                continue
+            }
+        }
+        
+        return allFiles
     }
     
     /// Get file content
@@ -357,20 +394,20 @@ class GitManager: ObservableObject {
     }
     
     func stageAll() async {
-        for file in unstagedFiles {
-            await stageFile(file)
-        }
+        guard !unstagedFiles.isEmpty else { return }
+        _ = await runGitCommand(["add", "."])
+        await refreshGitStatus()
     }
     
     func unstageFile(_ file: GitFile) async {
-        _ = await runGitCommand(["reset", "HEAD", file.path])
+        _ = await runGitCommand(["reset", "HEAD", "--", file.path])
         await refreshGitStatus()
     }
     
     func unstageAll() async {
-        for file in stagedFiles {
-            await unstageFile(file)
-        }
+        guard !stagedFiles.isEmpty else { return }
+        _ = await runGitCommand(["reset", "HEAD"])
+        await refreshGitStatus()
     }
     
     func stageHunk(_ hunk: DiffHunk) async {
@@ -480,17 +517,32 @@ class GitManager: ObservableObject {
     // MARK: - Git Command Execution
     
     private func runGitCommand(_ args: [String]) async -> String {
-        guard !gitRepoPath.isEmpty else { return "" }
+        guard !gitRepoPath.isEmpty else { 
+            await setErrorMessage("Git repository path is empty")
+            return "" 
+        }
         
         let result = await CommandRunner.runGitCommand(args, in: gitRepoPath)
         
-        await MainActor.run {
-            if !result.isSuccess && !result.output.isEmpty {
-                self.errorMessage = "Git command failed: \(result.output)"
+        if !result.isSuccess {
+            let errorMessage: String
+            if !result.errorOutput.isEmpty {
+                errorMessage = "Git command failed: \(result.errorOutput)"
+            } else if !result.output.isEmpty {
+                errorMessage = "Git command failed with exit code \(result.exitCode): \(result.output)"
+            } else {
+                errorMessage = "Git command failed with exit code \(result.exitCode)"
             }
+            await setErrorMessage(errorMessage)
         }
         
         return result.output
+    }
+    
+    private func setErrorMessage(_ message: String) async {
+        await MainActor.run {
+            self.errorMessage = message
+        }
     }
 }
 
