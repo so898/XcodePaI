@@ -69,7 +69,7 @@ class SuggestionTester {
         let result = try await suggest.requestSuggestion(fileURL: URL(string: "file://test.swift")!, originalContent: originContent, cursorPosition: position, prefixContent: prefixContent, suffixContent: suffixContent)
         
         if let suggetsion = result.first {
-            return (prefixContent.substring(to: prefixContent.count - 9), suggetsion.text.substring(to: suggetsion.text.count - 1), suffixContent)
+            return (String(prefixContent.prefix(prefixContent.count - 9)), String(suggetsion.text.prefix(suggetsion.text.count - 1)), suffixContent)
         } else {
             throw SuggestionTesterError.noSuggestion
         }

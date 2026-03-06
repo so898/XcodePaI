@@ -177,24 +177,21 @@ class ChatProxyBridgeBase: LLMClientDelegate {
         
         // Remove think part in assistant message
         // Process simple because think could only be at the start of content
-        if returnContent.count > ThinkInContentWithCodeSnippetStartMarkForAgentic.count,
-           returnContent.substring(to: ThinkInContentWithCodeSnippetStartMarkForAgentic.count) == ThinkInContentWithCodeSnippetStartMarkForAgentic {
+        if returnContent.prefix(ThinkInContentWithCodeSnippetStartMarkForAgentic.count) == ThinkInContentWithCodeSnippetStartMarkForAgentic {
             let components = returnContent.split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
             if components.count == 1 {
                 returnContent = ""
             } else if components.count == 2 {
                 returnContent = String(components[1])
             }
-        } else if returnContent.count > ThinkInContentWithCodeSnippetStartMark.count,
-            returnContent.substring(to: ThinkInContentWithCodeSnippetStartMark.count) == ThinkInContentWithCodeSnippetStartMark {
+        } else if returnContent.prefix(ThinkInContentWithCodeSnippetStartMark.count) == ThinkInContentWithCodeSnippetStartMark {
             let components = returnContent.split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
             if components.count == 1 {
                 returnContent = ""
             } else if components.count == 2 {
                 returnContent = String(components[1])
             }
-        } else if returnContent.count > ThinkInContentWithCodeSnippetStartMarkWithFix.count,
-                    returnContent.substring(to: ThinkInContentWithCodeSnippetStartMarkWithFix.count) == ThinkInContentWithCodeSnippetStartMarkWithFix {
+        } else if returnContent.prefix(ThinkInContentWithCodeSnippetStartMarkWithFix.count) == ThinkInContentWithCodeSnippetStartMarkWithFix {
             let components = returnContent.split(separator: ThinkInContentWithCodeSnippetEndMark, maxSplits: 1)
             if components.count == 1 {
                 returnContent = ""

@@ -50,7 +50,7 @@ class LLMMCPToolUse: NSObject {
         toolName = ""
         
         while processContent.count > 0 {
-            if processContent.count >= 6, processContent.substring(to: 6) == "<name>" {
+            if processContent.prefix(6) == "<name>" {
                 let components = processContent.replacingOccurrences(of: "<name>", with: "").components(separatedBy: "</name>")
                 if components.count == 2 {
                     toolName = String(components[0])
@@ -58,7 +58,7 @@ class LLMMCPToolUse: NSObject {
                     throw LLMMCPToolUseError.invalidToolNameFormat
                 }
                 processContent = components[1]
-            } else if processContent.count >= 10, processContent.substring(to: 11) == "<argument>" {
+            } else if processContent.prefix(11) == "<argument>" {
                 let components = processContent.replacingOccurrences(of: "<argument>", with: "").components(separatedBy: "</argument>")
                 if components.count == 2 {
                     arguments = String(components[0])
@@ -66,7 +66,7 @@ class LLMMCPToolUse: NSObject {
                     throw LLMMCPToolUseError.invalidArgumentFormat
                 }
                 processContent = components[1]
-            } else if processContent.count >= 11, processContent.substring(to: 11) == "<arguments>" {
+            } else if processContent.prefix(11) == "<arguments>" {
                 let components = processContent.replacingOccurrences(of: "<arguments>", with: "").components(separatedBy: "</arguments>")
                 if components.count == 2 {
                     arguments = String(components[0])
