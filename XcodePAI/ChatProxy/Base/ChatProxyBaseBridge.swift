@@ -274,7 +274,7 @@ class ChatProxyBridgeBase: LLMClientDelegate {
         
         // Plugin processing
         if let chatPlugin = PluginManager.shared.getChatPlugin(),
-            let processedContent = chatPlugin.processUserPrompt(returnContent, isLast: isLastMessage) {
+           let processedContent = chatPlugin.processUserPrompt(returnContent, isLast: isLastMessage) {
             returnContent = processedContent
         }
         
@@ -318,7 +318,7 @@ class ChatProxyBridgeBase: LLMClientDelegate {
         llmClient = newClient
         return newClient
     }
-
+    
     // MARK: - LLMClientDelegate - LLM client delegate implementation
     
     /// LLM client connection successful callback
@@ -392,6 +392,46 @@ class ChatProxyBridgeBase: LLMClientDelegate {
     /// - Parameter chunk: Thinking content chunk
     func sendReasonChunk(_ chunk: String?) {
         fatalError("sendReasonChunk(_:) not implemented.")
+    }
+    
+    private var thinkTagDotCount = 0
+    func processReasonChunkThinkTag(_ chunk: String) -> String {
+        var result = chunk.replacingOccurrences(of: "```", with: "'''")
+        
+        switch thinkTagDotCount {
+        case 0:
+            if result.suffix(2) == "``" {
+                thinkTagDotCount = 2
+                result = String(result.prefix(result.count - 2))
+            } else if result.suffix(1) == "`" {
+                thinkTagDotCount = 1
+                result = String(result.prefix(result.count - 1))
+            }
+        case 1:
+            if result.count >= 1 {
+                if result.prefix(1) == "`" {
+                    thinkTagDotCount = 2
+                    result = String(result.suffix(result.count - 1))
+                    fallthrough
+                } else {
+                    thinkTagDotCount = 0
+                    result = "`" + result
+                }
+            }
+        case 2:
+            if result.count >= 1{
+                if result.prefix(1) == "`" {
+                    thinkTagDotCount = 0
+                    result = "'''" + String(result.suffix(result.count - 1))
+                } else {
+                    thinkTagDotCount = 0
+                    result = "``" + result
+                }
+            }
+        default:
+            break
+        }
+        return result
     }
     
     /// Send text content chunk

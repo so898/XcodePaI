@@ -335,14 +335,14 @@ class ChatProxyBridge: ChatProxyBridgeBase {
                 
                 if thinkParser == .inContentWithCodeSnippet {
                     let startThinkMark = Configer.chatProxyCodeSnippetPreviewFix ? ThinkInContentWithCodeSnippetStartMarkWithFix : ThinkInContentWithCodeSnippetStartMark
-                    let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
+                    let processedChunk = processReasonChunkThinkTag(chunk)
                     sendContent(startThinkMark + processedChunk)
                 } else {
                     sendContent(chunk)
                 }
             case .inProgress:
                 if thinkParser == .inContentWithCodeSnippet {
-                    let processedChunk = chunk.replacingOccurrences(of: "```", with: "'''")
+                    let processedChunk = processReasonChunkThinkTag(chunk)
                     sendContent(processedChunk)
                 } else {
                     sendContent(chunk)

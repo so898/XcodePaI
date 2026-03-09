@@ -329,10 +329,10 @@ class ChatProxyClaudeBridge: ChatProxyBridgeBase {
                         return ""
                     }
                 }()
-                let processedReason = chunk.replacingOccurrences(of: "```", with: "'''")
+                let processedReason = processReasonChunkThinkTag(chunk)
                 textContent = startThinkMark + processedReason
             case .inProgress:
-                let processedReason = chunk.replacingOccurrences(of: "```", with: "'''")
+                let processedReason = processReasonChunkThinkTag(chunk)
                 textContent = processedReason
             case .completed:
                 // No thinking content in this state
