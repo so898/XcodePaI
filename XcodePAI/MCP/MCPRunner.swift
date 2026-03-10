@@ -54,6 +54,10 @@ class MCPRunner {
     func check(mcp: LLMMCP, complete: @escaping (Bool, [LLMMCPTool]?) -> Void) {
         checkingMCP = mcp
         Task {
+            // Clean up any existing process/client for this MCP before checking
+            // This prevents crashes when checking an MCP that's already running
+            await terminateMCPProcess(mcpName: mcp.name)
+
             let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
 
             defer {
