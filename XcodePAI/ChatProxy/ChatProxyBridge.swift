@@ -484,15 +484,22 @@ extension ChatProxyBridge {
         guard let tool = toolUse.tool else {
             return
         }
-        let respContent = """
+        var respContent = """
                     \(ToolUseInContentStartMark)
                     MCP: \(tool.mcp)
                     Tool: \(tool.name)
                     ARGS: \(toolUse.arguments ?? "NULL")
                     SUCCESS: \(isError ? "False" : "True")
-                    RET: \(content ?? "NULL")
-                    \(ToolUseInContentEndMark)
                     """
+        if Configer.chatProxyShowToolUseResult {
+            respContent += """
+                RET: \(content ?? "NULL")
+                """
+        }
+        
+        respContent += """
+                \(ToolUseInContentEndMark)
+                """
         
         sendContentChunk(respContent)
                 

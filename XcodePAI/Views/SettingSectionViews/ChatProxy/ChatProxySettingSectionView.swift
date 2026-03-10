@@ -19,6 +19,7 @@ struct ChatProxySettingSectionView: View {
     @State private var thinkStyle: Int = Configer.chatProxyThinkStyle.rawValue
     @State private var toolUseType: Int = Configer.chatProxyToolUseInRequest ? 0 : 1
     @State private var removeHallucination: Bool = Configer.chatProxyRemoveHallucinationToolCallResult
+    @State private var showToolUseResult: Bool = Configer.chatProxyShowToolUseResult
     @State private var cutSourceInSearchRequest = Configer.chatProxyCutSourceInSearchRequest
     @State private var codeSnippetPreviewFix = Configer.chatProxyCodeSnippetPreviewFix
     @State private var quickWindowEnabled = Configer.chatProxyQuickWindow
@@ -202,6 +203,16 @@ struct ChatProxySettingSectionView: View {
                         .toggleStyle(.checkbox)
                         .onChange(of: removeHallucination) { _, newValue in
                             Configer.chatProxyRemoveHallucinationToolCallResult = newValue
+                        }
+                }
+                
+                GridRow {
+                    Text("Show Tool Use Result in Code Snippet")
+                        .help("When enabled, tool use results will be displayed in tool use code snippet format.")
+                    Toggle("Enable", isOn: $showToolUseResult)
+                        .toggleStyle(.checkbox)
+                        .onChange(of: showToolUseResult) { _, newValue in
+                            Configer.chatProxyShowToolUseResult = newValue
                         }
                 }
                 

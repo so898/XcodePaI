@@ -268,3 +268,5 @@
 "Command: %@" = "命令：%@";
 "Keep Alive" = "常驻内存";
 "Keep Alive Timeout (s)" = "常驻内存超时(秒)";
+"Show Tool Use Result in Code Snippet" = "在工具调用中展示调用结果";
+"When enabled, tool use results will be displayed in tool use code snippet format." = "开启时将在工具调用中展示调用结果内容";
