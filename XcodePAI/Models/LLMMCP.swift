@@ -24,7 +24,9 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
     
     @Published var timeout: Int?
     @Published var enabled: Bool
-    
+    @Published var keepAlive: Bool
+    @Published var keepAliveTimeout: Int?
+
     enum CodingKeys: CodingKey {
         case id
         case name
@@ -36,9 +38,11 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         case env
         case timeout
         case enabled
+        case keepAlive
+        case keepAliveTimeout
     }
     
-    init(id: UUID = UUID(), name: String, description: String? = nil, url: String, headers: [String: String]? = nil, timeout: Int? = nil, enabled: Bool = true) {
+    init(id: UUID = UUID(), name: String, description: String? = nil, url: String, headers: [String: String]? = nil, timeout: Int? = nil, enabled: Bool = true, keepAlive: Bool = false, keepAliveTimeout: Int? = nil) {
         self.id = id
         self.name = name
         self.url = url
@@ -46,9 +50,11 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         self.headers = headers
         self.timeout = timeout
         self.enabled = enabled
+        self.keepAlive = keepAlive
+        self.keepAliveTimeout = keepAliveTimeout
     }
-    
-    init(id: UUID = UUID(), name: String, description: String? = nil, command: String?, args:[String]?, env: [String: String]? = nil, timeout: Int? = nil, enabled: Bool = true) {
+
+    init(id: UUID = UUID(), name: String, description: String? = nil, command: String?, args:[String]?, env: [String: String]? = nil, timeout: Int? = nil, enabled: Bool = true, keepAlive: Bool = false, keepAliveTimeout: Int? = nil) {
         self.id = id
         self.name = name
         self.description = description
@@ -58,6 +64,8 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         self.env = env
         self.timeout = timeout
         self.enabled = enabled
+        self.keepAlive = keepAlive
+        self.keepAliveTimeout = keepAliveTimeout
     }
     
     // MARK: - Codable
@@ -76,6 +84,8 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         
         timeout = try container.decodeIfPresent(Int.self, forKey: .timeout)
         enabled = try container.decode(Bool.self, forKey: .enabled)
+        keepAlive = try container.decodeIfPresent(Bool.self, forKey: .keepAlive) ?? false
+        keepAliveTimeout = try container.decodeIfPresent(Int.self, forKey: .keepAliveTimeout)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -93,6 +103,8 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         
         try container.encodeIfPresent(timeout, forKey: .timeout)
         try container.encode(enabled, forKey: .enabled)
+        try container.encode(keepAlive, forKey: .keepAlive)
+        try container.encodeIfPresent(keepAliveTimeout, forKey: .keepAliveTimeout)
     }
     
     // MARK: - Utilities
@@ -127,7 +139,13 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
         if let timeout = timeout {
             ret["timeout"] = timeout
         }
-        
+
+        ret["keepAlive"] = keepAlive
+
+        if let keepAliveTimeout = keepAliveTimeout {
+            ret["keepAliveTimeout"] = keepAliveTimeout
+        }
+
         return ret
     }
     
@@ -138,7 +156,7 @@ class LLMMCP: Identifiable, ObservableObject, Codable {
 
 extension LLMMCP: Hashable {
     static func == (lhs: LLMMCP, rhs: LLMMCP) -> Bool {
-        lhs.id == rhs.id && lhs.name == rhs.name && lhs.url == rhs.url && lhs.description == rhs.description && lhs.headers == rhs.headers && lhs.enabled == rhs.enabled
+        lhs.id == rhs.id && lhs.name == rhs.name && lhs.url == rhs.url && lhs.description == rhs.description && lhs.headers == rhs.headers && lhs.enabled == rhs.enabled && lhs.keepAlive == rhs.keepAlive && lhs.keepAliveTimeout == rhs.keepAliveTimeout
     }
     
     func hash(into hasher: inout Hasher) {

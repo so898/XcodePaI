@@ -265,3 +265,6 @@
 "When enabled, consecutive messages with the same role will be combined into a single message. This reduces the number of messages sent to the model and can improve performance and context handling. Note: This feature is incompatible with Ephemeral Cache." = "启用后，具有相同角色的连续消息将被合并为一条消息。这可以减少发送给模型的消息数量，并可以提高性能和上下文处理。注意：此功能与临时缓存互斥。";
 "Ephemeral Cache is unavailable when Combine Messages is enabled." = "合并消息开启时，临时缓存将不可用。";
 "Reqeust Proxy" = "请求代理";
+"Command: %@" = "命令：%@";
+"Keep Alive" = "常驻内存";
+"Keep Alive Timeout (s)" = "常驻内存超时(秒)";

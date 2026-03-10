@@ -147,39 +147,82 @@ struct MCPDetailHeader: View {
     @Binding var isEnabled: Bool
     var editMCPAction: () -> Void
     var refreshToolAction: () -> Void
-    
+
     var body: some View {
-        HStack(spacing: 12) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(LinearGradient(colors: [Color(hex: "333333"), .black], startPoint: .topLeading, endPoint: .bottomTrailing))
-                Image(systemName: "square.stack.3d.forward.dottedline").font(.system(size: 24)).foregroundColor(.white)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(LinearGradient(colors: [Color(hex: "333333"), .black], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    Image(systemName: "square.stack.3d.forward.dottedline").font(.system(size: 24)).foregroundColor(.white)
+                }
+                .frame(width: 40, height: 40)
+
+                Text(mcp.name).font(.title2).fontWeight(.medium)
+
+                Spacer()
+
+                Button(action: {
+                    refreshToolAction()
+                }) {
+                    Image(systemName: "arrow.trianglehead.clockwise")
+                        .frame(width: 10, height: 10)
+                }
+                .buttonStyle(GetButtonStyle())
+
+                Button(action: {
+                    editMCPAction()
+                }) {
+                    Image(systemName: "pencil")
+                        .frame(width: 10, height: 10)
+                }
+                .buttonStyle(GetButtonStyle())
+
+                Toggle("", isOn: $isEnabled)
+                    .toggleStyle(.switch)
+                    .labelsHidden()
             }
-            .frame(width: 40, height: 40)
-            
-            Text(mcp.name).font(.title2).fontWeight(.medium)
-            
-            Spacer()
-            
-            Button(action: {
-                refreshToolAction()
-            }) {
-                Image(systemName: "arrow.trianglehead.clockwise")
-                    .frame(width: 10, height: 10)
+
+            // Show MCP configuration info
+            HStack(spacing: 16) {
+                if mcp.isLocal() {
+                    if let command = mcp.command {
+                        Text("Command: \(command)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+
+                    if mcp.keepAlive {
+                        HStack(spacing: 4) {
+                            Image(systemName: "bolt.fill")
+                                .font(.caption)
+                            Text("Keep Alive")
+                                .font(.caption)
+                        }
+                        .foregroundColor(.green)
+
+                        if let timeout = mcp.keepAliveTimeout {
+                            Text("(\(timeout)s")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                } else {
+                    Text(mcp.url)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
+
+                if let timeout = mcp.timeout {
+                    Text("Timeout: \(timeout)s")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Spacer()
             }
-            .buttonStyle(GetButtonStyle())
-            
-            Button(action: {
-                editMCPAction()
-            }) {
-                Image(systemName: "pencil")
-                    .frame(width: 10, height: 10)
-            }
-            .buttonStyle(GetButtonStyle())
-            
-            Toggle("", isOn: $isEnabled)
-                .toggleStyle(.switch)
-                .labelsHidden()
         }
         .padding()
     }

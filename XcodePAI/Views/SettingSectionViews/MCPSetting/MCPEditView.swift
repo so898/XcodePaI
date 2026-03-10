@@ -45,7 +45,9 @@ struct MCPEditView: View {
     @State private var env = [KVObject]()
     
     @State private var timeout: String = ""
-    
+    @State private var keepAlive: Bool = false
+    @State private var keepAliveTimeout: String = ""
+
     @State private var isLocal: Bool = false
     
     @State var showCreateMCPAlert = false
@@ -94,7 +96,12 @@ struct MCPEditView: View {
             if let timeoutValue = mcp.timeout {
                 _timeout = State(initialValue: String(timeoutValue))
             }
-            
+
+            _keepAlive = State(initialValue: mcp.keepAlive)
+            if let keepAliveTimeoutValue = mcp.keepAliveTimeout {
+                _keepAliveTimeout = State(initialValue: String(keepAliveTimeoutValue))
+            }
+
             _isLocal = State(initialValue: mcp.isLocal())
         }
         self.removeMCP = removeMCP
@@ -328,6 +335,33 @@ struct MCPEditView: View {
             }
             .background(Color.black.opacity(0.25))
             .cornerRadius(12)
+
+            if isLocal {
+                VStack(spacing: 0) {
+                    FormFieldRow(label: "Keep Alive".localizedString, content: {
+                        HStack{
+                            Spacer()
+                            Toggle("", isOn: $keepAlive)
+                                .toggleStyle(.switch)
+                                .labelsHidden()
+                        }
+                    })
+                }
+                .background(Color.black.opacity(0.25))
+                .cornerRadius(12)
+
+                if keepAlive {
+                    VStack(spacing: 0) {
+                        FormFieldRow(label: "Keep Alive Timeout (s)".localizedString, content: {
+                            TextField("300", text: $keepAliveTimeout)
+                                .textFieldStyle(.plain)
+                                .multilineTextAlignment(.trailing)
+                        })
+                    }
+                    .background(Color.black.opacity(0.25))
+                    .cornerRadius(12)
+                }
+            }
         }
     }
         
@@ -360,13 +394,21 @@ struct MCPEditView: View {
             
             Button("Save".localizedString) {
                 showCreateMCPLoading = true
-                
+
                 let timeout: Int? = {
                     if let timeoutValue = Int(self.timeout), timeoutValue > 0 {
                         return timeoutValue
                     }
                     return nil
                 }()
+
+                let keepAliveTimeout: Int? = {
+                    if let timeoutValue = Int(self.keepAliveTimeout), timeoutValue > 0 {
+                        return timeoutValue
+                    }
+                    return nil
+                }()
+
                 let newMCP = {
                     if isLocal {
                         var args = [String]()
@@ -377,7 +419,7 @@ struct MCPEditView: View {
                         for value in self.env {
                             env[value.key] = value.value
                         }
-                        return LLMMCP(id: UUID(), name: name, command: command, args: args, env: env, timeout: timeout)
+                        return LLMMCP(id: currentMCP?.id ?? UUID(), name: name, command: command, args: args, env: env, timeout: timeout, keepAlive: keepAlive, keepAliveTimeout: keepAliveTimeout)
                     }
                     var headers = [String: String]()
                     for header in self.headers {

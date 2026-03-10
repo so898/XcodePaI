@@ -38,11 +38,18 @@ enum MCPError: LocalizedError {
 
 class MCPRunner {
     static let shared = MCPRunner()
-    
+
     private var checkingMCP: LLMMCP?
-    
-    private var localProcess: Process?
-    
+
+    // Store processes per MCP name
+    private var localProcesses: [String: Process] = [:]
+    // Store clients per MCP name for keepAlive
+    private var activeClients: [String: Client] = [:]
+    // Store timeout tasks per MCP name
+    private var timeoutTasks: [String: Task<Void, Never>] = [:]
+    // Store last active time per MCP
+    private var lastActiveTimes: [String: Date] = [:]
+
     // MARK: - Public Interface
     func check(mcp: LLMMCP, complete: @escaping (Bool, [LLMMCPTool]?) -> Void) {
         checkingMCP = mcp
@@ -54,46 +61,48 @@ class MCPRunner {
                     await client.disconnect()
                 }
             }
-            
+
             guard let transport = makeTransport(mcp: mcp) else {
                 DispatchQueue.main.async {
                     complete(false, nil)
                 }
                 return
             }
-            
+
             if let result = try? await client.connect(transport: transport) {
                 if result.capabilities.tools != nil {
                     let (tools, _) = try await client.listTools()
-                    
+
                     var mcpTools = [LLMMCPTool]()
                     for tool in tools {
                         mcpTools.append(LLMMCPTool(tool: tool, mcp: mcp.name))
                     }
-                    
+
                     DispatchQueue.main.async {
                         complete(true, mcpTools)
                     }
-                    
+
                     await client.disconnect()
-                    localProcess?.terminate()
-                    
+                    localProcesses[mcp.name]?.terminate()
+                    localProcesses.removeValue(forKey: mcp.name)
+
                     return
                 }
             }
             DispatchQueue.main.async {
                 complete(false, nil)
             }
-            
+
             await client.disconnect()
-            localProcess?.terminate()
+            localProcesses[mcp.name]?.terminate()
+            localProcesses.removeValue(forKey: mcp.name)
         }
     }
-    
+
     func run(mcpName: String, toolName: String, arguments: String?, complete: @escaping (Result<String, Error>) -> Void) {
         Task { [weak self] in
             guard let self = self else { return }
-            
+
             do {
                 let content = try await self.run(mcpName: mcpName, toolName: toolName, arguments: arguments)
                 await MainActor.run {
@@ -106,55 +115,82 @@ class MCPRunner {
             }
         }
     }
-    
+
     func run(mcpName: String, toolName: String, arguments: String?) async throws -> String {
         let (mcp, tool, arguments) = try processMCPToolArgument(mcpName: mcpName, toolName: toolName, arguments: arguments)
         return try await run(mcp: mcp, tool: tool, arguments: arguments)
     }
-    
+
     // MARK: - Private Helpers
     private func processMCPToolArgument(mcpName: String, toolName: String, arguments: String?) throws -> (LLMMCP, LLMMCPTool, [String: Value]?) {
         // Find MCP
         guard let mcp = StorageManager.shared.availableMCPs().first(where: { $0.name == mcpName }) else {
             throw MCPError.mcpNotFound
         }
-        
+
         // Find Tool
         guard let tool = StorageManager.shared.mcpTools.first(where: { $0.mcp == mcpName && $0.name == toolName }) else {
             throw MCPError.toolNotFound
         }
-        
+
         // Parse arguments
         let parsedArguments: [String: Value]? = {
             guard let argumentsString = arguments,
                   let data = argumentsString.data(using: .utf8) else {
                 return nil
             }
-            
+
             return try? JSONDecoder().decode([String: Value].self, from: data)
         }()
-        
+
         return (mcp, tool, parsedArguments)
     }
-    
+
     private func run(mcp: LLMMCP, tool: LLMMCPTool, arguments: [String: Value]?) async throws -> String {
-        // Create client and transport
-        let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
-        
-        defer {
-            Task {
-                await client.disconnect()
-            }
-            localProcess?.terminate()
+        // Update last active time
+        lastActiveTimes[mcp.name] = Date()
+
+        // Cancel any existing timeout task
+        timeoutTasks[mcp.name]?.cancel()
+
+        // Check if we have an existing client for keepAlive
+        if mcp.keepAlive, let existingClient = activeClients[mcp.name] {
+            // Use existing client and process
+            return try await callToolWithClient(existingClient, mcp: mcp, tool: tool, arguments: arguments)
         }
-        
+
+        // Create new client and transport
+        let client = Client(name: Constraint.AppName, version: Constraint.AppVersion)
+
         guard let transport = makeTransport(mcp: mcp) else {
             throw MCPError.invalidURL
         }
-        
+
         // Connect to server
         try await client.connect(transport: transport)
-        
+
+        // Store client if keepAlive is enabled
+        if mcp.keepAlive {
+            activeClients[mcp.name] = client
+        }
+
+        let result = try await callToolWithClient(client, mcp: mcp, tool: tool, arguments: arguments)
+
+        // Handle keepAlive logic
+        if mcp.keepAlive {
+            // Schedule timeout to terminate process
+            scheduleKeepAliveTimeout(mcp: mcp)
+        } else {
+            // Disconnect and terminate immediately
+            await client.disconnect()
+            localProcesses[mcp.name]?.terminate()
+            localProcesses.removeValue(forKey: mcp.name)
+        }
+
+        return result
+    }
+
+    private func callToolWithClient(_ client: Client, mcp: LLMMCP, tool: LLMMCPTool, arguments: [String: Value]?) async throws -> String {
         // Call tool
         let (content, isError) = try await Utils.withTimeout(seconds: TimeInterval(mcp.timeout ?? 60), throwError: MCPError.toolExecutionTimeout) {
             return try await client.callTool(
@@ -162,14 +198,12 @@ class MCPRunner {
                 arguments: arguments
             )
         }
-        
+
         // Handle errors
         if let isError = isError, isError {
             throw MCPError.toolExecutionError("Tool execution failed")
         }
-        
-        await client.disconnect()
-        
+
         // Extract text content
         guard let textContent = content.compactMap({ contentItem -> String? in
             if case .text(let text) = contentItem {
@@ -179,19 +213,56 @@ class MCPRunner {
         }).first else {
             throw MCPError.noTextContent
         }
-        
+
         return textContent
     }
-    
+
+    private func scheduleKeepAliveTimeout(mcp: LLMMCP) {
+        let timeout = mcp.keepAliveTimeout ?? 300 // Default 5 minutes
+
+        timeoutTasks[mcp.name] = Task { [weak self] in
+            do {
+                try await Task.sleep(nanoseconds: UInt64(timeout) * 1_000_000_000)
+
+                // Check if still idle
+                if let lastActive = self?.lastActiveTimes[mcp.name],
+                   Date().timeIntervalSince(lastActive) >= Double(timeout) {
+                    // Terminate the process
+                    await self?.terminateMCPProcess(mcpName: mcp.name)
+                }
+            } catch {
+                // Task was cancelled
+            }
+        }
+    }
+
+    private func terminateMCPProcess(mcpName: String) async {
+        if let client = activeClients[mcpName] {
+            await client.disconnect()
+            activeClients.removeValue(forKey: mcpName)
+        }
+
+        localProcesses[mcpName]?.terminate()
+        localProcesses.removeValue(forKey: mcpName)
+        timeoutTasks[mcpName]?.cancel()
+        timeoutTasks.removeValue(forKey: mcpName)
+        lastActiveTimes.removeValue(forKey: mcpName)
+    }
+
     private func makeTransport(mcp: LLMMCP) -> Transport? {
         if mcp.url == "local" {
-            // Terminate last process
-            if let localProcess {
-                localProcess.terminate()
+            // Check if we already have a process for this MCP
+            if let existingProcess = localProcesses[mcp.name], existingProcess.isRunning {
+                return existingProcess.stdioTransport()
             }
-            
+
+            // Terminate last process if exists
+            if let existingProcess = localProcesses[mcp.name] {
+                existingProcess.terminate()
+            }
+
             let command: String = mcp.command ?? "npx"
-            
+
             let result = CommandFinder.findCommand(command)
             var exe = ""
             if result.exists, let path = result.path {
@@ -199,22 +270,22 @@ class MCPRunner {
             } else {
                 return nil
             }
-            
+
             // If a command is specified, launch it and redirect I/O
             let process = Process()
             process.executableURL = URL(fileURLWithPath: exe)
             process.arguments = mcp.args ?? []
-            
+
             // copy current process environment
             var env = ProcessInfo.processInfo.environment
-            
+
             let binDir = URL(fileURLWithPath: exe).deletingLastPathComponent().path
             if env["PATH"] == nil {
                 env["PATH"] = binDir
             } else if !env["PATH"]!.contains(binDir) {
                 env["PATH"] = binDir + ":" + env["PATH"]!
             }
-            
+
             if let mcpEnv = mcp.env {
                 for key in mcpEnv.keys {
                     if let value = mcpEnv[key] {
@@ -222,18 +293,18 @@ class MCPRunner {
                     }
                 }
             }
-            
+
             process.environment = env
             let transport = process.stdioTransport()
-            
+
             do {
                 try process.run()
             } catch {
                 return nil
             }
-            
-            localProcess = process
-            
+
+            localProcesses[mcp.name] = process
+
             return transport
         } else if let url = URL(string: mcp.url) {
             return HTTPClientTransport(
@@ -251,7 +322,7 @@ class MCPRunner {
                     return newRequest
                 }
         }
-        
+
         return nil
     }
 }
