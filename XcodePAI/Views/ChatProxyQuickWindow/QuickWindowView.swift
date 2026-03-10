@@ -114,10 +114,12 @@ class QuickWindowDataManager: ObservableObject {
     @Published private(set) var availableModelDic: [String: [LLMModel]] = [:]
     @Published private(set) var availableMCPs: [LLMMCP] = []
 
+    @MainActor
     init() {
         loadInitialValue()
     }
 
+    @MainActor
     private func loadInitialValue() {
         NotificationCenter.default.addObserver(self, selector: #selector(defaultConfigUpdated), name: .storageDefaultLLMUpdated, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(modelsUpdated), name: .storageProvidersUpdated, object: nil)
@@ -128,6 +130,7 @@ class QuickWindowDataManager: ObservableObject {
         refreshMCPs()
     }
 
+    @MainActor
     private func refreshModels() {
         var modelDic = [String: [LLMModel]]()
         var lastProviderName = ""
@@ -153,18 +156,22 @@ class QuickWindowDataManager: ObservableObject {
         availableModelDic = modelDic
     }
 
+    @MainActor
     private func refreshMCPs() {
         availableMCPs = StorageManager.shared.availableMCPs()
     }
 
+    @MainActor
     @objc func defaultConfigUpdated() {
         defaultCofig = StorageManager.shared.defaultConfig()
     }
 
+    @MainActor
     @objc func modelsUpdated() {
         refreshModels()
     }
 
+    @MainActor
     @objc func mcpsUpdated() {
         refreshMCPs()
     }
