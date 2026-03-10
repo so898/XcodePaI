@@ -470,7 +470,7 @@ extension ChatProxyBridge {
                 if let tool = toolUse.tool {
                     do {
                         let content = try await MCPRunner.shared.run(mcpName: tool.mcp, toolName: tool.name, arguments: toolUse.arguments)
-                        self.sendCallToolResult(toolUse: toolUse, content: content, isError: false)
+                        self.sendCallToolResult(toolUse: toolUse, content: content.replacingOccurrences(of: "```", with: "'''"), isError: false)
                     } catch _ {
                         self.sendCallToolResult(toolUse: toolUse, content: nil, isError: true)
                     }
