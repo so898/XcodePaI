@@ -11,6 +11,9 @@ import Combine
 
 extension Notification.Name {
     static let storageDefaultLLMUpdated = Notification.Name("StorageDefaultLLMUpdated")
+    static let storageProvidersUpdated = Notification.Name("StorageProvidersUpdated")
+    static let storageModelsUpdated = Notification.Name("StorageModelsUpdated")
+    static let storageMCPsUpdated = Notification.Name("StorageMCPsUpdated")
 }
 
 class StorageManager {
@@ -57,6 +60,7 @@ extension StorageManager {
         LocalStorage.shared.save(providers, forKey: Constraint.modelProviderStorageKey)
             .sink { _ in }
             .store(in: &cancellables)
+        NotificationCenter.default.post(name: .storageProvidersUpdated, object: nil)
     }
 }
 
@@ -80,6 +84,7 @@ extension StorageManager {
         LocalStorage.shared.save(models, forKey: Constraint.modelStorageKeyPrefix + providerName)
             .sink { _ in }
             .store(in: &cancellables)
+        NotificationCenter.default.post(name: .storageModelsUpdated, object: nil)
     }
     
     func renameModels(from: String, to: String) {
@@ -115,6 +120,7 @@ extension StorageManager {
         LocalStorage.shared.save(mcps, forKey: Constraint.mcpStorageKey)
             .sink { _ in }
             .store(in: &cancellables)
+        NotificationCenter.default.post(name: .storageMCPsUpdated, object: nil)
     }
     
     func availableMCPs() -> [LLMMCP] {

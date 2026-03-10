@@ -113,18 +113,26 @@ class QuickWindowDataManager: ObservableObject {
     @Published private(set) var availableProviderNames: [String] = []
     @Published private(set) var availableModelDic: [String: [LLMModel]] = [:]
     @Published private(set) var availableMCPs: [LLMMCP] = []
-    
+
     init() {
         loadInitialValue()
     }
-    
+
     private func loadInitialValue() {
         NotificationCenter.default.addObserver(self, selector: #selector(defaultConfigUpdated), name: .storageDefaultLLMUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(modelsUpdated), name: .storageProvidersUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(modelsUpdated), name: .storageModelsUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(mcpsUpdated), name: .storageMCPsUpdated, object: nil)
         defaultConfigUpdated()
-        
+        refreshModels()
+        refreshMCPs()
+    }
+
+    private func refreshModels() {
         var modelDic = [String: [LLMModel]]()
         var lastProviderName = ""
         var models = [LLMModel]()
+        availableProviderNames.removeAll()
         for model in StorageManager.shared.availableModels() {
             if lastProviderName != model.provider {
                 if !lastProviderName.isEmpty {
@@ -134,19 +142,30 @@ class QuickWindowDataManager: ObservableObject {
                 lastProviderName = model.provider
                 models = [LLMModel]()
             }
-            
+
             models.append(model)
         }
         if !lastProviderName.isEmpty {
             availableProviderNames.append(lastProviderName)
             modelDic[lastProviderName] = models
         }
-        
+
         availableModelDic = modelDic
     }
-    
+
+    private func refreshMCPs() {
+        availableMCPs = StorageManager.shared.availableMCPs()
+    }
+
     @objc func defaultConfigUpdated() {
         defaultCofig = StorageManager.shared.defaultConfig()
-        availableMCPs = StorageManager.shared.availableMCPs()
+    }
+
+    @objc func modelsUpdated() {
+        refreshModels()
+    }
+
+    @objc func mcpsUpdated() {
+        refreshMCPs()
     }
 }
