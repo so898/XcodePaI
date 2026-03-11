@@ -36,6 +36,7 @@ enum MCPError: LocalizedError {
     }
 }
 
+@MainActor
 class MCPRunner {
     static let shared = MCPRunner()
 
@@ -54,7 +55,7 @@ class MCPRunner {
     func check(mcp: LLMMCP, complete: @escaping (Bool, [LLMMCPTool]?) -> Void) {
         checkingMCP = mcp
         Task {
-            // Clean up any existing process/client for this MCP before checking
+            // Clean up any existing process/client/timeout for this MCP before checking
             // This prevents crashes when checking an MCP that's already running
             await terminateMCPProcess(mcpName: mcp.name)
 
@@ -87,9 +88,7 @@ class MCPRunner {
                     }
 
                     await client.disconnect()
-                    localProcesses[mcp.name]?.terminate()
-                    localProcesses.removeValue(forKey: mcp.name)
-
+                    await terminateMCPProcess(mcpName: mcp.name)
                     return
                 }
             }
@@ -98,8 +97,7 @@ class MCPRunner {
             }
 
             await client.disconnect()
-            localProcesses[mcp.name]?.terminate()
-            localProcesses.removeValue(forKey: mcp.name)
+            await terminateMCPProcess(mcpName: mcp.name)
         }
     }
 
@@ -157,10 +155,21 @@ class MCPRunner {
         // Cancel any existing timeout task
         timeoutTasks[mcp.name]?.cancel()
 
-        // Check if we have an existing client for keepAlive
+        // Check if we have an existing client for keepAlive and validate it's still usable
         if mcp.keepAlive, let existingClient = activeClients[mcp.name] {
-            // Use existing client and process
-            return try await callToolWithClient(existingClient, mcp: mcp, tool: tool, arguments: arguments)
+            // Validate client is still connected and process is running
+            if await isClientValid(existingClient, mcpName: mcp.name) {
+                // Update last active time
+                lastActiveTimes[mcp.name] = Date()
+                // Use existing client and process
+                let result = try await callToolWithClient(existingClient, mcp: mcp, tool: tool, arguments: arguments)
+                // Schedule timeout after successful call
+                scheduleKeepAliveTimeout(mcp: mcp)
+                return result
+            } else {
+                // Client is invalid (process crashed or disconnected) - clean up
+                await terminateMCPProcess(mcpName: mcp.name)
+            }
         }
 
         // Create new client and transport
@@ -228,14 +237,22 @@ class MCPRunner {
             do {
                 try await Task.sleep(nanoseconds: UInt64(timeout) * 1_000_000_000)
 
-                // Check if still idle
-                if let lastActive = self?.lastActiveTimes[mcp.name],
-                   Date().timeIntervalSince(lastActive) >= Double(timeout) {
-                    // Terminate the process
-                    await self?.terminateMCPProcess(mcpName: mcp.name)
+                // Check if task was cancelled
+                try Task.checkCancellation()
+
+                // Check if still idle - compare current lastActiveTime with when we started sleeping
+                // If there's been activity since we scheduled this timeout, don't terminate
+                if let self = self {
+                    let currentLastActive = self.lastActiveTimes[mcp.name]
+                    let scheduledTime = Date().addingTimeInterval(-Double(timeout))
+                    
+                    // Only terminate if there hasn't been any activity since we scheduled the timeout
+                    if let lastActive = currentLastActive, lastActive < scheduledTime {
+                        await self.terminateMCPProcess(mcpName: mcp.name)
+                    }
                 }
             } catch {
-                // Task was cancelled
+                // Task was cancelled or error occurred
             }
         }
     }
@@ -253,16 +270,32 @@ class MCPRunner {
         lastActiveTimes.removeValue(forKey: mcpName)
     }
 
+    private func isClientValid(_ client: Client, mcpName: String) async -> Bool {
+        // Check if process is still running for local MCP
+        if let process = localProcesses[mcpName] {
+            // isRunning can return true even if process crashed, so we also check
+            // the process terminationStatus - a negative value indicates abnormal termination
+            if !process.isRunning || process.terminationStatus != 0 {
+                return false
+            }
+        }
+        // For remote MCP, we could ping the server but for simplicity we assume it's valid
+        // The actual call will fail if there's an issue
+        return true
+    }
+
     private func makeTransport(mcp: LLMMCP) -> Transport? {
         if mcp.url == "local" {
-            // Check if we already have a process for this MCP
-            if let existingProcess = localProcesses[mcp.name], existingProcess.isRunning {
-                return existingProcess.stdioTransport()
-            }
-
-            // Terminate last process if exists
+            // Check if we already have a valid process for this MCP
             if let existingProcess = localProcesses[mcp.name] {
+                // Verify process is actually running and healthy
+                // isRunning can return true even after crash, so check terminationStatus too
+                if existingProcess.isRunning && existingProcess.terminationStatus == 0 {
+                    return existingProcess.stdioTransport()
+                }
+                // Process is dead or crashed - clean up
                 existingProcess.terminate()
+                localProcesses.removeValue(forKey: mcp.name)
             }
 
             let command: String = mcp.command ?? "npx"
