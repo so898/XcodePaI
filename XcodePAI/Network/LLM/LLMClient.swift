@@ -206,6 +206,9 @@ class LLMClient {
         var processContent = message.content
         if thinkTagComplete == nil, message.reasoningContent == nil {
             // First Message
+            if let content = processContent, content.count == 0 {
+                return (nil, nil)
+            }
             if let content = processContent, content.contains("<think>") {
                 thinkTagComplete = false
                 processContent = processContent?.replacingOccurrences(of: "<think>", with: "")
