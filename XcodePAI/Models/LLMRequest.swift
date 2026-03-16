@@ -483,7 +483,11 @@ class LLMFunction {
             dict["description"] = description
         }
         if let parameters = parameters {
-            dict["parameters"] = parameters
+            if let data = parameters.data(using: .utf8), let jsonDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                dict["parameters"] = jsonDict
+            } else {
+                dict["parameters"] = parameters
+            }
         }
         if let arguments = arguments {
             dict["arguments"] = arguments
