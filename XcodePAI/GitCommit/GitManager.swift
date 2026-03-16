@@ -435,14 +435,17 @@ class GitManager: ObservableObject {
             // For untracked files, simply remove them
             let filePath = (gitRepoPath as NSString).appendingPathComponent(file.path)
             try? fileManager.removeItem(atPath: filePath)
+        } else if file.isStaged {
+            // For staged files, discard both staged and working directory changes
+            _ = await runGitCommand(["restore", "--staged", "--worktree", file.path])
         } else {
-            // For tracked files, use git checkout to discard changes
-            // This handles both unstaged and staged changes
-            _ = await runGitCommand(["checkout", "HEAD", "--", file.path])
+            // For unstaged files (not staged), only discard working directory changes
+            // This preserves any staged changes for partially-staged files
+            _ = await runGitCommand(["restore", "--worktree", file.path])
         }
-        
+
         await refreshGitStatus()
-        
+
         // If this file is currently selected, reload its diff (which should now be empty)
         if let selectedFile = selectedFile, selectedFile == file {
             await loadDiff(for: file)
