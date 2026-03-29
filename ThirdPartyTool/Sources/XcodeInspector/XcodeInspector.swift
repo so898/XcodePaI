@@ -19,7 +19,7 @@ public enum XcodeInspectorActor: GlobalActor {
     public static let shared = Actor()
 }
 
-#warning("TODO: Consider rewriting it with Swift Observation")
+// TODO: Consider rewriting it with Swift Observation
 public final class XcodeInspector: ObservableObject {
     public static let shared = XcodeInspector()
     
@@ -40,7 +40,7 @@ public final class XcodeInspector: ObservableObject {
     private var appChangeObservations = Set<Task<Void, Never>>()
     private var activeXcodeCancellable = Set<AnyCancellable>()
     
-    #warning("TODO: Find a good way to make XcodeInspector thread safe!")
+    // TODO: Find a good way to make XcodeInspector thread safe!
     public var safe = Safe()
 
     @Published public fileprivate(set) var activeApplication: AppInstanceInspector?

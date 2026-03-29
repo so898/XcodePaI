@@ -86,10 +86,9 @@ public final class BatchingFileChangeWatcher: DirectoryWatcherProtocol {
     
     internal func startPublishTimer() {
         guard self.timer == nil else { return }
-        
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-            self.timer = Timer.scheduledTimer(withTimeInterval: self.publishInterval, repeats: true) { [weak self] _ in
+
+        self.timer = Timer.scheduledTimer(withTimeInterval: self.publishInterval, repeats: true) { [weak self] _ in
+            Task { @MainActor in
                 self?.publishChanges()
                 self?.publishDirectoryChanges()
             }

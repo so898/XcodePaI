@@ -11,7 +11,7 @@ public final class Logger: Sendable {
     private let subsystem: String
     private let category: String
     private let osLog: OSLog
-    private let fileLogger = FileLogger()
+    private nonisolated(unsafe) let fileLogger = FileLogger()
 
     public static let service = Logger(category: "Service")
     public static let ui = Logger(category: "UI")

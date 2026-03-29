@@ -182,8 +182,8 @@ public final class GitHubCopilotService:
         fileURL: URL,
         content: String
     ) async throws {
-        let languageId = languageIdentifierFromFileURL(fileURL)
-        let uri = "file://\(fileURL.path)"
+        _ = languageIdentifierFromFileURL(fileURL)
+        _ = "file://\(fileURL.path)"
         //        Logger.service.debug("Open \(uri), \(content.count)")
 //        try await server.sendNotification(
 //            .textDocumentDidOpen(
@@ -205,7 +205,7 @@ public final class GitHubCopilotService:
         content: String,
         version: Int
     ) async throws {
-        let uri = "file://\(fileURL.path)"
+        _ = "file://\(fileURL.path)"
         //        Logger.service.debug("Change \(uri), \(content.count)")
 //        try await server.sendNotification(
 //            .textDocumentDidChange(
@@ -224,14 +224,14 @@ public final class GitHubCopilotService:
 
     @GitHubCopilotSuggestionActor
     public func notifySaveTextDocument(fileURL: URL) async throws {
-        let uri = "file://\(fileURL.path)"
+        _ = "file://\(fileURL.path)"
         //        Logger.service.debug("Save \(uri)")
 //        try await server.sendNotification(.textDocumentDidSave(.init(uri: uri)))
     }
 
     @GitHubCopilotSuggestionActor
     public func notifyCloseTextDocument(fileURL: URL) async throws {
-        let uri = "file://\(fileURL.path)"
+        _ = "file://\(fileURL.path)"
         //        Logger.service.debug("Close \(uri)")
 //        try await server.sendNotification(.textDocumentDidClose(.init(uri: uri)))
     }
