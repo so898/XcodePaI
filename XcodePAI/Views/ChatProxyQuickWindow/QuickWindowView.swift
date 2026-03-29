@@ -166,13 +166,15 @@ class QuickWindowDataManager: ObservableObject {
         defaultCofig = StorageManager.shared.defaultConfig()
     }
 
-    @MainActor
     @objc func modelsUpdated() {
-        refreshModels()
+        Task { @MainActor in
+            refreshModels()
+        }
     }
 
-    @MainActor
     @objc func mcpsUpdated() {
-        refreshMCPs()
+        Task { @MainActor in
+            refreshMCPs()
+        }
     }
 }
