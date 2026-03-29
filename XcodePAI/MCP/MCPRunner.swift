@@ -219,7 +219,7 @@ class MCPRunner {
 
         // Extract text content
         guard let textContent = content.compactMap({ contentItem -> String? in
-            if case .text(let text) = contentItem {
+            if case .text(let text, _, _) = contentItem {
                 return text
             }
             return nil
