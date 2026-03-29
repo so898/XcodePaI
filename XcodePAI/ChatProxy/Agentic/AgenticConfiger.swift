@@ -43,14 +43,19 @@ class AgenticConfiger {
     /// Local proxy server endpoint for XcodePAI's LLM service.
     ///
     /// All AI agents should route requests through this endpoint when properly configured.
-    /// Format: `http://127.0.0.1:50222/v1`
-    static let LocalProxyServer = "http://127.0.0.1:50222/v1"
+    /// Format: `http://127.0.0.1:{port}/v1` where port is from `Configer.chatProxyPort`
+    static func LocalProxyServer() -> String {
+        return "http://127.0.0.1:\(Configer.chatProxyPort)/v1"
+    }
     
     /// Local MCP server endpoint for XcodePAI's MCP service.
     ///
-    /// Used by AI agents to access MCP tools for code operations.
-    /// Format: `http://127.0.0.1:50222/mcp`
-    static let LocalMCPServer = "http://127.0.0.1:50222/mcp"
+    /// Provides AI agents with access to MCP (Model Context Protocol) tools
+    /// for code operations and context management.
+    /// Format: `http://127.0.0.1:{port}/mcp` where port is from `Configer.chatProxyPort`
+    static func LocalMCPServer() -> String {
+        return "http://127.0.0.1:\(Configer.chatProxyPort)/mcp"
+    }
     
     // MARK: - Codex Configuration Management
     
@@ -124,7 +129,7 @@ class AgenticConfiger {
                     // 5. Validate XcodePAI-specific configuration details
                     if let modelProviderTable = doc["model_providers"]?.tableValue,
                        let detailTable = modelProviderTable[Constraint.InternalModelName.lowercased()]?.tableValue,
-                       detailTable["base_url"]?.stringValue == LocalProxyServer,
+                       detailTable["base_url"]?.stringValue == LocalProxyServer(),
                        detailTable["wire_api"]?.stringValue == CurrentCodexAPIType {
                         return .configured
                     }
@@ -188,7 +193,7 @@ class AgenticConfiger {
             // Create XcodePAI provider configuration
             let detailTable = TOMLValue.table([
                 "name": .string("XcodePaI LLM Proxy"),
-                "base_url": .string(LocalProxyServer),
+                "base_url": .string(LocalProxyServer()),
                 "wire_api": .string(CurrentCodexAPIType)
             ])
             
@@ -209,7 +214,7 @@ class AgenticConfiger {
             
             // Configure local MCP server
             let mcpServerConfig = TOMLValue.table([
-                "url": .string(LocalMCPServer),
+                "url": .string(LocalMCPServer()),
                 "enabled": .boolean(true)
             ])
             
@@ -294,7 +299,7 @@ class AgenticConfiger {
                let env = configuration["env"] as? [String: Any],
                let baseUrl = env["ANTHROPIC_BASE_URL"] as? String {
                 
-                return baseUrl == LocalProxyServer ? .configured : .configuredWithOther
+                return baseUrl == LocalProxyServer() ? .configured : .configuredWithOther
             }
             // env block or ANTHROPIC_BASE_URL missing
             return .notConfigured
@@ -323,11 +328,11 @@ class AgenticConfiger {
             if var configuration = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
                 // Update or create env dictionary with proxy URL
                 var env = configuration["env"] as? [String: Any] ?? [:]
-                env["ANTHROPIC_BASE_URL"] = LocalProxyServer
+                env["ANTHROPIC_BASE_URL"] = LocalProxyServer()
                 configuration["env"] = env
                 
                 var mcpServers = configuration["mcpServers"] as? [String: Any] ?? [:]
-                mcpServers[Constraint.InternalModelName.lowercased()] = ["type": "http", "url": LocalMCPServer]
+                mcpServers[Constraint.InternalModelName.lowercased()] = ["type": "http", "url": LocalMCPServer()]
                 configuration["mcpServers"] = mcpServers
                 
                 // Write updated configuration

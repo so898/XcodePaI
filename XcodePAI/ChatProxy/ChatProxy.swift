@@ -38,6 +38,10 @@ class ChatProxy {
             currentServer.stop()
             server = nil
         }
+        
+        AgenticConfiger.setupCodexProxyConfig()
+        AgenticConfiger.setupClaudeProxyConfig()
+        
         server = TCPServer(port: Configer.chatProxyPort, delegate: self)
         server?.start()
     }
