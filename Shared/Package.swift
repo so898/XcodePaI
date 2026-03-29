@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Shared",
-    platforms: [.macOS(.v12)],
+    platforms: [.macOS(.v13)],
     products: [
         .library(name: "MainAppService", targets: ["MainAppService"]),
         .library(name: "EditExtensionService", targets: ["EditExtensionService"]),
